@@ -1,0 +1,487 @@
+<xmlDict>
+
+	<dictEntry name="FADC250 Window Raw Data (mode 1)" tag="0xe101" num="0" type="composite">
+		<description format="c,i,l,N(c,Ns)">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"channel number"
+			N	"number of adc samples"
+			s	"adc value"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FADC250 Pulse Integral Data with Timing (mode 7)" tag="0xe102" num="0" type="composite">
+		<description format="c,i,l,N(c,N(s,i,s,s))">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"channel number"
+			N	"number of pulses"
+			s	"tdc value"
+			i	"adc value"
+			s	"pulse min (4-tick average)"
+			s	"pulse max"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FADC250 Pulse Integral Data (mode 3)" tag="0xe103" num="0" type="composite">
+		<description format="c,i,l,N(c,N(s,i))">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"channel number"
+			N	"number of pulses"
+			s	"tdc value"
+			i	"adc value"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FADC250 Pulse Raw Data (mode 2)" tag="0xe110" num="0" type="composite">
+		<description format="c,i,l,N(c,N(c,Ns))">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"channel number"
+			N	"number of pulses"
+			c	"first sample"
+			N	"number of adc samples"
+			s	"adc value"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="VSCM Hadrware Data" tag="0xe104" num="1" type="uint32">
+		<description>
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(21:11)        "NEVENTS"
+               0(10:00)        "BLOCK"
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:00)         "NWORDS"
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:00)         "EVENT"
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:00)         "TIMEH"
+		       1(23:00)         "TIMEL"
+            0(31:27)=0x10+0x04 "BCOTIME"
+		       0(23:16)         "STOP"
+		       0(07:00)         "START"
+            0(31:27)=0x10+0x08 "FSSREVT"
+               0(22:22)        "HFCBID"
+               0(21:19)        "CHIPID"
+               0(18:12)        "CH"
+               0(11:04)        "BCO"
+               0(02:00)        "ADC"
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="VSCM Raw Data" tag="0xe104" num="0" type="uint32">
+		<description>
+            0(31:27)=0x10+0x08 "FSSREVT"
+               0(22:22)        "HFCBID"
+               0(21:19)        "CHIPID"
+               0(18:12)        "CH"
+               0(11:04)        "LATENCY"
+               0(02:00)        "ADC"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="DCRB Hadrware Data" tag="0xe105" num="0" type="uint32">
+		<description>
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(21:11)        "NEVENTS"
+               0(10:00)        "BLOCK"
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:0)         "NWORDS"
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:0)         "EVENTNUM"
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:0)         "TIMEH"
+		       1(23:0)         "TIMEL"
+            0(31:27)=0x10+0x08 "DCRBEVT"
+               0(22:16)        "CHANNUM"
+               0(15:00)        "TDC"
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="V1190 TDC Data" tag="0xe107" num="0" type="uint32">
+		<description>
+               0(31:27)        "SLOT"
+               0(26:26)        "EDGE"
+               0(25:19)        "CH"
+               0(18:00)        "TDC"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="DCRBGTP Hadrware Data" tag="0xe108" num="0" type="uint32">
+		<description>
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(21:11)        "NEVENTS"
+               0(10:00)        "BLOCK"
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:0)         "NWORDS"
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:0)         "EVENTNUM"
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:0)         "TIMEH"
+		       1(23:0)         "TIMEL"
+
+            0(31:27)=0x10+0x08 "DCRBEVT"
+               0(22:16)        "CHANNUM"
+               0(15:00)        "TDC"
+
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FADC250 Hadrware Data" tag="0xe109" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="TI Hadrware Data" tag="0xe10A" num="0" type="uint32">
+		<description>
+
+            0(31:27)=0x10+0x00 "BLOCK_HEADER_FIRST_WORD"
+               0(26:22)        "SLOT_NUMBER"
+               0(21:18)        0
+               0(17:08)        "BLOCK_NUMBER"
+               0(07:00)        "BLOCK_LEVEL"
+
+               0(31:17)=0x7F88 "BLOCK_HEADER_SECOND_WORD"
+               0(16:16)        1-have time stamp, 0-no time stamp
+               0(15:08)        0x20
+               0(07:00)        "BLOCK_LEVEL"
+
+               0(31:24)        "EVENT_TYPE"
+		       0(23:16)        0X0F
+		       0(15:00)        "EVENT_WORD_COUNT"
+
+               0(31:00)        "EVENT_NUMBER_LOW_32_BITS"
+
+               0(31:00)        "TIME_STAMP_LOW_32_BITS"
+
+  (optional)   0(31:16)        "EVENT_NUMBER_HIGH_16_BITS"
+               0(15:00)        "TIME_STAMP_HIGH_16_BITS"
+
+
+            0(31:27)=0x10+0x01 "BLOCK_TRAILER"
+               0(26:22)        "SLOTID"
+               0(21:0)         "BLOCK_WORD_COUNT"
+
+            0(31:27)=0x10+0x0E "DNV"
+
+            0(31:27)=0x10+0x0F "FILLER"
+               0(26:22)        "SLOT_NUMBER"
+               0(21:00)        "BLOCK_NUMBER", or '0011110001000100010000' for 128-bit alignment
+
+		</description>
+	</dictEntry>
+
+	<dictEntry name="V1190/V1290 Hadrware Data" tag="0xe10B" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="SSP Hadrware Data" tag="0xe10C" num="0" type="uint32">
+		<description>
+
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(17:08)        "BLOCK_NUMBER"
+               0(07:00)        "BLOCK_LEVEL"
+
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:0)         "NWORDS"
+
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:0)         "EVENTNUM"
+
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:0)         "TIMEL"
+		       1(23:0)         "TIMEH"
+
+            0(31:27)=0x10+0x04 "HPS_CLUSTER"
+               0(26:23)        "CLUSTER_N"
+               0(22:10)        "CLUSTER_E"
+               0(09:06)        "CLUSTER_Y"
+               0(05:00)        "CLUSTER_X"
+               1(09:00)        "CLUSTER_T"
+
+            0(31:27)=0x10+0x05 "HPS_TRIGGER"
+               0(26:23)        "TYPE"
+               0(22:16)        "DATA"
+               0(09:00)        "TIME"
+
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="GTP Hadrware Data" tag="0xe10D" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="Run Config File" tag="0xe10E" num="0" type="char">
+		<description>
+		</description>
+	</dictEntry>
+
+
+
+	<dictEntry name="HEAD bank" tag="0xe10F" num="0" type="uint32">
+		<description>
+            0(31:0)  "version number"
+            1(31:0)  "run number"
+            2(31:0)  "event number"
+            3(31:0)  "event unix time"
+            4(31:0)  "event type"
+            5(31:0)  "roc pattern"
+            6(31:0)  "event classification (17,18,20 etc)"
+            7(31:0)  "trigger bits"
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="SVT Composite Data" tag="0xe111" num="0" type="composite">
+		<description format="c,i,l,N(c,c,c,c)">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"half/chip number"
+			c	"channel number"
+			c	"tdc value"
+			c	"adc value"
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="HEAD bank raw format" tag="0xe112" num="0" type="uint32">
+		<description>
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(07:00)        "BLOCK_LEVEL"
+
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(21:0)         "NWORDS"
+
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:0)         "EVENTNUM"
+
+            0(31:27)=0x10+0x04 "HEAD_DATA"
+               0(07:0)  "the number of following words"
+               1(31:0)  "version number"
+               2(31:0)  "run number"
+               3(31:0)  "event number"
+               4(31:0)  "event unix time"
+               5(31:0)  "event type"
+
+		</description>
+	</dictEntry>
+
+
+
+	<dictEntry name="SLAC SVT before disent" tag="0xe113" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="EPICS data" tag="0xe114" num="0" type="char">
+		<description>
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="DSC2 Scalers raw format" tag="0xe115" num="0" type="uint32">
+		<description>
+
+		</description>
+	</dictEntry>
+
+	<dictEntry name="DC Composite Data" tag="0xe116" num="0" type="composite">
+		<description format="c,i,l,N(c,s)">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			c	"channel number"
+			s	"tdc value"
+		</description>
+	</dictEntry>
+
+	<dictEntry name="ADC v792 raw format" tag="0xe117" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="MVT raw format" tag="0xe118" num="0" type="uint32">
+		<description>
+
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FTT raw format" tag="0xe119" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="TDC v775 raw format" tag="0xe11a" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="MVT composite data" tag="0xe11b" num="0" type="composite">
+		<description format="c,i,l,N(s,Ns)">
+			c	"slot number"
+			i	"trigger number"
+			l	"time stamp"
+			N	"number of channels fired"
+			s	"channel number"
+			N	"number of adc samples"
+			s	"adc value"
+		</description>
+	</dictEntry>
+
+
+	<dictEntry name="DAQ performance timers" tag="0xe11e" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="SRS Raw Data" tag="0xe11f" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="FASTBUS Raw Data" tag="0xe120" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="PGEM crate Raw Data" tag="0xe121" num="0" type="uint32">
+		<description>
+		</description>
+	</dictEntry>
+
+	<dictEntry name="VTP Hadrware Data" tag="0xe122" num="0" type="uint32">
+		<description>
+
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(17:08)        "BLOCK_NUMBER"
+               0(07:00)        "BLOCK_LEVEL"
+
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:0)         "NWORDS"
+
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:0)         "EVENTNUM"
+
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:0)         "TIMEL"
+		       1(23:0)         "TIMEH"
+
+            0(31:27)=0x10+0x04 "EC_PEAK"
+               0(26:26)        "PEAK_INST"
+               0(25:24)        "PEAK_VIEW"
+               0(23:15)        "PEAK_COORD"
+               0(14:02)        "PEAK_ENERGY"
+               1(10:00)        "PEAK_TIME"
+
+            0(31:27)=0x10+0x05 "EC_CLUSTER"
+               0(26:26)        "CLUSTER_INST"
+               0(25:17)        "CLISTER_COORDW"
+               0(16:08)        "CLISTER_COORDV"
+               0(07:01)        "CLISTER_COORDU_H"
+               1(30:30)        "CLISTER_COORDU_L"
+               1(29:17)        "CLISTER_ENERGY"
+               1(10:00)        "CLUSTER_TIME"
+
+            0(31:27)=0x10+0x06 "TRIGGER"
+               0(16:16)        "TRIG_INST"
+               0(15:11)        "TRIG_LANE"
+               0(10:00)        "TRIG_TIME"
+
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+
+		</description>
+	</dictEntry>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <dictEntry name="EC strips" tag="0xd101" num="0" type="composite">
+        <description format="2c,2s">
+            c   "layer# (1-6)"
+            c   "strip# (1-36)"
+            s   "energy (MeV)"
+            s   "time (4 ns ticks)"
+        </description>
+    </dictEntry>
+
+    <dictEntry name="EC peaks" tag="0xd102" num="0" type="composite">
+        <description format="c,4s,2c">
+            c   "layer# (1-6)"
+            s   "energy (MeV)"
+            s   "time (4 ns ticks)"
+            s   "coord (strip# * 8 - 4, strip number from 1)"
+            s   "width (strip# * 8 - 4, strip number from 1)"
+            c   "first strip number (from 1)"
+            c   "the number of strips"
+        </description>
+    </dictEntry>
+
+    <dictEntry name="EC clusters" tag="0xd103" num="0" type="composite">
+        <description format="c,8s,6c">
+            c   "layer# (1-6)"
+            s   "energy (MeV)"
+            s   "time (4 ns ticks)"
+            s   "coordU (strip# * 8 - 4, strip number from 1)"
+            s   "coordV (strip# * 8 - 4, strip number from 1)"
+            s   "coordW (strip# * 8 - 4, strip number from 1)"
+            s   "widthU (strip# * 8 - 4, strip number from 1)"
+            s   "widthV (strip# * 8 - 4, strip number from 1)"
+            s   "widthW (strip# * 8 - 4, strip number from 1)"
+            c   "peak1U - U peak ID (from 1)
+            c   "peak1V - V peak ID (from 1)
+            c   "peak1W - W peak ID (from 1)
+            c   "peaknU - # of U peaks
+            c   "peaknV - # of V peaks
+            c   "peaknW - # of W peaks
+        </description>
+    </dictEntry>
+
+
+
+</xmlDict>
