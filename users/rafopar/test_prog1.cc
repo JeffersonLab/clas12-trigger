@@ -1,6 +1,8 @@
 #include <evioUtil.hxx>
 #include <evioFileChannel.hxx>
 #include <list>
+#include <bitset>         // std::bitset
+#include <iomanip>
 
 using namespace evio;
 using namespace std;
@@ -34,7 +36,7 @@ int main(int argc, char **argv){
 	  vector<uint32_t> *data_values = (*it)->getVector<uint32_t>();
 
 	  for( std::vector<uint32_t>::iterator it_data = data_values->begin(); it_data != data_values->end(); it_data++ ){
-	    cout<<(*it_data)<<"     ";
+	    cout<<setw(15)<<(*it_data)<<setw(36)<<bitset<32>(*it_data)<<endl;
 	  }
 	  cout<<endl;
 	}
