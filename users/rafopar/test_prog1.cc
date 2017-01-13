@@ -15,7 +15,7 @@ using namespace evio;
 using namespace std;
 
 int main(int argc, char **argv){
-  
+ // Dummy comment
   try{
     evioFileChannel chan(argv[1], "r");
 
