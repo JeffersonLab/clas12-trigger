@@ -4,6 +4,9 @@
 #include <bitset>         // std::bitset
 #include <iomanip>
 
+#include <TFile.h>
+#include <TH1D.h>
+
 #define GET_CHAR(b,i) b[i]; i+=1;
 #define GET_SHORT(b,i) ((short *)(&b[i]))[0]; i+=2;
 #define GET_INT(b,i) ((int *)(&b[i]))[0]; i+=4;
@@ -15,10 +18,15 @@ using namespace evio;
 using namespace std;
 
 int main(int argc, char **argv){
- // Dummy comment
+  
   try{
     evioFileChannel chan(argv[1], "r");
 
+    TFile *file_out = new TFile(Form("out_%s.root", argv[1]), "Recreate");
+    TH1D *h_tdc1 = new TH1D("h_tdc1", "", 1500, 3000., 4500.);
+    TH1D *h_time1 = new TH1D("h_time1", "", 1500, 46., 71.);
+    TH1D *h_time2 = new TH1D("h_time2", "", 2000, 0., 4.);
+    
     chan.open();
 
     int counter = 0;
@@ -58,6 +66,8 @@ int main(int argc, char **argv){
 	  unsigned char *p = (unsigned char *)fadc->data.data();
 	  unsigned int len = fadc->data.size() * 4;
 
+	  cout<<"       len = "<<len<<endl;
+	  
 	  while(len-i>4)
 	    {
 	      unsigned char slot = GET_CHAR(p,i);
@@ -88,6 +98,18 @@ int main(int argc, char **argv){
 		  adc[i_pulse] = GET_INT(p,i);
 		  pulse_min[i_pulse] = GET_SHORT(p,i);
 		  pulse_max[i_pulse] = GET_SHORT(p,i);
+
+		  double time1 = double(tdc[i_pulse])/64.;
+		  double time2 = time1/32.;
+		  h_tdc1->Fill(tdc[i_pulse]);
+		  h_time1->Fill(time1);
+		  h_time2->Fill(time2);
+		  
+
+		  cout<<"======tdc["<<i_pulse<<"]:        "<<tdc[i_pulse]<<endl;
+		  cout<<"======adc["<<i_pulse<<"]:        "<<adc[i_pulse]<<endl;
+		  cout<<"======pulse_min["<<i_pulse<<"]   "<<pulse_min[i_pulse]<<endl;
+		  cout<<"======pulse_max["<<i_pulse<<"]   "<<pulse_max[i_pulse]<<endl;
 		}
 
 		
@@ -106,6 +128,9 @@ int main(int argc, char **argv){
       counter = counter + 1;
     }
 
+    gDirectory->Write();
+    file_out->Close();
+      
     chan.close();
   } catch(evioException e){
     cerr<<endl<<e.toString()<<endl;

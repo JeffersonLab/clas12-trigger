@@ -1,0 +1,19 @@
+#ifndef __ECTrig__
+#define __ECTrig__
+
+ #include <evioUtil.hxx>
+// #include <evioFileChannel.hxx>
+//class evio::evioDOMNode;
+
+class TECTrig
+{
+public:
+  TECTrig();
+  TECTrig( evio::evioDOMNode*);
+  int Sector() {return fSector;};
+private:
+  int fSector;
+  
+};
+
+#endif

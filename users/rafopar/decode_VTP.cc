@@ -1,6 +1,7 @@
 #include <evioUtil.hxx>
 #include <evioFileChannel.hxx>
 #include <list>
+#include <ECTrig.hh>
 
 using namespace evio;
 using namespace std;
@@ -30,12 +31,14 @@ int main(int argc, char **argv){
       for( std::list<evioDOMNode*>::iterator it = nodelist1.get()->begin();  it != nodelist1.get()->end(); it++ ){
 	
 	if( (*it)->tag == vtp_tag ){
-	  // length of each data word is 32 bit
-	  vector<uint32_t> *data_values = (*it)->getVector<uint32_t>();
 
-	  for( std::vector<uint32_t>::iterator it_data = data_values->begin(); it_data != data_values->end(); it_data++ ){
+	  TECTrig trig(*it);
+	  // length of each data word is 32 bit
+	  // vector<uint32_t> *data_values = (*it)->getVector<uint32_t>();
+
+	  // for( std::vector<uint32_t>::iterator it_data = data_values->begin(); it_data != data_values->end(); it_data++ ){
 	    
-	  }
+	  // }
 	}
 
       }

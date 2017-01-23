@@ -1,0 +1,16 @@
+CC              = g++
+CC_OBJ_FLAGS    = -c -fPIC
+CC_Shared_FLAGS = -shared -Wl,-soname,libTrigDiag.so
+ROOT_CFLAGS     = $(shell root-config --cflags)
+ROOT_LIBS       = $(shell root-config --libs)
+CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
+
+libTrigDiag:	ECTrig.o
+		rm -f libTrigDiag.so*
+		$(CC) $(CC_Shared_FLAGS) -o lib/$@.so.1.0.1 $?
+		cd lib;\
+		ln -sf $@.so.1.0.1 $@.so.1; ln -sf $@.so.1.0.1 $@.so
+
+
+ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
+		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) -I./include

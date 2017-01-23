@@ -1,0 +1,15 @@
+#include <ECTrig.hh>
+#include <evioUtil.hxx>
+#include <evioFileChannel.hxx>
+
+// using namespace evio;
+// using namespace std;
+
+TECTrig::TECTrig(){
+  cout<<"Kuku"<<endl;
+}
+
+TECTrig::TECTrig( evio::evioDOMNode* it ){
+  vector<uint32_t> *data_values = it->getVector<uint32_t>();
+  //cout<<setw(15)<<(*it_data)<<setw(36)<<bitset<32>(*it_data)<<endl;
+}
