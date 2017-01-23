@@ -15,13 +15,13 @@ TECTrig::TECTrig( evio::evioDOMNode* it ){
 
   vector<uint32_t> *data_values = it->getVector<uint32_t>();
 
-  for( std::vector<uint32_t>::iterator it_data = data_values->begin(); it_data != data_values->end(); it_data++ ){
-    bool is_type_def =(*it_data)&chk_typedef;
+  for( fit_data = data_values->begin(); fit_data != data_values->end(); fit_data++ ){
+    bool is_type_def =(*fit_data)&chk_typedef;
     if( is_type_def ){
-      cout<<"Type defining word"<<setw(15)<<(*it_data)<<setw(36)<<bitset<32>(*it_data)<<endl;
+      //cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
 
-      unsigned short int data_type = ((*it_data)&typedef_bits)>>27;
-      cout<<"Data type is "<<data_type<<endl;
+      unsigned short int data_type = ((*fit_data)&typedef_bits)>>27;
+      //cout<<"Data type is "<<data_type<<endl;
       
       switch ( data_type ){
       case type_blk_head: ReadBlockHeader(); break;
@@ -35,7 +35,7 @@ TECTrig::TECTrig( evio::evioDOMNode* it ){
       }
       
     }else{
-      //cout<<"Data continuation word<<setw(15)"<<(*it_data)<<setw(36)<<bitset<32>(*it_data)<<endl;
+      //cout<<"Data continuation word<<setw(15)"<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
     }
 
   }
@@ -44,6 +44,10 @@ TECTrig::TECTrig( evio::evioDOMNode* it ){
 }
 
 void TECTrig::ReadBlockHeader(){
+  fslotid = ((*fit_data)&SLOTID_bits)>>22;
+  fblock_number = ((*fit_data)&BLOCK_NUMBER_bits)>>8;
+  fblock_level = (*fit_data)&BLOCK_NUMBER_bits;
+  cout<<"Slot id"<<setw(15)<<fslotid<<setw(36)<<bitset<32>(*fit_data)<<endl;
   
 }
 
@@ -56,7 +60,19 @@ void TECTrig::ReadEventHeader(){
 }
 
 void TECTrig::ReadTriggerTime(){
-  
+  int timel = (*fit_data)&TIMEL_bits;
+  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+  fit_data = std::next(fit_data, 1);
+  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+  int timeh = (*fit_data)&TIMEL_bits;
+
+  ftrig_time = timeh;
+  ftrig_time = ftrig_time<<24;
+  ftrig_time = ftrig_time|timel;
+  // cout<<"timel           "<<bitset<48>(timel)<<endl;
+  // cout<<"timeh           "<<bitset<48>(timeh)<<endl;
+  // cout<<"ftrig_time      "<<bitset<48>(ftrig_time)<<endl;
+  cout<<"Trigger time is "<<ftrig_time<<endl;
 }
 void TECTrig::ReadECTriggerPeak(){
   
