@@ -61,18 +61,23 @@ void TECTrig::ReadEventHeader(){
 
 void TECTrig::ReadTriggerTime(){
   int timel = (*fit_data)&TIMEL_bits;
-  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
   fit_data = std::next(fit_data, 1);
-  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
   int timeh = (*fit_data)&TIMEL_bits;
 
   ftrig_time = timeh;
   ftrig_time = ftrig_time<<24;
   ftrig_time = ftrig_time|timel;
-  // cout<<"timel           "<<bitset<48>(timel)<<endl;
-  // cout<<"timeh           "<<bitset<48>(timeh)<<endl;
-  // cout<<"ftrig_time      "<<bitset<48>(ftrig_time)<<endl;
+  cout<<"size of ftrig_time = "<<sizeof(ftrig_time)<<endl;
+  cout<<"timel           "<<bitset<48>(timel)<<endl;
+  cout<<"timeh           "<<bitset<48>(timeh)<<endl;
+  cout<<"ftrig_time      "<<bitset<48>(ftrig_time)<<endl;
   cout<<"Trigger time is "<<ftrig_time<<endl;
+
+  test_var[0] = 15; test_var[1] = 75;
+  cout<<"Addr1 = "<<&test_var[0]<<"     Addr2 = "<<&test_var[1]<<endl;
+  cout<<"width of ftrig_time = "<<ftrig_time.getBitWidth()<<endl;
 }
 void TECTrig::ReadECTriggerPeak(){
   

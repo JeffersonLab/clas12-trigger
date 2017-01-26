@@ -4,6 +4,7 @@ CC_Shared_FLAGS = -shared -Wl,-soname,libTrigDiag.so
 ROOT_CFLAGS     = $(shell root-config --cflags)
 ROOT_LIBS       = $(shell root-config --libs)
 CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
+HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 
 libTrigDiag:	ECTrig.o
 		rm -f libTrigDiag.so*
@@ -13,4 +14,7 @@ libTrigDiag:	ECTrig.o
 
 
 ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
-		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) -I./include
+		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+
+clean:
+		rm -f lib/*.so.*

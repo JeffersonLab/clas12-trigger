@@ -4,6 +4,9 @@
  #include <evioUtil.hxx>
 // #include <evioFileChannel.hxx>
 //class evio::evioDOMNode;
+#include <ap_int.h>
+#include <ap_fixed.h>
+#include <hls_stream.h>
 
 class TECTrig
 {
@@ -17,8 +20,10 @@ private:
   int fslotid;
   int fblock_number;
   int fblock_level;
-  
-  long long int ftrig_time;
+
+  //long long int ftrig_time;
+  ap_int<48> ftrig_time;
+  ap_int<33> test_var[2];
   
   void ReadBlockHeader();
   void ReadBlockTrailer();
