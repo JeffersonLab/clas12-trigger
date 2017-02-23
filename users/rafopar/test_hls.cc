@@ -16,7 +16,15 @@ int main(){
     cout<<" bit["<<20 - ii - 1<<"] = "<<a[20 - ii - 1]<<endl;
   }
 
-  ap_int<20> *bb = new ap_int<20>(2314);
+  ap_int<20> *bb = new ap_int<20>(4919);
   cout<<"bb = "<<*bb<<"     bb<20> bits = "<<bitset<20>(*bb)<<endl;
-  
+
+  cout<<"Range b(1, 3) is "<<bb->range(3, 1)<<endl;
+
+  cout.precision(10);
+  ap_ufixed<9, 6> cc = 30.3;
+  double cc_double = cc.to_double();
+  cout<<"cc bits = "<<bitset<20>(cc)<<endl;
+  cout<<"cc = "<<cc<<endl;
+  cout<<"cc_double = "<<cc_double<<endl;
 }

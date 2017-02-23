@@ -15,14 +15,34 @@ public:
   TECTrig( evio::evioDOMNode*);
   int Sector() {return fSector;};
 private:
-  std::vector<uint32_t>::iterator fit_data;
+  std::vector<ap_int<32> >::iterator fit_data;
   int fSector;
   int fslotid;
+  int fnwords;
+  int fev_number;
   int fblock_number;
   int fblock_level;
+  
+  int fpeak_inst;
+  int fpeak_view;
+  double fpeak_coord;
+  //ap_ufixed<128,32> fpeak_coord;
+  int fpeak_energy;
+  int fpeak_time;
 
+  int fclust_inst;
+  double fclust_coord_W;
+  double fclust_coord_V;
+  double fclust_coord_U;
+  int fclust_Energy;
+  int fclust_time;
+
+  int ftrig_inst;
+  int ftrig_lane;
+  int ftrig_time;
+  
   //long long int ftrig_time;
-  ap_int<48> ftrig_time;
+  ap_int<48> ftrg_time;
   ap_int<33> test_var[2];
   
   void ReadBlockHeader();
@@ -32,13 +52,7 @@ private:
   void ReadECTriggerPeak();
   void ReadECTriggerCluster();
   void ReadTrigger();
-  static const uint32_t chk_typedef = 2147483648; // bit 32 is 1, and all others are 0
-  static const uint32_t typedef_bits = 2013265920; // bits 31, 30, 29 and 28 are 1, all others are 0
-  static const uint32_t SLOTID_bits = 130023424; // bits 26:22 are 1, all others a 0
-  static const uint32_t BLOCK_NUMBER_bits = 261888;
-  static const uint32_t BLOCK_LEVEL_bits = 255;
-  static const uint32_t TIMEL_bits = 16777215;
-  static const uint32_t TIMEH_bits = 16777215;
+
   static const unsigned short int type_blk_head = 0;
   static const unsigned short int type_blk_trail = 1;
   static const unsigned short int type_ev_head = 2;

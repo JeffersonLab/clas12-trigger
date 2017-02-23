@@ -318,7 +318,7 @@
 		</description>
 	</dictEntry>
 
-	<dictEntry name="DC Composite Data" tag="0xe116" num="0" type="composite">
+	<dictEntry name="DCRB Composite Data" tag="0xe116" num="0" type="composite">
 		<description format="c,i,l,N(c,s)">
 			c	"slot number"
 			i	"trigger number"
@@ -413,7 +413,7 @@
                0(26:26)        "CLUSTER_INST"
                0(25:17)        "CLISTER_COORDW"
                0(16:08)        "CLISTER_COORDV"
-               0(07:01)        "CLISTER_COORDU_H"
+               0(07:00)        "CLISTER_COORDU_H"
                1(30:30)        "CLISTER_COORDU_L"
                1(29:17)        "CLISTER_ENERGY"
                1(10:00)        "CLUSTER_TIME"
