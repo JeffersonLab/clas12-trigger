@@ -26,14 +26,18 @@ private:
   int fpeak_inst;
   int fpeak_view;
   double fpeak_coord;
+  ap_ufixed<9, 6> fpeak_coord_hls;
   //ap_ufixed<128,32> fpeak_coord;
   int fpeak_energy;
   int fpeak_time;
 
   int fclust_inst;
-  double fclust_coord_W;
-  double fclust_coord_V;
-  double fclust_coord_U;
+  ap_ufixed<9, 6> fclust_coord_Y_hls;
+  ap_ufixed<9, 6> fclust_coord_X_hls;
+
+  double fclust_coord_Y;
+  double fclust_coord_X;
+
   int fclust_Energy;
   int fclust_time;
 
@@ -44,7 +48,8 @@ private:
   //long long int ftrig_time;
   ap_int<48> ftrg_time;
   ap_int<33> test_var[2];
-  
+
+  void ResetAll();
   void ReadBlockHeader();
   void ReadBlockTrailer();
   void ReadEventHeader();

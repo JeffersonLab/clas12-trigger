@@ -12,6 +12,9 @@ TECTrig::TECTrig(){
 }
 
 TECTrig::TECTrig( evio::evioDOMNode* it ){
+
+  // Reset all attributes, before reading the current event
+  ResetAll(); 
   
   vector<ap_int<32> > *data_values = (vector<ap_int<32>> *)it->getVector<uint32_t>();
 
@@ -19,7 +22,7 @@ TECTrig::TECTrig( evio::evioDOMNode* it ){
 
     ap_int<1> is_type_def = fit_data->range(31, 31);
 
-    cout<<"The word is word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+    cout<<"The word is "<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
 
     if( is_type_def ){
       cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
@@ -86,14 +89,15 @@ void TECTrig::ReadTriggerTime(){
   cout<<"Addr1 = "<<&test_var[0]<<"     Addr2 = "<<&test_var[1]<<endl;
   cout<<"width of ftrig_time = "<<ftrg_time.getBitWidth()<<endl;
 }
+
+
 void TECTrig::ReadECTriggerPeak(){
   cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
   fpeak_inst = fit_data->range(26, 26);
   fpeak_view = fit_data->range(25, 24);
-  //fpeak_coord = fit_data->range(23, 15);
-  int dbl_intpart = fit_data->range(23, 18);
-  int dbl_floatpart = fit_data->range(17, 15);
-  fpeak_coord = double(dbl_intpart) + double(dbl_floatpart/10.);
+
+  fpeak_coord_hls(8, 0) = fit_data->range(23, 15);
+  fpeak_coord = fpeak_coord_hls.to_double();
   fpeak_energy = fit_data->range(14, 2);
 
   fit_data = std::next(fit_data, 1);   // Go to the next word
@@ -113,40 +117,27 @@ void TECTrig::ReadECTriggerCluster(){
   cout<<" === === === === ECTrigCluster === === === ===  "<<endl;
   cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
   fclust_inst = fit_data->range(26, 26);
-  int dbl_intpart = fit_data->range(25, 20);
-  int dbl_floatpart = fit_data->range(19, 17);
-  fclust_coord_W = double(dbl_intpart) + double(dbl_floatpart/10.);
-  dbl_intpart = fit_data->range(16, 11);
-  dbl_floatpart = fit_data->range(10, 8);
-  fclust_coord_V = double(dbl_intpart) + double(dbl_floatpart/10.);
-
-  dbl_intpart = fit_data->range(7, 2);
-
-  int coordh = fit_data->range(1, 0);
-  //cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+  fclust_coord_Y_hls(8, 0) = fit_data->range(25, 17);
+  fclust_coord_Y = fclust_coord_Y_hls.to_double();
+  fclust_coord_X_hls(8, 0) = fit_data->range(16, 8);
+  fclust_coord_X = fclust_coord_X_hls.to_double();
   
-  fit_data = std::next(fit_data, 1);   // Go to the next word
-  //This should be data continuation word, if not then data format is not correct
+  //cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+
+  // Go to the next word
+  fit_data = std::next(fit_data, 1);
+  
+  // This should be data continuation word,
+  // if not then data format is not correct
   if( fit_data->range(31, 31) ) {printf("Wrong Data Format in %s Exiting", __func__); exit(0); }
 
   cout<<"Data cont. word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
-  int coordl = fit_data->range(30, 30);
-
-  dbl_floatpart = coordh<<1;
-  dbl_floatpart = dbl_floatpart|coordl;
-  fclust_coord_U = double(dbl_intpart) + double(dbl_floatpart)/10.;
   
   fclust_Energy = fit_data->range(29, 17);
   fclust_time = fit_data->range(10, 0);
-  cout<<"coordh = "<<coordh<<endl;
-  cout<<"coordl = "<<coordl<<endl;
-  cout<<"dbl_floatpart = "<<dbl_floatpart<<endl;
-  cout<<"double(dbl_floatpart)/10. = "<<double(dbl_floatpart)/10.<<endl;
-  cout<<"flust_Ucord = "<<(double(dbl_intpart) + double(dbl_floatpart)/10.)<<endl;
   
-  cout<<"W coordinate = "<<fclust_coord_W<<endl;
-  cout<<"V coordinate = "<<fclust_coord_V<<endl;
-  cout<<"U coordinate = "<<fclust_coord_U<<endl;
+  cout<<"Y coordinate = "<<fclust_coord_Y<<endl;
+  cout<<"X coordinate = "<<fclust_coord_X<<endl;
   cout<<"Cluster Energy = "<<fclust_Energy<<endl;
   cout<<"Cluster Time = "<<fclust_time<<endl;
   
@@ -167,4 +158,35 @@ void TECTrig::ReadTrigger(){
   cout<<"ftrig_lane = "<<ftrig_lane<<endl;
   cout<<"ftrig_time = "<<ftrig_time<<endl;
   cout<<" === === === === End of Trigger === === === ===  "<<endl;
+}
+
+
+void TECTrig::ResetAll(){
+  
+  fSector=-9999;
+  fslotid=-9999;
+  fnwords=-9999;
+  fev_number=-9999;
+  fblock_number=-9999;
+  fblock_level=-9999;
+  
+  fpeak_inst=-9999;
+  fpeak_view=-9999;
+  fpeak_coord=-9999;
+  fpeak_energy=-9999;
+  fpeak_time=-9999;
+
+  fclust_inst=-9999;
+  fclust_coord_Y=-9999;
+  fclust_coord_X=-9999;
+
+  fclust_Energy=-9999;
+  fclust_time=-9999;
+
+  ftrig_inst=-9999;
+  ftrig_lane=-9999;
+  ftrig_time=-9999;
+  
+  ftrg_time=-9999;
+  
 }

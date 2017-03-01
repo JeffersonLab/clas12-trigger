@@ -7,24 +7,16 @@
 using namespace std;
 
 int main(){
-  ap_int<20> a = 926;
-
-  cout<<"a = "<<a<<"     a<20> bits = "<<bitset<20>(a)<<endl;
-  cout<<"checking Bit select operator []:"<<endl;
-
-  for( int ii = 0; ii < 20; ii++ ){
-    cout<<" bit["<<20 - ii - 1<<"] = "<<a[20 - ii - 1]<<endl;
-  }
-
-  ap_int<20> *bb = new ap_int<20>(4919);
-  cout<<"bb = "<<*bb<<"     bb<20> bits = "<<bitset<20>(*bb)<<endl;
-
-  cout<<"Range b(1, 3) is "<<bb->range(3, 1)<<endl;
-
+  ap_uint<20> *ii = new ap_uint<20>(321331);
+  cout<<"Bits of ii is "<<bitset<20>(*ii)<<endl;
+  cout<<" ii(18, 3) = "<<ii->range(18, 3)<<endl;
+    
   cout.precision(10);
-  ap_ufixed<9, 6> cc = 30.3;
+  ap_ufixed<18, 15> cc;
+  cc(17, 0) = ii->range(17, 0);
+  //cc = ii(17, 0);            //  THIS IS WRONG!!!
   double cc_double = cc.to_double();
-  cout<<"cc bits = "<<bitset<20>(cc)<<endl;
+  cout<<"cc bits = "<<bitset<32>(cc)<<endl;
   cout<<"cc = "<<cc<<endl;
   cout<<"cc_double = "<<cc_double<<endl;
 }
