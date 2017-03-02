@@ -184,6 +184,24 @@ void TECTrig::ReadTrigger(){
   cout<<" === === === === End of Trigger === === === ===  "<<endl;
 }
 
+TEC_Peak* TECTrig::GetECPeak( int aind){
+  if( aind < fnPeaks ){
+    return &fv_ECPeaks.at(aind);
+  }
+  else{
+    printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
+  }
+}
+
+TEC_Cluster* TECTrig::GetECCluster( int aind){
+  if( aind < fnClusters ){
+    return &fv_ECClusters.at(aind);
+  }
+  else{
+    printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
+  }
+}
+
 
 void TECTrig::ResetAll(){
   fSector=UNDEF;

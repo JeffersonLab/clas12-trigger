@@ -50,7 +50,8 @@ public:
   int GetEvNumber() { return has_EventHeader ? fev_number : UNDEF; }
   int GetBlockNUmber() {return has_BlockHeader ? fblock_number: UNDEF; }
   int GetBlockLevel() {return has_BlockHeader ? fblock_level: UNDEF; }
-  
+  TEC_Peak *GetECPeak( int );
+  TEC_Cluster *GetECCluster( int );
   //-------  double GetPeakCoord() {return }
   
 private:
