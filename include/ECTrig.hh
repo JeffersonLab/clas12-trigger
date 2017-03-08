@@ -6,6 +6,7 @@
 #include <ap_fixed.h>
 #include <hls_stream.h>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -35,8 +36,9 @@ class TECTrig
 {
 public:
   TECTrig();
-  TECTrig( evio::evioDOMNode*);
-  int Sector() {return fSector;};
+  TECTrig( evio::evioDOMNode*, int);
+
+  int GetSector() {return fSector;};
   bool HasBlockHeader() {return has_BlockHeader;};
   bool HasBlockTrailer() {return has_BlockTrailer;};
   bool HasEventHeader() {return has_EventHeader;};
@@ -50,12 +52,19 @@ public:
   int GetEvNumber() { return has_EventHeader ? fev_number : UNDEF; }
   int GetBlockNUmber() {return has_BlockHeader ? fblock_number: UNDEF; }
   int GetBlockLevel() {return has_BlockHeader ? fblock_level: UNDEF; }
+  int GetNAllPeaks() {return fnAllPeaks;}
+  int GetNPeaks(int, int);
+  int GetNClust() {return fnClusters;}
   TEC_Peak *GetECPeak( int );
+  TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
   //-------  double GetPeakCoord() {return }
   
 private:
+  static const int n_inst = 2;
+  static const int n_view = 3;
   std::vector<ap_int<32> >::iterator fit_data;
+  int fECVTP_tag;
   int fSector;
   int fslotid;
   int fnwords;
@@ -63,16 +72,18 @@ private:
   int fblock_number;
   int fblock_level;
 
-  vector<TEC_Peak> fv_ECPeaks;
+  vector<TEC_Peak> fv_ECAllPeaks;
   vector<TEC_Cluster> fv_ECClusters;
+  vector<TEC_Peak*> fv_ECPeaks[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W
 
-  int fnPeaks;
+  int fnAllPeaks;
+  int fnPeaks[n_inst][n_view];
   int fnClusters;
   
   ap_ufixed<9, 6> fpeak_coord_hls;
 
   ap_ufixed<9, 6> fclust_coord_Y_hls;
-  ap_ufixed<9, 6> fclust_coord_X_hls;
+  ap_fixed<9, 6> fclust_coord_X_hls;
 
   int ftrig_inst;
   int ftrig_lane;
@@ -108,6 +119,9 @@ private:
   static const unsigned short int type_trigger = 6;
 
   static const int UNDEF = -9999;
+  static const int adcECvtp_tagmax = 112;
+  static const int adcECvtp_tagmin = 100;
+  static map<int, int> EC_vtp_sector;
 };
 
 #endif

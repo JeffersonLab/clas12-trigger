@@ -17,4 +17,4 @@ ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
 		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
 
 clean:
-		rm -f lib/*.so.* lib/*.so
+		rm -f lib/*.so.* lib/*.so *.o
