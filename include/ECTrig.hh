@@ -54,10 +54,12 @@ public:
   int GetBlockLevel() {return has_BlockHeader ? fblock_level: UNDEF; }
   int GetNAllPeaks() {return fnAllPeaks;}
   int GetNPeaks(int, int);
-  int GetNClust() {return fnClusters;}
+  int GetNAllClust() {return fnAllClusters;}
+  int GetNClust( int );
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
+  TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
   //-------  double GetPeakCoord() {return }
   
 private:
@@ -73,12 +75,14 @@ private:
   int fblock_level;
 
   vector<TEC_Peak> fv_ECAllPeaks;
-  vector<TEC_Cluster> fv_ECClusters;
   vector<TEC_Peak*> fv_ECPeaks[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W
-
+  vector<TEC_Cluster> fv_ECAllClusters;
+  vector<TEC_Cluster*> fv_ECClusters[n_inst];
+  
   int fnAllPeaks;
   int fnPeaks[n_inst][n_view];
-  int fnClusters;
+  int fnAllClusters;
+  int fnClusters[n_inst];
   
   ap_ufixed<9, 6> fpeak_coord_hls;
 

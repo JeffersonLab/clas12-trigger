@@ -68,9 +68,10 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
   }
   //  cout<<"======******====== END OF VTP Hadrware Data ======******======"<<endl;
   fnAllPeaks = fv_ECAllPeaks.size();
-  fnClusters = fv_ECClusters.size();
+  fnAllClusters = fv_ECAllClusters.size();
   
   for( int i = 0; i < n_inst; i++ ){
+    fnClusters[i] = fv_ECClusters[i].size();
     for( int j = 0; j < n_view; j++ ){
       fnPeaks[i][j] = fv_ECPeaks[i][j].size();
     }
@@ -187,7 +188,8 @@ void TECTrig::ReadECTriggerCluster(){
   cur_clust.energy = fit_data->range(29, 17);
   cur_clust.time = fit_data->range(10, 0);
 
-  fv_ECClusters.push_back(cur_clust);
+  fv_ECAllClusters.push_back(cur_clust);
+  fv_ECClusters[cur_clust.inst].push_back(&fv_ECAllClusters.back());
   
   // cout<<"Y coordinate = "<<cur_clust.coordY<<endl;
   // cout<<"X coordinate = "<<cur_clust.coordY<<endl;
@@ -242,9 +244,24 @@ int TECTrig::GetNPeaks(int ainst, int aview){
 
 }
 
+int TECTrig::GetNClust( int ainst ){
+  if( ainst >= 0 && ainst < n_inst){
+    return fnClusters[ainst];
+  }
+}
+
 TEC_Cluster* TECTrig::GetECCluster( int aind){
-  if( aind < fnClusters ){
-    return &fv_ECClusters.at(aind);
+  if( aind < fnAllClusters ){
+    return &fv_ECAllClusters.at(aind);
+  }
+  else{
+    printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
+  }
+}
+
+TEC_Cluster* TECTrig::GetECCluster( int ainst, int aind){
+  if( ainst >= 0 && ainst < n_inst && aind < fnAllClusters ){
+    return fv_ECClusters[ainst].at(aind);
   }
   else{
     printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
@@ -265,22 +282,27 @@ void TECTrig::ResetAll(){
   ftrig_time=UNDEF;
 
   for( int i = 0; i < n_inst; i++ ){
-    for( int j = 0; j < n_inst; j++ ){
+
+    fv_ECClusters[i].clear();
+    fv_ECClusters[i].shrink_to_fit();
+    fnClusters[i] = 0;
+      
+    for( int j = 0; j < n_view; j++ ){
       fv_ECPeaks[i][j].clear();
       fv_ECPeaks[i][j].shrink_to_fit();
       fnPeaks[i][j] = 0;
     }
-
   }
+  
   ftrg_time=0;
 
   fv_ECAllPeaks.clear();
   fv_ECAllPeaks.shrink_to_fit();
-  fv_ECClusters.clear();
-  fv_ECClusters.shrink_to_fit();
+  fv_ECAllClusters.clear();
+  fv_ECAllClusters.shrink_to_fit();
   
   fnAllPeaks = 0;
-  fnClusters = 0;
+  fnAllClusters = 0;
   
   has_BlockHeader = false;
   has_BlockTrailer = false;
