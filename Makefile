@@ -6,7 +6,7 @@ ROOT_LIBS       = $(shell root-config --libs)
 CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
 HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 
-libTrigDiag:	ECTrig.o
+libTrigDiag:	ECTrig.o ECGeom.o
 		rm -f libTrigDiag.so*
 		$(CC) $(CC_Shared_FLAGS) -o lib/$@.so.1.0.1 $?
 		cd lib;\
@@ -15,6 +15,9 @@ libTrigDiag:	ECTrig.o
 
 ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
 		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+
+ECGeom.o:	src/ECGeom.cxx include/ECGeom.hh
+		$(CC) $(CC_OBJ_FLAGS) src/ECGeom.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
 
 clean:
 		rm -f lib/*.so.* lib/*.so *.o
