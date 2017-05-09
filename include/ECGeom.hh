@@ -14,6 +14,9 @@ public:
   const double GetX_UW() {return fx_UW;}
   const double GetY_VW() {return fy_VW;}
   const double GetX_VW() {return fx_VW;}
+  const double GetLU() {return fLU;} // Length of U side
+  const double GetLV() {return fLV;} // Length of V side
+  const double GetLW() {return fLW;} // Length of W side
   
 private:
 
@@ -46,6 +49,9 @@ private:
   static const double fy0_V;
   static const double fx0_W;
   static const double fy0_W;
+
+  //========= Width of a scintilliator =========
+  static const double fSCWidth;
 };
 
 #endif

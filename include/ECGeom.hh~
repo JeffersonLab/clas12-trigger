@@ -1,0 +1,8 @@
+#ifndef __ECGeom__
+#define __ECGeom__
+
+class TECTrig{
+  
+}
+
+#endif

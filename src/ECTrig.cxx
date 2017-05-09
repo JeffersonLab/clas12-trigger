@@ -13,6 +13,12 @@ map<int, int> TECTrig::EC_vtp_sector = {
   {107, 0}, {108, 1}, {109, 2}, {110, 3}, {111, 4}, {112, 5}    // PCal
 };
 
+map<int, int> TECTrig::EC_vtp_Detector = {
+  {100, 0}, // Global trigger
+  {101, 1}, {102, 1}, {103, 1}, {104, 1}, {105, 1}, {106, 1},   // ECal
+  {107, 2}, {108, 2}, {109, 2}, {110, 2}, {111, 2}, {112, 2}    // PCal
+};
+
 TECTrig::TECTrig(){
   cout<<"Kuku"<<endl;
 }
@@ -20,7 +26,7 @@ TECTrig::TECTrig(){
 TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
 
     // Reset all attributes, before reading the current event
-  ResetAll(); 
+  ResetAll();
   
   // Check if, the tag representing ROC id is correct, otherwise
   // exit the program
@@ -31,6 +37,10 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
   // Sector number is identified from the roc id
   fECVTP_tag = a_adcECvtp_tag;
   fSector = EC_vtp_sector[fECVTP_tag];
+
+  // Determine which detector is
+  
+  fDet = EC_vtp_Detector[fECVTP_tag];
   
   vector<ap_int<32> > *data_values = (vector<ap_int<32>> *)it->getVector<uint32_t>();
 
@@ -71,9 +81,9 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
   fnAllClusters = fv_ECAllClusters.size();
   
   for( int i = 0; i < n_inst; i++ ){
-    fnClusters[i] = fv_ECClusters[i].size();
+    fnClusters[i] = fv_ind_ECCluster[i].size();
     for( int j = 0; j < n_view; j++ ){
-      fnPeaks[i][j] = fv_ECPeaks[i][j].size();
+      fnPeaks[i][j] = fv_ind_ECPeak[i][j].size();
     }
   }
   
@@ -114,27 +124,15 @@ void TECTrig::ReadTriggerTime(){
   ftrg_time = timeh;
   ftrg_time = ftrg_time<<24;
   ftrg_time = ftrg_time|timel;
- 
-  // cout<<"size of ftrig_time = "<<sizeof(ftrg_time)<<endl;
-  // cout<<"timel           "<<bitset<48>(timel)<<endl;
-  // cout<<"timeh           "<<bitset<48>(timeh)<<endl;
-  // cout<<"ftrig_time       "<<bitset<48>(ftrg_time)<<endl;
-  //cout<<"aftrig_time      "<<bitset<48>(aftrig_time)<<endl;
-  //  cout<<"Trigger time is  "<<ftrg_time<<endl;
-  //cout<<"aTrigger time is "<<aftrig_time<<endl;
-
-  test_var[0] = 15; test_var[1] = 75;
-  //  cout<<"Addr1 = "<<&test_var[0]<<"     Addr2 = "<<&test_var[1]<<endl;
-  //cout<<"width of ftrig_time = "<<ftrg_time.getBitWidth()<<endl;
 }
 
 void TECTrig::ReadECTriggerPeak(){
   has_TrigPeak = true;
-  //cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
+
   TEC_Peak cur_peak;
   cur_peak.inst = fit_data->range(26, 26);
   cur_peak.view = fit_data->range(25, 24);
-  //if( cur_peak.view > 1 ) {cout<<"  view is W "<<cur_peak.view<<endl; }
+
   fpeak_coord_hls(8, 0) = fit_data->range(23, 15);
   cur_peak.coord = fpeak_coord_hls.to_double();
   cur_peak.energy = fit_data->range(14, 2);
@@ -146,21 +144,13 @@ void TECTrig::ReadECTriggerPeak(){
   cur_peak.time = fit_data->range(10, 0);
 
   fv_ECAllPeaks.push_back(cur_peak);
-  fv_ECPeaks[cur_peak.inst][cur_peak.view].push_back(&fv_ECAllPeaks.back());
-  
-  // cout<<"Data cont. word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
-  // cout<<"======= Inst = "<<cur_peak.inst<<endl;
-  // cout<<"======= view = "<<cur_peak.view<<endl;
-  // cout<<"======= The peak coordinate is "<<cur_peak.coord<<endl;
-  // cout<<"======= The peak coordinate is "<<bitset<9>(cur_peak.coord)<<endl;
-  // cout<<"======= Energy = "<<cur_peak.energy<<endl;
-  // cout<<"======= Time = "<<cur_peak.time<<endl;
+
+  fv_ind_ECPeak[cur_peak.inst][cur_peak.view].push_back(fv_ECAllPeaks.size() - 1);
 }
 
 void TECTrig::ReadECTriggerCluster(){
   has_TrigClust = true;
-  // cout<<" === === === === ECTrigCluster === === === ===  "<<endl;
-  // cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
+
   TEC_Cluster cur_clust;
   cur_clust.inst = fit_data->range(26, 26);
   fclust_coord_Y_hls(8, 0) = fit_data->range(25, 17);
@@ -168,13 +158,6 @@ void TECTrig::ReadECTriggerCluster(){
   fclust_coord_X_hls(8, 0) = fit_data->range(16, 8);
   cur_clust.coordX = fclust_coord_X_hls.to_double();
 
-  // if( cur_clust.coordY >= 37. || cur_clust.coordX >= 37. ){
-  //   cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
-  //   cout<<"clust X = "<<cur_clust.coordX<<"    clust Y = "<<cur_clust.coordY<<endl;
-  //   cout<<"Ev number is "<<GetEvNumber()<<endl;
-  // }
-  
-  //cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
 
   // Go to the next word
   fit_data = std::next(fit_data, 1);
@@ -189,31 +172,18 @@ void TECTrig::ReadECTriggerCluster(){
   cur_clust.time = fit_data->range(10, 0);
 
   fv_ECAllClusters.push_back(cur_clust);
-  fv_ECClusters[cur_clust.inst].push_back(&fv_ECAllClusters.back());
-  
-  // cout<<"Y coordinate = "<<cur_clust.coordY<<endl;
-  // cout<<"X coordinate = "<<cur_clust.coordY<<endl;
-  // cout<<"Cluster Energy = "<<cur_clust.energy<<endl;
-  // cout<<"Cluster Time = "<<cur_clust.time<<endl;
-  
-  // cout<<" === === === ===  End of ECTrigCluster === === === ===  "<<endl;
+  //fv_ECClusters[cur_clust.inst].push_back(&fv_ECAllClusters.back());
+  fv_ind_ECCluster[cur_clust.inst].push_back(fv_ECAllClusters.size() - 1);
 }
 
 
 
 void TECTrig::ReadTrigger(){
   has_Trigger = true;
-  // cout<<" === === === === Trigger === === === ===  "<<endl;
-  // cout<<"  Data word is  "<<bitset<32>(fit_data->range(31, 0))<<endl;
 
   ftrig_inst = fit_data->range(16, 16);
   ftrig_lane = fit_data->range(15, 11);
   ftrig_time = fit_data->range(10, 0);
-
-  // cout<<"ftrig_inst = "<<ftrig_inst<<endl;
-  // cout<<"ftrig_lane = "<<ftrig_lane<<endl;
-  // cout<<"ftrig_time = "<<ftrig_time<<endl;
-  // cout<<" === === === === End of Trigger === === === ===  "<<endl;
 }
 
 TEC_Peak* TECTrig::GetECPeak( int aind){
@@ -227,7 +197,7 @@ TEC_Peak* TECTrig::GetECPeak( int aind){
 
 TEC_Peak* TECTrig::GetECPeak( int ainst, int aview, int aind){
   if( ainst >= 0 && ainst < n_inst && aview >= 0 && aview < n_view && aind >= 0 && aind < fnPeaks[ainst][aview] ){
-    return fv_ECPeaks[ainst][aview].at(aind);
+    return &fv_ECAllPeaks.at(fv_ind_ECPeak[ainst][aview].at(aind)); 
   }
   else{
     printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
@@ -260,8 +230,42 @@ TEC_Cluster* TECTrig::GetECCluster( int aind){
 }
 
 TEC_Cluster* TECTrig::GetECCluster( int ainst, int aind){
-  if( ainst >= 0 && ainst < n_inst && aind < fnAllClusters ){
-    return fv_ECClusters[ainst].at(aind);
+  if( ainst >= 0 && ainst < n_inst && aind < fnClusters[ainst] ){
+    return &fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind));
+    //return fv_ECClusters[ainst].at(aind);
+  }
+  else{
+    printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
+  }
+}
+
+
+void TECTrig::PrintECCluster( int aind){
+  if( aind < fnAllClusters ){
+    cout<<"fv_ECAllClusters.size() = "<<fv_ECAllClusters.size()<<endl;
+    cout<<"Cluster index = "<<aind<<endl;
+    cout<<"Cluster inst = "<<fv_ECAllClusters.at(aind).inst<<endl;
+    cout<<"Cluster Address "<<&fv_ECAllClusters.at(aind)<<endl;
+    cout<<"Cluster Y = "<<fv_ECAllClusters.at(aind).coordY<<endl;
+    cout<<"Cluster X = "<<fv_ECAllClusters.at(aind).coordX<<endl;
+    cout<<"Cluster E = "<<fv_ECAllClusters.at(aind).energy<<endl;
+  }
+  else{
+    printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
+  }
+}
+
+void TECTrig::PrintECCluster( int ainst, int aind){
+  if( ainst >= 0 && ainst < n_inst && aind < fnClusters[ainst] ){
+    cout<<"fv_ind_ECCluster[ainst].size() = "<<fv_ind_ECCluster[ainst].size()<<endl;
+    cout<<"Cluster instance in the argument = "<<ainst<<endl;
+    cout<<"Cluster instance from the cluster structure = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).inst<<endl;
+    cout<<"Cluster Address "<<&fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))<<endl;
+    cout<<"Cluster index = "<<aind<<endl;
+    cout<<"Cluster Y = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).coordY<<endl;
+    cout<<"Cluster X = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).coordX<<endl;
+    cout<<"Cluster E = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).energy<<endl;
+
   }
   else{
     printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
@@ -283,13 +287,13 @@ void TECTrig::ResetAll(){
 
   for( int i = 0; i < n_inst; i++ ){
 
-    fv_ECClusters[i].clear();
-    fv_ECClusters[i].shrink_to_fit();
+    fv_ind_ECCluster[i].clear();
+    fv_ind_ECCluster[i].shrink_to_fit();
     fnClusters[i] = 0;
       
     for( int j = 0; j < n_view; j++ ){
-      fv_ECPeaks[i][j].clear();
-      fv_ECPeaks[i][j].shrink_to_fit();
+      fv_ind_ECPeak[i][j].clear();
+      fv_ind_ECPeak[i][j].shrink_to_fit();
       fnPeaks[i][j] = 0;
     }
   }

@@ -38,6 +38,7 @@ public:
   TECTrig();
   TECTrig( evio::evioDOMNode*, int);
 
+  int GetDetector() {return fDet;};   // 0 = Global Trigger, 1 = EC, 2 = PCal
   int GetSector() {return fSector;};
   bool HasBlockHeader() {return has_BlockHeader;};
   bool HasBlockTrailer() {return has_BlockTrailer;};
@@ -53,13 +54,22 @@ public:
   int GetBlockNUmber() {return has_BlockHeader ? fblock_number: UNDEF; }
   int GetBlockLevel() {return has_BlockHeader ? fblock_level: UNDEF; }
   int GetNAllPeaks() {return fnAllPeaks;}
-  int GetNPeaks(int, int);
+  int GetNPeaks(int, int); // Instance (0=in, 1 = out), view (0=U,1=V,2=W)
   int GetNAllClust() {return fnAllClusters;}
   int GetNClust( int );
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
   TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
+  int GetTrigLane() {return ftrig_lane;}; // trigger number, i.e. which trigger is fired
+  int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event winfow beginning
+  int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
+
+  // ====== Diagnostic functions =====
+  void PrintECCluster( int );
+  void PrintECCluster( int, int );
+
+  //ftrig_time
   //-------  double GetPeakCoord() {return }
   
 private:
@@ -67,17 +77,21 @@ private:
   static const int n_view = 3;
   std::vector<ap_int<32> >::iterator fit_data;
   int fECVTP_tag;
-  int fSector;
-  int fslotid;
+  int fDet;       // The detector, 0 = global trigger, 1 = EC, 2 = PCal
+  int fSector;    // sector
+  int fslotid;    // slotid
   int fnwords;
   int fev_number;
   int fblock_number;
   int fblock_level;
+  
 
   vector<TEC_Peak> fv_ECAllPeaks;
-  vector<TEC_Peak*> fv_ECPeaks[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W
+  vector<int> fv_ind_ECPeak[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W
+//  vector<TEC_Peak*> fv_ECPeaks[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W
   vector<TEC_Cluster> fv_ECAllClusters;
-  vector<TEC_Cluster*> fv_ECClusters[n_inst];
+  vector<int> fv_ind_ECCluster[n_inst];
+//  vector<TEC_Cluster*> fv_ECClusters[n_inst];
   
   int fnAllPeaks;
   int fnPeaks[n_inst][n_view];
@@ -95,7 +109,6 @@ private:
 
   long long int ftrg_time;
   //ap_int<48> ftrg_time;
-  ap_int<33> test_var[2];
 
   void ResetAll();
   void ReadBlockHeader();
@@ -125,7 +138,8 @@ private:
   static const int UNDEF = -9999;
   static const int adcECvtp_tagmax = 112;
   static const int adcECvtp_tagmin = 100;
-  static map<int, int> EC_vtp_sector;
+  static map<int, int> EC_vtp_sector;   // Mapping tag number to the sector
+  static map<int, int> EC_vtp_Detector;   // Mapping tag number to the Detector
 };
 
 #endif

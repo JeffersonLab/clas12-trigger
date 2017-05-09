@@ -1,11 +1,15 @@
 #include <ECGeom.hh>
 #include <cmath>
+#include <iostream>
+#include <TMath.h>
+
 using namespace std;
 
 // Init some const static data members
-const double TECGeom::fLU = 415.692;
-const double TECGeom::fLV = 415.692;
-const double TECGeom::fLW = 415.692;
+const double TECGeom::fLU = 415.692; // cm
+const double TECGeom::fLV = 415.692; // cm
+const double TECGeom::fLW = 415.692; // cm
+const double TECGeom::fSCWidth = 10.; // cm
 const double TECGeom::fPhalf = 0.5*(TECGeom::fLU + TECGeom::fLV + TECGeom::fLU );
 const double TECGeom::fS = sqrt(TECGeom::fPhalf*(TECGeom::fPhalf - TECGeom::fLU)*(TECGeom::fPhalf - TECGeom::fLV)
 				*(TECGeom::fPhalf - TECGeom::fLW));
@@ -22,12 +26,16 @@ const double TECGeom::fy0_W = TECGeom::fLW*sin(TECGeom::falpha_W);
 const double TECGeom::fx0_W = TECGeom::fLW*cos(TECGeom::falpha_W);
 
 TECGeom::TECGeom(double aU, double aV, double aW){
-  fU = aU;
-  fV = aV;
-  fW = aW;
+  fU = aU*fSCWidth/sin(falpha_V);
+  fV = aV*fSCWidth/sin(falpha_W);
+  fW = aW*fSCWidth/sin(falpha_U);
 
   fDalitz = fU/fLU + fV/fLV + fW/fLW - 2.;
 
+  // cout<<"ECGEOM fSCWidth "<<fSCWidth<<endl;
+  // cout<<"ECGEOM "<<aU<<"  "<<aV<<"  "<<aW<<"  "<<fU<<"  "<<fV<<"  "<<fW<<"  "<<endl;
+  // cout<<"ECGEOM ALPHAS "<<falpha_U*TMath::RadToDeg()<<"   "<<falpha_U*TMath::RadToDeg()<<"  "<<falpha_W*TMath::RadToDeg()<<"  "<<fDalitz<<endl;
+  
   fx_UV = fx0_V + fV - (fLU - fU)*sin(falpha_V)/tan(falpha_W);
   fy_UV = fU*sin(falpha_V);
 

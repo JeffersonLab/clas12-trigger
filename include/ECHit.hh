@@ -1,13 +1,11 @@
-
-
 class TECHit
 {
 public:
   TECHit();
 
-  double E(); {return fE;}// Pedestal subtracted Energy in MeV
+  double E(); {return fE;} // Pedestal subtracted Energy in MeV
   int T(); {return ftime;} // TDC Time in ns
-  int View(); {return fview;}// 1(U), 2(V), 3(W)
+  int View(); {return fview;} // 1(U), 2(V), 3(W)
   int Sector() {return fsect;}
   
 private:
@@ -20,6 +18,4 @@ private:
 
   int fslot;
   int fchannel;
-  
-  
 };
