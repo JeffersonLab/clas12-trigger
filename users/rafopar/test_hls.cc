@@ -30,6 +30,20 @@ int main(){
   cout<<"Bits of view =    "<<bitset<11>(view)<<endl;
   cout<<"Bits of addr =    "<<bitset<11>(addr)<<endl;
 
-  
-  
+
+  cout<<"======================= Checking some cluster coordinate conversion ======================="<<endl;
+  ap_uint<32> *clust_word = new ap_uint<32>(2837412608);
+  ap_ufixed<9, 6> fclust_coord_Y_hls;
+  ap_fixed<9, 6> fclust_coord_X_hls;
+
+  fclust_coord_Y_hls(8, 0) = clust_word->range(25, 17);
+  double coordY = fclust_coord_Y_hls.to_double();
+  fclust_coord_X_hls(8, 0) = clust_word->range(16, 8);
+  double coordX = fclust_coord_X_hls.to_double();
+
+  cout<<"the word is "<<bitset<32>(*clust_word)<<endl;
+
+  cout<<"coordY = "<<coordY<<endl;
+  cout<<"coordX = "<<coordX<<endl;
+
 }
