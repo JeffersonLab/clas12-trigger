@@ -17,7 +17,13 @@ using namespace std;
 // e.g. which part of EC (in, or out), cluster coordinates (u, v, w), etc
 
 int main(int argc, char **argv){
- 
+
+  const double Dalitz_ECin_max = 0.3333;
+  const double Dalitz_ECin_min = -0.2222;
+
+  const double Dalitz_ECout_max = 0.0833333;
+  const double Dalitz_ECout_min = -0.0555556;
+
   const int vtp_tag = 57634;
   const int adcECvtp_tagmin = 100;
   const int adcECvtp_tagmax = 112;
@@ -33,6 +39,7 @@ int main(int argc, char **argv){
   TH2D *h_ncl_n_peak = new TH2D("h_ncl_n_peak", "", 40, 0., 20., 40, 0., 20.);
   TH2D *h_n_incl_prodInPeaks = new TH2D("h_n_incl_prodInPeaks", "", 100, 0., 50., 100, 0., 50.);
   TH2D *h_n_incl_prodInPeaks_DalitzCut = new TH2D("h_n_incl_prodInPeaks_DalitzCut", "", 100, 0., 50., 100, 0., 50.);
+  TH2D *h_n_outcl_prodOutPeaks_DalitzCut = new TH2D("h_n_outcl_prodOutPeaks_DalitzCut", "", 100, 0., 50., 100, 0., 50.);
   TH2D *h_n_incl_prodInPeaks_intime1 = new TH2D("h_n_incl_prodInPeaks_intime1", "", 100, 0., 50., 100, 0., 50.);
   TH2D *h_n_outcl_prodInPeaks = new TH2D("h_n_outcl_prodInPeaks", "", 100, 0., 50., 100, 0., 50.);
   TH2D *h_out_cl_yxc1 = new TH2D("h_out_cl_yxc1", "", 200, -40., 40., 200, 0., 50.);
@@ -48,6 +55,7 @@ int main(int argc, char **argv){
   TH1D *h_in_Vcoord1 = new TH1D("h_in_Vcoord1", "", 200, 0., 40.);
   TH1D *h_in_Wcoord1 = new TH1D("h_in_Wcoord1", "", 200, 0., 40.);
   TH1D *h_Dalitz1 = new TH1D("h_Dalitz1", "", 200, -2.1, 2.1);
+  TH1D *h_out_Dalitz1 = new TH1D("h_out_Dalitz1", "", 200, -2.1, 2.1);
 
   TH1D *h_Trig_loc_time = new TH1D("h_Trig_loc_time", "", 200, 0., 200.);
   
@@ -83,6 +91,8 @@ int main(int argc, char **argv){
 	  
 	  TECTrig trig(*it, adcECvtp_tag);
 
+	  //cout<<" EV NUMBER and parent BANK tag   "<<trig.GetEvNumber()<<"     "<<trig.GetDetector()<<endl;
+	  
 	  if( trig.GetDetector() == 1 ){
 
 	    int sect = trig.GetSector();
@@ -142,7 +152,7 @@ int main(int argc, char **argv){
 	    //   trig.PrintECCluster(i_cl);
 	    // }
 	    
-	    
+
 	    int n_intime_in_cl = 0;
 	    for( int i_incl = 0; i_incl < n_in_clust; i_incl++ ){
 
@@ -151,7 +161,15 @@ int main(int argc, char **argv){
 	      double x_cl = trig.GetECCluster(0, i_incl)->coordX;
 	      double E_cl = trig.GetECCluster(0, i_incl)->energy;
 	      h_in_cl_yxc1->Fill(x_cl, y_cl);
-	      
+
+	      // if( y_cl < -2. - sqrt(3.)*x_cl ){
+	      // 	cout<<"Event number is "<<trig.GetEvNumber()<<endl;
+	      // 	cout<<"x_cl = "<<x_cl<<endl;
+	      // 	cout<<"y_cl = "<<y_cl<<endl;
+	      // 	trig.PrintXMLData();
+	      // }
+
+
 	      double cl_t_in = trig.GetECCluster(0, i_incl)->time;
 	      h_cl_t_in->Fill(cl_t_in);
 
@@ -202,11 +220,9 @@ int main(int argc, char **argv){
 		  TECGeom geom(trig.GetECPeak(0, 0, iU)->coord, trig.GetECPeak(0, 1, iV)->coord, trig.GetECPeak(0, 2, iW)->coord);
 		  double Dalitz = geom.GetDalitz();
 
-		  //cout<<" u, v, w, Dalitz: "<<trig.GetECPeak(0, 0, iU)->coord<<"    "<<trig.GetECPeak(0, 1, iV)->coord<<"    "<<trig.GetECPeak(0, 2, iW)->coord<<"    "<<Dalitz<<endl;
-		
 		  h_Dalitz1->Fill(Dalitz);
 
-		  if( Dalitz > -0.5 && Dalitz < 0.5 ){
+		  if( Dalitz > Dalitz_ECin_min && Dalitz < Dalitz_ECin_max ){
 		    n_Dalitz_cut_clusters = n_Dalitz_cut_clusters + 1;
 		  }
 		}
@@ -215,7 +231,25 @@ int main(int argc, char **argv){
 	  
 	    h_n_incl_prodInPeaks_DalitzCut->Fill( n_Dalitz_cut_clusters, n_in_clust);
 	  
+
+	    // ===== Loop over outer peaks =====
+	    int n_out_Dalitz_cut_clusters = 0;
+	    for( int iU = 0; iU < n_out_Upeaks; iU++ ){
+	      for( int iV = 0; iV < n_out_Vpeaks; iV++ ){
+		for( int iW = 0; iW < n_out_Wpeaks; iW++ ){
+		  TECGeom geom(trig.GetECPeak(1, 0, iU)->coord, trig.GetECPeak(1, 1, iV)->coord, trig.GetECPeak(1, 2, iW)->coord);
+		  double Dalitz = geom.GetDalitz();
+
+		  h_out_Dalitz1->Fill(Dalitz);
+
+		  if( Dalitz > Dalitz_ECout_min && Dalitz < Dalitz_ECout_max ){
+		    n_out_Dalitz_cut_clusters = n_out_Dalitz_cut_clusters + 1;
+		  }
+		}
+	      }
+	    }
 	  
+	    h_n_outcl_prodOutPeaks_DalitzCut->Fill( n_out_Dalitz_cut_clusters, n_out_clust);	    
 	  
 	    for( int icl = 0; icl < n_clust; icl++ ){
 	      double y_cl = trig.GetECCluster(icl)->coordY;
@@ -224,6 +258,7 @@ int main(int argc, char **argv){
 	    
 	      h_cl_yxc1->Fill(x_cl, y_cl);
 	      h_cl_E1->Fill(E_cl);
+
 	    }
 
 	  } else if( trig.GetDetector() == 0 ){

@@ -68,6 +68,7 @@ public:
   // ====== Diagnostic functions =====
   void PrintECCluster( int );
   void PrintECCluster( int, int );
+  void PrintXMLData();
 
   //ftrig_time
   //-------  double GetPeakCoord() {return }
@@ -84,7 +85,7 @@ private:
   int fev_number;
   int fblock_number;
   int fblock_level;
-  
+  evio::evioDOMNode* fhead_node; //pointer to the head node of VTP bank
 
   vector<TEC_Peak> fv_ECAllPeaks;
   vector<int> fv_ind_ECPeak[n_inst][n_view]; // [i][j]; i: 0=EC_in, 1=EC_out j: 0=U, 1=V, 2=W

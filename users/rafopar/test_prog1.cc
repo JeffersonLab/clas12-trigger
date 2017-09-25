@@ -140,7 +140,7 @@ int main(int argc, char **argv){
 
 	      // cout<<"Slot:                       "<<static_cast<unsigned>(slot)<<endl;
 	      // cout<<"Trigger Number:             "<<trig_n<<endl;
-	      // cout<<"Trigger time:               "<<trig_t<<endl;
+	      //cout<<"Trigger time:               "<<trig_t<<endl;
 	      
 	      int nch = GET_INT(p,i);
 
@@ -195,6 +195,8 @@ int main(int argc, char **argv){
 	      int trig_n = GET_INT(p,i);
 	      long long trig_t = GET_L64(p,i);
 
+	      //cout<<"trig_t = "<<trig_t<<endl;
+
 	      int nch = GET_INT(p,i);
 	      h_nch1->Fill(nch);
 
@@ -205,6 +207,7 @@ int main(int argc, char **argv){
 		  int ns = GET_INT(p,i);
 		  int np = 0;				
 		  int x, y;
+
 		  //int ecal_channel = fadcGetXY(slot, ch, roc, &x, &y);
 
 		  //if( adclayerecal[slot][ch] == 0 ){continue;} // Need to make sure why we see such cases
@@ -256,15 +259,34 @@ int main(int argc, char **argv){
 		}
 	    }
 
-	  if( h_fADC_ECal2_[0][0][0]->GetEntries()> 0 ){
-	    c1->SetTheta(30);
-	    c1->SetPhi(10);
-	    h_fADC_ECal2_[0][0][0]->Draw("lego2");
-	    gDirectory->Write("hist_Dir", TObject::kOverwrite);
-	    c1->Print("tmp.eps");
-	    cin.ignore();
-	    h_fADC_ECal2_[0][0][0]->Reset();
-	  }
+	  // for( int i_sect = 0; i_sect < n_sect; i_sect++ ){
+	  //   for( int i_view = 0; i_view < n_view; i_view++ ){
+	  //     if( h_fADC_ECal2_[i_sect][0][i_view]->GetMaximum() > 0 && sector == 1){
+	  // 	cout<<"sector = "<<i_sect<<endl;
+	  // 	cout<<"view = "<<i_view<<endl;
+	  // 	gDirectory->Write("hist_Dir", TObject::kOverwrite);
+	      
+	  // 	cin.ignore();
+	  // 	h_fADC_ECal2_[i_sect][0][i_view]->Reset();
+
+	  // 	for( int i_strip = 0; i_strip < n_strip; i_strip++ ){
+	  // 	  h_fADC_ECal_[i_sect][1][i_view][i_strip]->Reset();
+	  // 	  h_fADC_ECal_[i_sect][0][i_view][i_strip]->Reset();
+	  // 	}
+	  //     }
+	  //   }
+	  // }
+	  
+	  
+	  // if( h_fADC_ECal2_[0][0][0]->GetEntries()> 0 ){
+	  //   c1->SetTheta(30);
+	  //   c1->SetPhi(10);
+	  //   h_fADC_ECal2_[0][0][0]->Draw("lego2");
+	  //   gDirectory->Write("hist_Dir", TObject::kOverwrite);
+	  //   c1->Print("tmp.eps");
+	  //   cin.ignore();
+	  //   h_fADC_ECal2_[0][0][0]->Reset();
+	  // }
 	  
 	  // if( ECStrip[sector][0][0].size() > 0){
 	  //   bool DrawFirst = true;

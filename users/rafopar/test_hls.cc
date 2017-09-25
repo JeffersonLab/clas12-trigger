@@ -43,7 +43,9 @@ int main(){
 
   cout<<"the word is "<<bitset<32>(*clust_word)<<endl;
 
+  cout<<"fclust_coord_Y_hls = "<<fclust_coord_Y_hls<<endl;
   cout<<"coordY = "<<coordY<<endl;
+  cout<<"fclust_coord_X_hls = "<<fclust_coord_X_hls<<endl;
   cout<<"coordX = "<<coordX<<endl;
 
 }

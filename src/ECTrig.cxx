@@ -25,8 +25,10 @@ TECTrig::TECTrig(){
 
 TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
 
-    // Reset all attributes, before reading the current event
+  // Reset all attributes, before reading the current event
   ResetAll();
+
+  fhead_node = it;
   
   // Check if, the tag representing ROC id is correct, otherwise
   // exit the program
@@ -44,14 +46,9 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
   
   vector<ap_int<32> > *data_values = (vector<ap_int<32>> *)it->getVector<uint32_t>();
 
-  //cout<<"======******====== BEGINNIG OF VTP Hadrware Data ======******======"<<endl;
-
   for( fit_data = data_values->begin(); fit_data != data_values->end(); fit_data++ ){
 
     ap_int<1> is_type_def = fit_data->range(31, 31);
-
-    //cout<<endl;    cout<<endl;
-    //cout<<"The word is "<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
 
     if( is_type_def ){
       //cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
@@ -94,7 +91,6 @@ void TECTrig::ReadBlockHeader(){
   fslotid = fit_data->range(26, 22);
   fblock_number = fit_data->range(17, 8);
   fblock_level = fit_data->range(7, 0);
-  //  cout<<"Slot id"<<setw(15)<<fslotid<<setw(36)<<bitset<32>(*fit_data)<<endl;
 }
 
 void TECTrig::ReadBlockTrailer(){
@@ -111,15 +107,11 @@ void TECTrig::ReadEventHeader(){
 void TECTrig::ReadTriggerTime(){
   has_TrigTime = true;
   int timel = fit_data->range(23, 0);
-  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+
   fit_data = std::next(fit_data, 1);
-  //  cout<<"Type defining word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
+
   int timeh = fit_data->range(23, 0);
  
-  // ftrg_time = timeh;
-  // ftrg_time = ftrg_time<<24;
-  // ftrg_time = ftrg_time|timel;
-
   ftrg_time = 0; // Make sure all bits are 0
   ftrg_time = timeh;
   ftrg_time = ftrg_time<<24;
@@ -270,6 +262,15 @@ void TECTrig::PrintECCluster( int ainst, int aind){
   else{
     printf("Request for out of range element in %s Exiting the program", __func__); exit(0);
   }
+}
+
+void TECTrig::PrintXMLData(){
+  cout<<"   *******  Header  "<<(fhead_node)->getHeader(0);
+  cout<<"   *******  tag  "<<(fhead_node)->tag<<endl;
+  cout<<"   ***  Contenttype  "<<(fhead_node)->getContentType()<<endl;
+  cout<<"   *********  Body  "<<(fhead_node)->getBody(0)<<endl;
+  cout<<"   ********  Footer  "<<(fhead_node)->getFooter(0);
+  cout<<"   **********  size  "<<(fhead_node)->getSize()<<endl;
 }
 
 
