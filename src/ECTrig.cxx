@@ -3,7 +3,7 @@
 #include <evioFileChannel.hxx>
 #include <bitset>        // std::bitset
 #include <iomanip>
-
+#include <iterator>     // std::next
 // using namespace evio;
 // using namespace std;
 
