@@ -13,15 +13,16 @@ using namespace std;
 typedef struct{
   int inst;
   int view;
-  double coord;
+  int coord;
   int energy;
   int time;
 } TEC_Peak;
 
 typedef struct{
   int inst;
-  double coordY;
-  double coordX;
+  int Ustrip;   // U strip number
+  int Vstrip;   // V strip number
+  int Wstrip;   // W strip number
   int energy;
   int time;
 } TEC_Cluster;
@@ -99,7 +100,7 @@ private:
   int fnAllClusters;
   int fnClusters[n_inst];
   
-  ap_ufixed<9, 6> fpeak_coord_hls;
+  int fpeak_coord_hls;
 
   ap_ufixed<9, 6> fclust_coord_Y_hls;
   ap_fixed<9, 6> fclust_coord_X_hls;
@@ -137,8 +138,9 @@ private:
   static const unsigned short int type_trigger = 6;
 
   static const int UNDEF = -9999;
-  static const int adcECvtp_tagmax = 112;
-  static const int adcECvtp_tagmin = 100;
+  
+  static const int adcECvtp_tagmax = 112; // VTP bank tags are in the range 100 - 112
+  static const int adcECvtp_tagmin = 100; // VTP bank tags are in the range 100 - 112
   static map<int, int> EC_vtp_sector;   // Mapping tag number to the sector
   static map<int, int> EC_vtp_Detector;   // Mapping tag number to the Detector
 };

@@ -73,7 +73,7 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
     }
 
   }
-  //  cout<<"======******====== END OF VTP Hadrware Data ======******======"<<endl;
+  //cout<<"======******====== END OF VTP Hadrware Data ======******======"<<endl;
   fnAllPeaks = fv_ECAllPeaks.size();
   fnAllClusters = fv_ECAllClusters.size();
   
@@ -81,6 +81,7 @@ TECTrig::TECTrig( evio::evioDOMNode* it, int a_adcECvtp_tag){
     fnClusters[i] = fv_ind_ECCluster[i].size();
     for( int j = 0; j < n_view; j++ ){
       fnPeaks[i][j] = fv_ind_ECPeak[i][j].size();
+     // cout<<"fnpeaks["<<i<<"]["<<j<<"] = "<<fnPeaks[i][j]<<endl;
     }
   }
   
@@ -125,18 +126,21 @@ void TECTrig::ReadECTriggerPeak(){
   cur_peak.inst = fit_data->range(26, 26);
   cur_peak.view = fit_data->range(25, 24);
 
-  fpeak_coord_hls(8, 0) = fit_data->range(23, 15);
-  cur_peak.coord = fpeak_coord_hls.to_double();
-  cur_peak.energy = fit_data->range(14, 2);
-
+  cur_peak.time = fit_data->range(23, 16);
+  
+  // If the data is MC, bits (13, 7) and (6, 0) represent strip1, and stripn, 
+  // but this is not that urgent now, sit will try to implement this later.  
+  
   fit_data = std::next(fit_data, 1);   // Go to the next word
   // This should be data continuation word, if not then data format is not correct
-  if( fit_data->range(31, 31) ) {printf("Wrong Data Format in %s Exiting", __func__); exit(0); }
+  // Also bist 30 to 26 should be 0 as well 
+  if( fit_data->range(31, 26) ) {printf("Wrong Data Format in %s Exiting", __func__); exit(0); }
   
-  cur_peak.time = fit_data->range(10, 0);
-
+  cur_peak.coord = fit_data->range(25, 16);
+  cur_peak.energy = fit_data->range(15, 0);
+  
+  cout<<"  view = "<<cur_peak.view<<endl;
   fv_ECAllPeaks.push_back(cur_peak);
-
   fv_ind_ECPeak[cur_peak.inst][cur_peak.view].push_back(fv_ECAllPeaks.size() - 1);
 }
 
@@ -145,24 +149,25 @@ void TECTrig::ReadECTriggerCluster(){
 
   TEC_Cluster cur_clust;
   cur_clust.inst = fit_data->range(26, 26);
-  fclust_coord_Y_hls(8, 0) = fit_data->range(25, 17);
-  cur_clust.coordY = fclust_coord_Y_hls.to_double();
-  fclust_coord_X_hls(8, 0) = fit_data->range(16, 8);
-  cur_clust.coordX = fclust_coord_X_hls.to_double();
-
-
+  
+  if( fit_data->range(25, 24) ) {printf("Wrong Data Format in %s, bits (25, 24) should be 0. Exiting", __func__); exit(0); }
+  
+  cur_clust.time = fit_data->range(23, 16);
+  cur_clust.energy = fit_data->range(15, 0);
+  
   // Go to the next word
   fit_data = std::next(fit_data, 1);
-  
+
   // This should be data continuation word,
   // if not then data format is not correct
-  if( fit_data->range(31, 31) ) {printf("Wrong Data Format in %s Exiting", __func__); exit(0); }
-
+  if( fit_data->range(31, 30) ) {printf("Wrong Data Format in %s, In the 2nd word, bits(31,30) should be 0. Exiting", __func__); exit(0); }
+  
+  cur_clust.Ustrip = fit_data->range(29, 20);
+  cur_clust.Vstrip = fit_data->range(19, 10);
+  cur_clust.Wstrip = fit_data->range(9, 0);
+  
   // cout<<"Data cont. word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
   
-  cur_clust.energy = fit_data->range(29, 17);
-  cur_clust.time = fit_data->range(10, 0);
-
   fv_ECAllClusters.push_back(cur_clust);
   //fv_ECClusters[cur_clust.inst].push_back(&fv_ECAllClusters.back());
   fv_ind_ECCluster[cur_clust.inst].push_back(fv_ECAllClusters.size() - 1);
@@ -238,8 +243,9 @@ void TECTrig::PrintECCluster( int aind){
     cout<<"Cluster index = "<<aind<<endl;
     cout<<"Cluster inst = "<<fv_ECAllClusters.at(aind).inst<<endl;
     cout<<"Cluster Address "<<&fv_ECAllClusters.at(aind)<<endl;
-    cout<<"Cluster Y = "<<fv_ECAllClusters.at(aind).coordY<<endl;
-    cout<<"Cluster X = "<<fv_ECAllClusters.at(aind).coordX<<endl;
+    cout<<"Cluster U = "<<fv_ECAllClusters.at(aind).Ustrip<<endl;
+    cout<<"Cluster V = "<<fv_ECAllClusters.at(aind).Vstrip<<endl;
+    cout<<"Cluster W = "<<fv_ECAllClusters.at(aind).Wstrip<<endl;
     cout<<"Cluster E = "<<fv_ECAllClusters.at(aind).energy<<endl;
   }
   else{
@@ -254,8 +260,9 @@ void TECTrig::PrintECCluster( int ainst, int aind){
     cout<<"Cluster instance from the cluster structure = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).inst<<endl;
     cout<<"Cluster Address "<<&fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))<<endl;
     cout<<"Cluster index = "<<aind<<endl;
-    cout<<"Cluster Y = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).coordY<<endl;
-    cout<<"Cluster X = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).coordX<<endl;
+    cout<<"Cluster U = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).Ustrip <<endl;
+    cout<<"Cluster V = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).Vstrip<<endl;
+    cout<<"Cluster W = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).Wstrip<<endl;
     cout<<"Cluster E = "<<(fv_ECAllClusters.at(fv_ind_ECCluster[ainst].at(aind))).energy<<endl;
 
   }

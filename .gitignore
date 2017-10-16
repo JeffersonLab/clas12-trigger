@@ -27,3 +27,35 @@
 *.exe
 *.out
 *.app
+
+# Data files
+*.root
+*.evio.*
+
+# Media files, e.g. plots
+*.eps
+*.pdf
+*.png
+*~
+
+clas12-trigger/
+lib/
+users/rafopar/1053_log
+users/rafopar/FADC_Write_test/
+users/rafopar/Figs/
+users/rafopar/Slides/
+users/rafopar/TCS_1_.evio
+users/rafopar/TCS_1_.evio_tmp
+users/rafopar/Trig_Analyzer/
+users/rafopar/clonbanks2.xml
+users/rafopar/compileRun_test_hls.sh
+users/rafopar/event_2188
+users/rafopar/log_ev13794
+users/rafopar/out_boundary_events.dat
+users/rafopar/tmp
+users/rafopar/tmp3
+users/rafopar/tmp_759
+users/rafopar/tmp_803
+users/rafopar/tmp_803.xml
+users/rafopar/tmp_803_18
+users/rafopar/tmp_ev

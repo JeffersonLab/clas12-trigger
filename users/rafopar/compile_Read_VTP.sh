@@ -1,0 +1,1 @@
+g++ Read_VTP.cc -o Read_VTP.exe `root-config --cflags --libs` -I$CODA/Linux-x86_64/include -I$CLAS12Trig/include -I/Work/apps/Vivado_HLS/2015.4/include -L$CLAS12Trig_LIB -lTrigDiag -L$CODA/Linux-x86_64/lib -levioxx -levio -lexpat -lpthread
