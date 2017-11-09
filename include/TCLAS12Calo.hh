@@ -10,7 +10,10 @@ class TCLAS12Calo: public TCLAS12Detector{
 public:
   TCLAS12Calo();
   TCLAS12Calo(double, double, double, double, double); // E, X, Y, Z and t
+  void SetEXYZT(double, double, double, double, double); // Set E, X, Y, Z and time
   void SetE(double); // Set energy of the cluster
+  void SetXYZ(double, double, double ); // Set X, Y, Z
+  void SetTime(double); // Set Time of the cluster
   double E() {return fE;};
   
 private:

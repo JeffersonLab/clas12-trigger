@@ -28,6 +28,7 @@ using namespace std;
 double TCLAS12TrigCand::fPCal_Emin = 0.02;
 double TCLAS12TrigCand::ftot_Emin = 0.09;
 double TCLAS12TrigCand::fEC_Emin = 0.05;
+int TCLAS12TrigCand::fNphe_min = 3;
 
 TCLAS12TrigCand::TCLAS12TrigCand() {
     
@@ -44,6 +45,9 @@ TCLAS12TrigCand::TCLAS12TrigCand() {
     
     // All energies are set to 0
     fEPCal = fEECin = fEECout = fEECinout = fEECTot = 0.;
+    
+    // Cherenkov is set to 0
+    fnphe_HTCC = 0;
     
     // Initialize trigger bits to 0
     trig_bits = 0;
@@ -67,6 +71,11 @@ has_ECin = true;
 void TCLAS12TrigCand::SetECoutResponce(TCLAS12ECout ECout_responce){
 fECout_responce = ECout_responce;
 has_ECout = true;
+}
+
+void TCLAS12TrigCand::SetHTCCResponce(TCLAS12HTCC HTCC_responce){
+    fHTCC_responce = HTCC_responce;
+    has_HTCC = true;
 }
 
 void TCLAS12TrigCand::SetRecParticle( TRECHB_particle rec_part ){
@@ -105,8 +114,9 @@ int32_t TCLAS12TrigCand::Analyze(){
     fEPCal = fPCal_responce.E();
     fEECTot = fEECTot + fEPCal;
         
-        // If The PCal threshold is passed, the set the corresponding bit
+        // If The PCal threshold is passed, then set the corresponding bit
         if( fEPCal > fPCal_Emin ){
+         // * * * * * * * * * * 1
           trig_bits = trig_bits|1<<0;
         }
     }
@@ -127,14 +137,28 @@ int32_t TCLAS12TrigCand::Analyze(){
     
     // If the total energy in the EC (excluding PCal) is more than the threshold, then set the corresponding bit
     if(fEECinout > fEC_Emin){
+        // * * * * * * * * * 1 *
         trig_bits = trig_bits|1<<1;
     }
     
      // If the total energy in the whole calo (EC + PCal) is more than the threshold, then set the corresponding bit
     if(fEECinout > fEC_Emin){
+        // * * * * * * * * 1 * *
         trig_bits = trig_bits|1<<2;
     }
    
+    // Check to see if Cherenkov has a hit
+    
+    if( has_HTCC ){
+        fnphe_HTCC = fHTCC_responce.Nphe();
+    }
+    
+    // If Cherenkov, EC and PCal thresholds are passed
+    if( fnphe_HTCC >= fNphe_min && fEECinout > fEC_Emin){
+         // * * * * * * * 1 * * * 
+        trig_bits = trig_bits|1<<3;
+    }
+    
     is_analyzed = true;
     
     return trig_bits;

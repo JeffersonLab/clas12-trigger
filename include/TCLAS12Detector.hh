@@ -10,12 +10,13 @@ public:
   void  SetXYZ(double, double, double); // Set the coordinated of the hit/cluster or a corresponding quantity for that detector
   void  SetTime(double);                // Set the time of the hit/cluster or a corresponding quantity for that detector
   
-  double Time() {return ftime;};
-  double* Coord() {return fCoord;};
-  double X() {return fCoord[0];};
-  double Y() {return fCoord[1];};
-  double Z() {return fCoord[2];};
-
+  double Time() {return ftime;};        // Returns the time of the hit/cluster
+  double* Coord() {return fCoord;};     // Returns the pointer for the hit/cluster coordinate
+  double X() {return fCoord[0];};       // Returns X coordinate
+  double Y() {return fCoord[1];};       // Returns Y coordinate
+  double Z() {return fCoord[2];};       // Returns Z coordinate
+  
+  
 protected:
   double fCoord[3];      // coordinates of hit/cluster or a relative quantity
   double ftime;          // time of the hit/cluster or a relative quantity

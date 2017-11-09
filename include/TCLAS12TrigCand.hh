@@ -15,6 +15,7 @@
 #define TCLAS12TRIGCAND_HH
 
 #include "TCLAS12Calo.hh"
+#include "TCLAS12Cherenkov.hh"
 #include <TRECHB_particle.hh>
 #include <stdint.h>
 
@@ -33,6 +34,7 @@ public:
     void SetPCalResponce(TCLAS12PCal);
     void SetECinResponce(TCLAS12ECin);
     void SetECoutResponce(TCLAS12ECout);
+    void SetHTCCResponce(TCLAS12HTCC);
     
     void SetRecParticle(TRECHB_particle);
     
@@ -40,7 +42,8 @@ public:
     
     static double fPCal_Emin;  // Threshold for the PCal energy minimum
     static double ftot_Emin;   // Threshold for the total energy in PCal plus ECal
-    static double fEC_Emin;     // Threshold for the total energy in EC only
+    static double fEC_Emin;    // Threshold for the total energy in EC only
+    static int    fNphe_min;   // Threshold for the number of photoelectrons in HTCC
     
     bool HasPCal() {return has_PCal;};
     bool HasECin() {return has_ECin;};
@@ -71,9 +74,10 @@ public:
     double EECout(){return fEECout;};
     
 private:
-    TCLAS12PCal fPCal_responce;
-    TCLAS12ECin fECin_responce;
-    TCLAS12ECout fECout_responce;
+    TCLAS12PCal     fPCal_responce;
+    TCLAS12ECin     fECin_responce;
+    TCLAS12ECout    fECout_responce;
+    TCLAS12HTCC     fHTCC_responce;
 
     bool EC_thresholds_set;
     bool has_PCal;
@@ -84,12 +88,16 @@ private:
     
     bool is_analyzed;
     
-    // ====== Calorimeter related variables ======
+    // ====== EC/PCal related variables ======
     double fEPCal;   // Energy in the PCal
     double fEECin;   // Energy in the ECin
     double fEECout;  // Energy in the ECout
     double fEECinout;  // ENergy in the EC (Excluding PCal)
     double fEECTot;  // Total deposited energy in PCal and EC
+    
+    // ========= Cherenkov related variables ========
+    
+    int fnphe_HTCC;
     
     //======= REC particle related variables ===========
     double fP;

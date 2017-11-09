@@ -7,7 +7,7 @@ CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
 HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 libTrigDIAG	= libTrigDiag
 
-all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o
+all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o TCLAS12Cherenkov.o
 		rm -f ${libTrigDIAG}.so*
 		$(CC) $(CC_Shared_FLAGS) -o lib/${libTrigDIAG}.so.1.0.1 $?
 		cd lib;\
@@ -32,6 +32,9 @@ TCLAAS12Detector.o:	src/TCLAS12Detector.cxx include/TCLAS12Detector.hh
 
 TCLAS12Calo.o:	src/TCLAS12Calo.cxx include/TCLAS12Calo.hh
 		$(CC) $(CC_OBJ_FLAGS) src/TCLAS12Calo.cxx -o $@ $(ROOT_CFLAGS) -I./include
+
+TCLAS12Cherenkov.o:	src/TCLAS12Cherenkov.cxx include/TCLAS12Cherenkov.hh
+			$(CC) $(CC_OBJ_FLAGS) src/TCLAS12Cherenkov.cxx -o $@ $(ROOT_CFLAGS) -I./include
 
 clean:
 		rm -f lib/*.so.* lib/*.so *.o
