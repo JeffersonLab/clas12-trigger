@@ -25,7 +25,7 @@ map<int, int> TECTrig::EC_vtp_Detector = {
 
 TECTrig::TECTrig()
 {
-    cout << "Kuku" << endl;
+    cout << "Kuku Kaka Kuku" << endl;
 }
 
 TECTrig::TECTrig(evio::evioDOMNode* it, int a_adcECvtp_tag)
@@ -33,7 +33,7 @@ TECTrig::TECTrig(evio::evioDOMNode* it, int a_adcECvtp_tag)
 
     // Reset all attributes, before reading the current event
     ResetAll();
-
+    
     fhead_node = it;
 
     // Check if, the tag representing ROC id is correct, otherwise
@@ -158,6 +158,15 @@ void TECTrig::ReadECTriggerPeak()
 
     TEC_Peak cur_peak;
     cur_peak.inst = fit_data->range(26, 26);
+    
+    // ====== Test why no events in ECout are visible ====
+    if( cur_peak.inst ){
+        cout<<"Kuku inst is "<<cur_peak.inst<<endl;
+    }
+    else{
+        //cout<<"=============== Bobo inst is "<<cur_peak.inst<<endl;
+    }
+    
     cur_peak.view = fit_data->range(25, 24);
 
     cur_peak.time = fit_data->range(23, 16);
