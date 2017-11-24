@@ -225,6 +225,7 @@ void Draw_VTP_hists(){
 
   TH2D *h_Dalitz_cl1 = (TH2D*)file_in->Get("h_Dalitz_cl1");
   h_Dalitz_cl1->SetTitle("Dalitz calculated using cluster coordiantes; Dalitz; Sector");
+  h_Dalitz_cl1->GetXaxis()->SetTitleOffset(1.7);
   h_Dalitz_cl1->Draw("lego5");
   c1->Print("figs/EC_Dalitz_cl1.eps");
   c1->Print("figs/EC_Dalitz_cl1.pdf");
@@ -256,4 +257,51 @@ void Draw_VTP_hists(){
   c1->Print("figs/EC_Dalitz_peaka1.eps");
   c1->Print("figs/EC_Dalitz_peaka1.pdf");
   c1->Print("figs/EC_Dalitz_peaka1.png");
+
+                                                    
+  TH2D *h_PCal_Dalitz_Clust1 = (TH2D*)file_in->Get("h_PCal_Dalitz_Clust1");
+  h_PCal_Dalitz_Clust1->SetTitle("Dalitz calculated using cluster coordiantes; Dalitz; Sector");
+  h_PCal_Dalitz_Clust1->GetXaxis()->SetTitleOffset(1.7);
+  h_PCal_Dalitz_Clust1->Draw("lego5");
+  c1->Print("figs/PCal_Dalitz_cl1.eps");
+  c1->Print("figs/PCal_Dalitz_cl1.pdf");
+  c1->Print("figs/PCal_Dalitz_cl1.png");
+  
+  TH2D *h_PCal_Dalitz_Peaks1 = (TH2D*)file_in->Get("h_PCal_Dalitz_Peaks1");
+  h_PCal_Dalitz_Peaks1->SetTitle("Dalitz calculated using independent U, V and W peaks; Dalitz; Sector");
+  h_PCal_Dalitz_Peaks1->GetXaxis()->SetTitleOffset(1.7);
+  h_PCal_Dalitz_Peaks1->Draw("lego5");
+  c1->Print("figs/PCal_Dalitz_peaks1.eps");
+  c1->Print("figs/PCal_Dalitz_peaks1.pdf");
+  c1->Print("figs/PCal_Dalitz_peaks1.png");
+
+  
+  TH2D *h_PCal_yxc1 = (TH2D*)file_in->Get("h_PCal_yxc1");
+  h_PCal_yxc1->SetTitle("Coordinates calculated using the cluster U,V and W; X [cm]; Y [cm]");
+  h_PCal_yxc1->Draw("colz");
+  c1->Print("figs/PCal_yxc1.eps");
+  c1->Print("figs/PCal_yxc1.pdf");
+  c1->Print("figs/PCal_yxc1.png");
+  
+  TH2D *h_PCal_yxc_UV1 = (TH2D*)file_in->Get("h_PCal_yxc_UV1");
+  h_PCal_yxc_UV1->SetTitle("Coordinates calculated using U and V peaks; X [cm]; Y [cm]");
+  h_PCal_yxc_UV1->Draw("colz");
+  c1->Print("figs/PCal_yxc_UV1.eps");
+  c1->Print("figs/PCal_yxc_UV1.pdf");
+  c1->Print("figs/PCal_yxc_UV1.png");
+
+  TH2D *h_PCal_yxc_UW1 = (TH2D*)file_in->Get("h_PCal_yxc_UW1");
+  h_PCal_yxc_UW1->SetTitle("Coordinates calculated using U and W peaks; X [cm]; Y [cm]");
+  h_PCal_yxc_UW1->Draw("colz");
+  c1->Print("figs/PCal_yxc_UW1.eps");
+  c1->Print("figs/PCal_yxc_UW1.pdf");
+  c1->Print("figs/PCal_yxc_UW1.png");
+
+  TH2D *h_PCal_yxc_VW1 = (TH2D*)file_in->Get("h_PCal_yxc_VW1");
+  h_PCal_yxc_VW1->SetTitle("Coordinates calculated using V and W peaks; X [cm]; Y [cm]");
+  h_PCal_yxc_VW1->Draw("colz");
+  c1->Print("figs/PCal_yxc_VW1.eps");
+  c1->Print("figs/PCal_yxc_VW1.pdf");
+  c1->Print("figs/PCal_yxc_VW1.png");
+
 }

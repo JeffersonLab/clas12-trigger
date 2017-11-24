@@ -7,7 +7,7 @@ CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
 HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 libTrigDIAG	= libTrigDiag
 
-all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o TCLAS12Cherenkov.o
+all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o TCLAS12Cherenkov.o ECGeom.o PCalGeom.o TECTrue.o
 		rm -f ${libTrigDIAG}.so*
 		$(CC) $(CC_Shared_FLAGS) -o lib/${libTrigDIAG}.so.1.0.1 $?
 		cd lib;\
@@ -19,6 +19,13 @@ ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
 
 ECGeom.o:	src/ECGeom.cxx include/ECGeom.hh
 		$(CC) $(CC_OBJ_FLAGS) src/ECGeom.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+	
+PCalGeom.o:	src/TPCalGeom.cxx include/TPCalGeom.hh
+		$(CC) $(CC_OBJ_FLAGS) src/TPCalGeom.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+
+TECTrue.o:	src/TECTrue.cxx include/TECTrue.hh
+		$(CC) $(CC_OBJ_FLAGS) src/TECTrue.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+
 
 TRECHB_particle.o:  src/TRECHB_particle.cc include/TRECHB_particle.hh
 		    $(CC) $(CC_OBJ_FLAGS) src/TRECHB_particle.cc -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) -I./include

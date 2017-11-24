@@ -9,7 +9,7 @@ using namespace std;
 const double TECGeom::fLU = 419.239839; // cm
 const double TECGeom::fLV = 383.0062897; // cm
 const double TECGeom::fLW = 419.239839; // cm
-//const double TECGeom::fSCWidth = 10.; // cm
+
 const double TECGeom::fdU = 10.366; // cm
 const double TECGeom::fdV = 9.48; // cm
 const double TECGeom::fdW = 9.48; // cm
@@ -33,7 +33,7 @@ const double TECGeom::EC_angle = 25*TECGeom::d2r;
 const double TECGeom::fy0 = 50.7601930;
 const double TECGeom::fz0 = 786.4028205; // It is calculated as 7127.23/cos(25*TMath::DegToRad())
 
-TECGeom::TECGeom(double aU, double aV, double aW){
+TECGeom::TECGeom(double aU, double aV, double aW){ // U, V and W are strip coordinates in the (0-36) range
     
   fSector = -1;
     
@@ -43,10 +43,6 @@ TECGeom::TECGeom(double aU, double aV, double aW){
 
   fDalitz = fU/fLU + fV/fLV + fW/fLW - 2.;
 
-  // cout<<"ECGEOM fSCWidth "<<fSCWidth<<endl;
-  // cout<<"ECGEOM "<<aU<<"  "<<aV<<"  "<<aW<<"  "<<fU<<"  "<<fV<<"  "<<fW<<"  "<<endl;
-  // cout<<"ECGEOM ALPHAS "<<falpha_U*TMath::RadToDeg()<<"   "<<falpha_U*TMath::RadToDeg()<<"  "<<falpha_W*TMath::RadToDeg()<<"  "<<fDalitz<<endl;
-  
   fx_UV = fx0_V - fV + (fLU - fU)*sin(falpha_V)/tan(falpha_W);
   fy_UV = fU*sin(falpha_V);
 
