@@ -1,6 +1,7 @@
 #ifndef __ECGeom__
 #define __ECGeom__
 
+
 class TECGeom{
 
 public:
@@ -29,9 +30,9 @@ public:
   const double GetHallZ_VW() {return fz_VW_Hall;};
   void SetSector(int); // Sets the sector and integer in the range 0 - 5
   
-private:
+protected:
 
- void GetHallCoordinates(double, double, double *, double *, double*); // Using the sector, and local (x,y) calculate the global x coordinate in the Hall coordinate frame
+ void GetHallCoordinates(double, double, double *, double *, double*); // Using the sector, and local (x,y) calculate the global x,y,z coordinates in the Hall coordinate frame
     
     
   int fSector;

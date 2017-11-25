@@ -50,6 +50,7 @@ public:
   TECTrig();
   TECTrig( evio::evioDOMNode*, int);
 
+  void SetevioDOMENodeSect(evio::evioDOMNode*, int);
   int GetDetector() {return fDet;};   // 0 = Global Trigger, 1 = EC, 2 = PCal
   int GetSector() {return fSector;};
   bool HasBlockHeader() {return has_BlockHeader;};

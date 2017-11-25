@@ -28,9 +28,12 @@ TECTrig::TECTrig()
     cout << "Kuku Kaka Kuku" << endl;
 }
 
-TECTrig::TECTrig(evio::evioDOMNode* it, int a_adcECvtp_tag)
-{
+TECTrig::TECTrig(evio::evioDOMNode* it, int a_adcECvtp_tag){
+    SetevioDOMENodeSect(it, a_adcECvtp_tag);
+}
 
+void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag)
+{
     // Reset all attributes, before reading the current event
     ResetAll();
     

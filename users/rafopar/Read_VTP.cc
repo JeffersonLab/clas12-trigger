@@ -18,8 +18,7 @@ using namespace std;
 // Then will loop over all words inside the bank and decode all the information,
 // e.g. which part of EC (in, or out), cluster coordinates (u, v, w), etc
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 
     const double Dalitz_ECout_max = 0.0833333;
     const double Dalitz_ECout_min = -0.0555556;
@@ -60,8 +59,8 @@ int main(int argc, char **argv)
     TH2D *h_PCal_yxc_UV1 = new TH2D("h_PCal_yxc_UV1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_PCal_yxc_UW1 = new TH2D("h_PCal_yxc_UW1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_PCal_yxc_VW1 = new TH2D("h_PCal_yxc_VW1", "", 200, -500., 500., 200, -500., 500.);
-    
-    
+
+
     TH2D *h_Dalitz_cl1 = new TH2D("h_Dalitz_cl1", "", 40, -0.5, 0.5, 7, -0.5, 6.5);
     TH2D *h_Dalitz_Peaks1 = new TH2D("h_Dalitz_Peaks1", "", 40, -0.5, 0.5, 7, -0.5, 6.5);
     TH2D *h_PCal_Dalitz_Peaks1 = new TH2D("h_PCal_Dalitz_Peaks1", "", 40, -0.5, 0.5, 7, -0.5, 6.5);
@@ -78,8 +77,7 @@ int main(int argc, char **argv)
     TH2D *h_PCalcl_V1 = new TH2D("h_PCalcl_V1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_W1 = new TH2D("h_PCalcl_W1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
 
-    for (int i_view = 0; i_view < n_view; i_view++)
-    {
+    for (int i_view = 0; i_view < n_view; i_view++) {
         h_N_ECpeaks1_[i_view] = new TH2D(Form("h_N_ECpeaks1_%d", i_view), "", 11, -0.5, 10.5, 7, -0.5, 6.5);
         h_t_ECpeak1_[i_view] = new TH2D(Form("h_t_ECpeak1_%d", i_view), "", 21, -0.5, 20.5, 7, -0.5, 6.5);
         h_coord_ECpeak1_[i_view] = new TH2D(Form("h_coord_ECpeak1_%d", i_view), "", 41, -0.5, 40.5, 7, -0.5, 6.5);
@@ -103,15 +101,13 @@ int main(int argc, char **argv)
 
     int adcECvtp_tag;
 
-    try
-    {
+    try {
 
         evioFileChannel chan(argv[1], "r");
         chan.open();
         int counter = 0;
-        
-        while (chan.read())
-        {
+
+        while (chan.read()) {
 
             evioDOMTree tree(chan);
 
@@ -122,39 +118,35 @@ int main(int argc, char **argv)
             bool has_PCal = false;
             bool has_HTCC = false;
 
+            TECTrig trig; // adcECvtp_tag determines the vtp crate (or sector in another words)
 
-            for (std::list<evioDOMNode*>::iterator it = nodelist1.get()->begin(); it != nodelist1.get()->end(); it++)
-            {
+            for (std::list<evioDOMNode*>::iterator it = nodelist1.get()->begin(); it != nodelist1.get()->end(); it++) {
 
-                if ((*it)->tag >= adcECvtp_tagmin && (*it)->tag <= adcECvtp_tagmax)
-                {
+                if ((*it)->tag >= adcECvtp_tagmin && (*it)->tag <= adcECvtp_tagmax) {
                     adcECvtp_tag = (*it)->tag;
                 }
 
-                if ((*it)->tag == vtp_tag)
-                {
+                if ((*it)->tag == vtp_tag) {
 
-                    TECTrig trig(*it, adcECvtp_tag); // adcECvtp_tag determines the vtp crate (or sector in another words)
-
+                    //  TECTrig trig(*it, adcECvtp_tag); // adcECvtp_tag determines the vtp crate (or sector in another words)
+                    trig.SetevioDOMENodeSect(*it, adcECvtp_tag);
+                    
                     int detector = trig.GetDetector();
                     int sector = trig.GetSector();
 
                     int ev_number = trig.GetEvNumber();
 
-                    if (detector == 1)
-                    { // ECal
+                    if (detector == 1) { // ECal
 
                         vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
 
                         // ====== EC Peaks ======
-                        for (int i_view = 0; i_view < n_view; i_view++)
-                        {
+                        for (int i_view = 0; i_view < n_view; i_view++) {
 
                             int n_ECpeaks = trig.GetNPeaks(0, i_view);
                             h_N_ECpeaks1_[i_view]->Fill(n_ECpeaks, sector);
 
-                            for (int i_peak = 0; i_peak < n_ECpeaks; i_peak++)
-                            {
+                            for (int i_peak = 0; i_peak < n_ECpeaks; i_peak++) {
 
                                 h_t_ECpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
 
@@ -165,12 +157,9 @@ int main(int argc, char **argv)
                             }
                         }
 
-                        for (int iU = 0; iU < v_Peaks_[0].size(); iU++)
-                        {
-                            for (int iV = 0; iV < v_Peaks_[1].size(); iV++)
-                            {
-                                for (int iW = 0; iW < v_Peaks_[2].size(); iW++)
-                                {
+                        for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
+                            for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
+                                for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
                                     TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., v_Peaks_[1].at(iV)->coord / 8., v_Peaks_[2].at(iW)->coord / 8.);
                                     ec_geom_peaks.SetSector(sector);
 
@@ -202,8 +191,7 @@ int main(int argc, char **argv)
 
                         h_N_ECClust1->Fill(n_cl, sector);
 
-                        for (int i_cl = 0; i_cl < n_cl; i_cl++)
-                        {
+                        for (int i_cl = 0; i_cl < n_cl; i_cl++) {
                             int cl_time = trig.GetECCluster(0, i_cl)->time;
                             double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / 8.;
                             double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / 8.;
@@ -233,26 +221,21 @@ int main(int argc, char **argv)
 
                         //cout<<"n_upeaks = "<<n_upeaks<<endl;
 
-                    }
-                    else if (detector == 2)
-                    { // PCal
+                    } else if (detector == 2) { // PCal
 
                         vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
 
-                        for (int i_view = 0; i_view < n_view; i_view++)
-                        {
+                        for (int i_view = 0; i_view < n_view; i_view++) {
 
                             int n_PCalpeaks = trig.GetNPeaks(0, i_view);
                             h_N_PCalpeaks1_[i_view]->Fill(n_PCalpeaks, sector);
 
-                            for (int i_peak = 0; i_peak < n_PCalpeaks; i_peak++)
-                            {
+                            for (int i_peak = 0; i_peak < n_PCalpeaks; i_peak++) {
 
                                 h_t_PCalpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
 
                                 double coord_conv = 3.;
-                                if (i_view == 0)
-                                {
+                                if (i_view == 0) {
                                     coord_conv = 2.75;
                                 }
                                 double coord = double(trig.GetECPeak(0, i_view, i_peak)->coord) / coord_conv;
@@ -262,15 +245,12 @@ int main(int argc, char **argv)
                             }
                         }
 
-                        for (int iU = 0; iU < v_Peaks_[0].size(); iU++)
-                        {
-                            for (int iV = 0; iV < v_Peaks_[1].size(); iV++)
-                            {
-                                for (int iW = 0; iW < v_Peaks_[2].size(); iW++)
-                                {
+                        for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
+                            for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
+                                for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
 
                                     TPCalGeom pcal_geom_peaks(v_Peaks_[0].at(iU)->coord / U_conv, v_Peaks_[1].at(iV)->coord / V_conv,
-                                                              v_Peaks_[2].at(iW)->coord / W_conv);
+                                            v_Peaks_[2].at(iW)->coord / W_conv);
                                     pcal_geom_peaks.SetSector(sector);
 
                                     //                       double hall_x_UV = ec_geom_peaks.GetHallX_UV();
@@ -294,7 +274,7 @@ int main(int argc, char **argv)
                                     double hall_x_VW = pcal_geom_peaks.GetHallX_VW();
                                     double hall_y_VW = pcal_geom_peaks.GetHallY_VW();
                                     h_PCal_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
-                                    
+
                                     double Dalitz_peaks = pcal_geom_peaks.GetDalitz();
 
                                     h_PCal_Dalitz_Peaks1->Fill(Dalitz_peaks, sector);
@@ -312,8 +292,7 @@ int main(int argc, char **argv)
 
                         h_N_PCalClust1->Fill(n_cl, sector);
 
-                        for (int i_cl = 0; i_cl < n_cl; i_cl++)
-                        {
+                        for (int i_cl = 0; i_cl < n_cl; i_cl++) {
 
                             int cl_time = trig.GetECCluster(0, i_cl)->time;
 
@@ -334,7 +313,7 @@ int main(int argc, char **argv)
                             double hall_y_cl = pcal_geom_clust.GetHallY_UV();
 
                             h_PCal_yxc1->Fill(hall_x_cl, hall_y_cl);
-                            
+
                             double Dalitz = pcal_geom_clust.GetDalitz();
 
                             h_PCal_Dalitz_Clust1->Fill(Dalitz, sector);
@@ -349,15 +328,12 @@ int main(int argc, char **argv)
                         }
 
 
-                    }
-                    else if (detector == 4)
-                    { // HTCC
+                    } else if (detector == 4) { // HTCC
 
                         int n_HTCC_masks = trig.GetNHTCCMasks();
                         h_n_HTCC_masks->Fill(n_HTCC_masks);
 
-                        for (int i_htcc = 0; i_htcc < n_HTCC_masks; i_htcc++)
-                        {
+                        for (int i_htcc = 0; i_htcc < n_HTCC_masks; i_htcc++) {
 
                             THTCC_mask *cur_mask = trig.GetHTCCMask(i_htcc);
 
@@ -367,23 +343,19 @@ int main(int argc, char **argv)
 
                             h_n_HTCC_hits->Fill(n_hits);
 
-                            for (int i_ch = 0; i_ch < n_hits; i_ch++)
-                            {
+                            for (int i_ch = 0; i_ch < n_hits; i_ch++) {
 
                                 h_HTCC_hit_chan1->Fill(cur_mask->chan.at(i_ch));
                             }
                         }
 
-                    }
-                    else if (detector == 3)
-                    { // FTOF
+                    } else if (detector == 3) { // FTOF
 
                         int n_FTOF_masks = trig.GetNFTOFMasks();
 
                         h_n_FTOF_masks->Fill(n_FTOF_masks, sector);
 
-                        for (int i_ftof = 0; i_ftof < n_FTOF_masks; i_ftof++)
-                        {
+                        for (int i_ftof = 0; i_ftof < n_FTOF_masks; i_ftof++) {
 
                             TFTOF_mask *cur_mask = trig.GetFTOFMask(i_ftof);
                             h_FTOF_time1->Fill(cur_mask->time, sector);
@@ -392,8 +364,7 @@ int main(int argc, char **argv)
 
                             h_n_FTOF_hits->Fill(n_hits, sector);
 
-                            for (int i_ch = 0; i_ch < n_hits; i_ch++)
-                            {
+                            for (int i_ch = 0; i_ch < n_hits; i_ch++) {
                                 h_FTOF_hit_chan1->Fill(cur_mask->chan.at(i_ch), sector);
                             }
 
@@ -414,9 +385,7 @@ int main(int argc, char **argv)
 
         gDirectory->Write();
 
-    }
-    catch (evioException e)
-    {
+    }    catch (evioException e) {
         cerr << endl << e.toString() << endl;
         exit(EXIT_FAILURE);
     }

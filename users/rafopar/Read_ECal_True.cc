@@ -68,7 +68,7 @@ int main(int argc, char **argv)
         {
 
            evioFileChannel chan(fname_list->At(ifile)->GetTitle(), "r");
-           cout<<"Runnin the file "<<fname_list->At(ifile)->GetTitle()<<endl;
+           cout<<"Running the file "<<fname_list->At(ifile)->GetTitle()<<endl;
             chan.open();
             int counter = 0;
 

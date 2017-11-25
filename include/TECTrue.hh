@@ -21,9 +21,12 @@ using namespace evio;
 
 class TECTrue {
 public:
+    TECTrue();
     TECTrue( evio::evioDOMNode*);
- //   TECTrue(const TECTrue& orig);
+    TECTrue(const TECTrue& orig);
     
+    void Reset();
+    void SetevioDOMNode(evio::evioDOMNode*);
     void Print();
     const int Npart() {return fn_part;}
     const int PID(int);
@@ -53,14 +56,14 @@ private:
     vector<int> *ftid_raw;
     vector<int> *fmtid_raw;
     
-    vector<double*> fPx;
-    vector<double*> fPy;
-    vector<double*> fPz;
-    vector<double*> fE;
-    vector<double*> favgX;
-    vector<double*> favgY;
-    vector<double*> favgZ;
-    vector<int*> fPID;
+    vector<double> fPx;
+    vector<double> fPy;
+    vector<double> fPz;
+    vector<double> fE;
+    vector<double> favgX;
+    vector<double> favgY;
+    vector<double> favgZ;
+    vector<int> fPID;
     
     map<int, int> fmap_tr_id;     // This should identify indexes of original tracks
     map<int, double> fmap_Emax;   // This shows Max energy of 
