@@ -24,9 +24,9 @@ const double TECGeom::falpha_W = asin(2*TECGeom::fS/(TECGeom::fLW*TECGeom::fLV))
 const double TECGeom::fy0_U = 0.;
 const double TECGeom::fx0_U = 0.;
 const double TECGeom::fy0_V = TECGeom::fLU*sin(TECGeom::falpha_V);
-const double TECGeom::fx0_V = TECGeom::fLU*cos(TECGeom::falpha_V);
+const double TECGeom::fx0_V = -TECGeom::fLU*cos(TECGeom::falpha_V);
 const double TECGeom::fy0_W = TECGeom::fLW*sin(TECGeom::falpha_W);
-const double TECGeom::fx0_W = -TECGeom::fLW*cos(TECGeom::falpha_W);
+const double TECGeom::fx0_W = TECGeom::fLW*cos(TECGeom::falpha_W);
 
 const double TECGeom::d2r =  0.017453;
 const double TECGeom::EC_angle = 25*TECGeom::d2r;
@@ -43,16 +43,16 @@ TECGeom::TECGeom(double aU, double aV, double aW){ // U, V and W are strip coord
 
   fDalitz = fU/fLU + fV/fLV + fW/fLW - 2.;
 
-  fx_UV = fx0_V - fV + (fLU - fU)*sin(falpha_V)/tan(falpha_W);
+  fx_UV = fx0_V + fV - (fLU - fU)*sin(falpha_V)/tan(falpha_W);
   fy_UV = fU*sin(falpha_V);
 
-  fx_UW = fx0_V - (fLU - fU)*cos(falpha_V) - ( fLV - fW*(fLV/fLW) ); 
+  fx_UW = fx0_W - fW*fLV/fLW + (fLU - fU)*cos(falpha_V); 
   //fx_UW = fx0_V - (fLV/fLW)*fW + fLU*cos(falpha_V)*(fLU - fU)/fLU;
   fy_UW = fU*sin(falpha_V);
   
   double u_calc = fLU*(2. - fV/fLV - fW/fLW);  // Using Dalitz rule calculate U, and then calculate x as UW
   //fx_VW = fx0_V - (fLV/fLW)*fW + fLU*cos(falpha_V)*(fLU - u_calc)/fLU;
-  fx_VW = fx0_V - (fLU - u_calc)*cos(falpha_V) - ( fLV - fW*(fLV/fLW) );
+  fx_VW = fx0_W - fW*fLV/fLW +(fLU - u_calc)*cos(falpha_V);
   fy_VW = u_calc*sin(falpha_V);
 
   //====== According to Ben's algorithm the cluster coordinate is the mean of uv, uw and vw
