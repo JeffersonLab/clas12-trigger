@@ -160,7 +160,11 @@ int main(int argc, char **argv) {
                         for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
                             for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
                                 for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
+                                 
+                                    //if( v_Peaks_[2].at(iW)->coord / 8. < 35 ){continue;}
+                                    
                                     TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., v_Peaks_[1].at(iV)->coord / 8., v_Peaks_[2].at(iW)->coord / 8.);
+                                    //TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., 15., 57 - v_Peaks_[0].at(iU)->coord / 8.);
                                     ec_geom_peaks.SetSector(sector);
 
                                     double hall_x_UV = ec_geom_peaks.GetHallX_UV();
@@ -199,6 +203,7 @@ int main(int argc, char **argv) {
                             int cl_E = double(trig.GetECCluster(0, i_cl)->energy);
 
                             TECGeom ec_geom(cl_U, cl_V, cl_W);
+                            
                             ec_geom.SetSector(sector);
 
                             double hall_x_cl = ec_geom.GetHallX_UV();

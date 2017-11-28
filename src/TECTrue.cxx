@@ -261,27 +261,6 @@ TECTrue::TECTrue(const TECTrue& orig) {
     favgZ = orig.favgZ;
     fPID = orig.fPID;
 
-//    fPx_raw = new vector<double>;
-//    *fPx_raw = *orig.fPx_raw;
-//    fPy_raw = new vector<double>;
-//    *fPy_raw = *orig.fPy_raw;
-//    fPz_raw = new vector<double>;
-//    *fPz_raw = *orig.fPz_raw;
-//    fE_raw = new vector<double>;
-//    *fE_raw = *orig.fE_raw;
-//    favgX_raw = new vector<double>;
-//    *favgX_raw = *orig.favgX_raw;
-//    favgY_raw = new vector<double>;
-//    *favgY_raw = *orig.favgY_raw;
-//    favgZ_raw = new vector<double>;
-//    *favgZ_raw = *orig.favgZ_raw;
-//    fPID_raw = new vector<int>;
-//    *fPID_raw = *orig.fPID_raw;
-//    ftid_raw = new vector<int>;
-//    *ftid_raw = *orig.ftid_raw;
-//    fmtid_raw = new vector<int>;
-//    *fmtid_raw = *orig.fmtid_raw;
-
     fPx_raw = orig.fPx_raw;
     fPy_raw = orig.fPy_raw;
     fPz_raw = orig.fPz_raw;
@@ -300,18 +279,4 @@ TECTrue::TECTrue(const TECTrue& orig) {
 
 TECTrue::~TECTrue() {
 
-//    cout << "Destructor TECTRUE1" << endl;
-//    //cout<<"fPx_raw = "<<fPx_raw<<endl;
-//    delete fPx_raw;
-//    cout << "Destructor TECTRUE1_1" << endl;
-//    delete fPy_raw;
-//    delete fPz_raw;
-//    delete fE_raw;
-//    delete favgX_raw;
-//    delete favgY_raw;
-//    delete favgZ_raw;
-//    delete fPID_raw;
-//    delete ftid_raw;
-//    delete fmtid_raw;
-//    cout << "Destructor TECTRUE2" << endl;
 }

@@ -221,8 +221,10 @@ void TECTrig::ReadECTriggerCluster()
         exit(0);
     }
 
-    cur_clust.Wstrip = fit_data->range(29, 20);
-    cur_clust.Vstrip = fit_data->range(19, 10);
+    // ********======******====== Oho seems V and W astrips are read out incorrectly
+    // This should be sorted out!!
+    cur_clust.Vstrip = fit_data->range(29, 20);
+    cur_clust.Wstrip = fit_data->range(19, 10);
     cur_clust.Ustrip = fit_data->range(9, 0);
 
     // cout<<"Data cont. word"<<setw(15)<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;

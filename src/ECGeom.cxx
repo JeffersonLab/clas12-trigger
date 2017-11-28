@@ -30,8 +30,8 @@ const double TECGeom::fx0_W = -TECGeom::fLW*cos(TECGeom::falpha_W);
 
 const double TECGeom::d2r =  0.017453;
 const double TECGeom::EC_angle = 25*TECGeom::d2r;
-const double TECGeom::fy0 = 50.7601930;
-const double TECGeom::fz0 = 786.4028205; // It is calculated as 7127.23/cos(25*TMath::DegToRad())
+const double TECGeom::fy0 = 50.7601930 + 14.73/cos(TECGeom::EC_angle); // The 14.73 is obtained by comparing to GEMC
+const double TECGeom::fz0 = 786.4028205 + 34.6730; // It is calculated as 7127.23/cos(25*TMath::DegToRad()), 34.673 is calculated by comparing to GEMC
 
 TECGeom::TECGeom(double aU, double aV, double aW){ // U, V and W are strip coordinates in the (0-36) range
     

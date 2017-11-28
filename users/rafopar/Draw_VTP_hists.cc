@@ -172,6 +172,19 @@ void Draw_VTP_hists(){
   c1->Print("figs/EC_cl_E.pdf");
   c1->Print("figs/EC_cl_E.png");
 
+  TH1D *h_Proj_ECEcl_sec1 = (TH1D*)h_ECcl_E1->ProjectionX("h_Proj_ECEcl_sec1", 1, 1);
+  h_Proj_ECEcl_sec1->SetTitle("Sector 1; ADC");
+  h_Proj_ECEcl_sec1->Draw();
+  c1->Print("figs/Proj_ECEcl_sec1.eps");
+  c1->Print("figs/Proj_ECEcl_sec1.pdf");
+  c1->Print("figs/Proj_ECEcl_sec1.png");
+  
+  TH1D *h_Proj_ECEcl_sec5 = (TH1D*)h_ECcl_E1->ProjectionX("h_Proj_ECEcl_sec5", 5, 5);
+  h_Proj_ECEcl_sec5->SetTitle("Sector 5; ADC");
+  h_Proj_ECEcl_sec5->Draw();
+  c1->Print("figs/Proj_ECEcl_sec5.eps");
+  c1->Print("figs/Proj_ECEcl_sec5.pdf");
+  c1->Print("figs/Proj_ECEcl_sec5.png");
 
   TH2D *h_N_PCalClust1 = (TH2D*)file_in->Get("h_N_PCalClust1");
   h_N_PCalClust1->SetTitle("; # of PCal clusters; sector");
