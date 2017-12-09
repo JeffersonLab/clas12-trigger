@@ -7,25 +7,47 @@
 // using namespace evio;
 // using namespace std;
 
+// ================= WHEN MC ====================
+
+//map<int, int> TECTrig::EC_vtp_sector = {
+//    {100, 10}, // Global trigger
+//    {60101, 0},    {60102, 1},    {60103, 2},    {60104, 3},    {60105, 4},    {60106, 5}, // ECal
+//    {60107, 0},    {60108, 1},    {60109, 2},    {60110, 3},    {60111, 4},    {60112, 5}, // PCal
+//    {60094, 0},    {60095, 1},    {60096, 2},    {60097, 3},    {60098, 4},    {60099, 5}, // PCal
+//    {60093, 7} // HTCC
+//};
+//
+//map<int, int> TECTrig::EC_vtp_Detector = {
+//    {100, 0}, // Global trigger
+//    {60101, 1},    {60102, 1},    {60103, 1},    {60104, 1},    {60105, 1},    {60106, 1}, // ECal
+//    {60107, 2},    {60108, 2},    {60109, 2},    {60110, 2},    {60111, 2},    {60112, 2}, // PCal
+//    {60094, 3},    {60095, 3},    {60096, 3},    {60097, 3},    {60098, 3},    {60099, 3}, // FTOF
+//    {60093, 4} // HTCC
+//};
+
+// ================= WHEN Data ====================
 map<int, int> TECTrig::EC_vtp_sector = {
     {100, 10}, // Global trigger
-    {60101, 0},    {60102, 1},    {60103, 2},    {60104, 3},    {60105, 4},    {60106, 5}, // ECal
-    {60107, 0},    {60108, 1},    {60109, 2},    {60110, 3},    {60111, 4},    {60112, 5}, // PCal
-    {60094, 0},    {60095, 1},    {60096, 2},    {60097, 3},    {60098, 4},    {60099, 5}, // PCal
-    {60093, 7} // HTCC
+    {101, 0},    {102, 1},    {103, 2},    {104, 3},    {105, 4},    {106, 5}, // ECal
+    {107, 0},    {108, 1},    {109, 2},    {110, 3},    {111, 4},    {112, 5}, // PCal
+    {94, 0},     {95, 1},     {96, 2},     {97, 3},     {98, 4},     {99, 5}, // PCal
+    {93, 7} // HTCC
 };
 
 map<int, int> TECTrig::EC_vtp_Detector = {
     {100, 0}, // Global trigger
-    {60101, 1},    {60102, 1},    {60103, 1},    {60104, 1},    {60105, 1},    {60106, 1}, // ECal
-    {60107, 2},    {60108, 2},    {60109, 2},    {60110, 2},    {60111, 2},    {60112, 2}, // PCal
-    {60094, 3},    {60095, 3},    {60096, 3},    {60097, 3},    {60098, 3},    {60099, 3}, // FTOF
-    {60093, 4} // HTCC
+    {101, 1},    {102, 1},    {103, 1},    {104, 1},    {105, 1},    {106, 1}, // ECal
+    {107, 2},    {108, 2},    {109, 2},    {110, 2},    {111, 2},    {112, 2}, // PCal
+    {94, 3},     {95, 3},     {96, 3},     {97, 3},     {98, 3},     {99, 3}, // FTOF
+    {93, 4} // HTCC
 };
+
+
+
 
 TECTrig::TECTrig()
 {
-    cout << "Kuku Kaka Kuku" << endl;
+    //cout << "Kuku Kaka Kuku" << endl;
 }
 
 TECTrig::TECTrig(evio::evioDOMNode* it, int a_adcECvtp_tag){
@@ -43,7 +65,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag)
     // exit the program
     if (a_adcECvtp_tag < adcECvtp_tagmin || a_adcECvtp_tag > adcECvtp_tagmax)
     {
-        printf("Wrong tag number in %s, Exiting", __func__);
+        printf("Wrong tag number in %s, tag is %d Exiting", __func__, a_adcECvtp_tag);
         exit(0);
     }
 
@@ -401,6 +423,12 @@ TEC_Cluster* TECTrig::GetECCluster(int ainst, int aind)
 THTCC_mask* TECTrig::GetHTCCMask(int aind){
    if( aind >= fv_HTCCMasks.size() ){
        printf("Request for out of range element in %s Exiting the program", __func__);
+       exit(1);
+   }
+   
+   if (fDet != 4){
+       cout<<"Requesting for HTCC mask, but this seems, is not HTCC VTP data, "<<endl;
+       cout<<"Exiting"<<endl;
        exit(1);
    }
    

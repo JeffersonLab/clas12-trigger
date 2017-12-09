@@ -169,9 +169,14 @@ private:
   static const unsigned short int type_trigger = 15;
 
   static const int UNDEF = -9999;
-  
-  static const int adcECvtp_tagmax = 60115; // VTP bank tags are in the range 100 - 112
-  static const int adcECvtp_tagmin = 60000; // VTP bank tags are in the range 100 - 112
+//==================== When MC ======================  
+//  static const int adcECvtp_tagmax = 60115; // VTP bank tags are in the range 100 - 112
+//  static const int adcECvtp_tagmin = 60000; // VTP bank tags are in the range 100 - 112
+
+  //==================== When MC ======================
+  static const int adcECvtp_tagmax = 115; // VTP bank tags are in the range 100 - 112
+  static const int adcECvtp_tagmin = 100; // VTP bank tags are in the range 100 - 112
+
   static map<int, int> EC_vtp_sector;   // Mapping tag number to the sector
   static map<int, int> EC_vtp_Detector;   // Mapping tag number to the Detector
 };

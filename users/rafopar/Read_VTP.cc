@@ -31,13 +31,14 @@ int main(int argc, char **argv) {
     const int n_sect = 6;
     const int n_view = 3;
     const int vtp_tag = 57634;
-    // const int adcECvtp_tagmin = 100;
-    // const int adcECvtp_tagmax = 112;
-    const int adcECvtp_tagmin = 60000;
-    const int adcECvtp_tagmax = 60115;
+     const int adcECvtp_tagmin = 100;
+     const int adcECvtp_tagmax = 112;
+//    const int adcECvtp_tagmin = 60000;
+//    const int adcECvtp_tagmax = 60115;
 
-
-    TFile *file_out = new TFile("VTP_out.root", "Recreate");
+     int run = 1847;
+    //TFile *file_out = new TFile(Form("VTP_out_%s.root", argv[1]), "Recreate");
+    TFile *file_out = new TFile(Form("Data/VTP_out_%d.root", run), "Recreate");
 
     TH2D * h_N_ECpeaks1_[n_view];
     TH2D * h_t_ECpeak1_[n_view];
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
 
                     //  TECTrig trig(*it, adcECvtp_tag); // adcECvtp_tag determines the vtp crate (or sector in another words)
                     trig.SetevioDOMENodeSect(*it, adcECvtp_tag);
-                    
+
                     int detector = trig.GetDetector();
                     int sector = trig.GetSector();
 
@@ -160,9 +161,9 @@ int main(int argc, char **argv) {
                         for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
                             for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
                                 for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
-                                 
+
                                     //if( v_Peaks_[2].at(iW)->coord / 8. < 35 ){continue;}
-                                    
+
                                     TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., v_Peaks_[1].at(iV)->coord / 8., v_Peaks_[2].at(iW)->coord / 8.);
                                     //TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., 15., 57 - v_Peaks_[0].at(iU)->coord / 8.);
                                     ec_geom_peaks.SetSector(sector);
@@ -203,7 +204,7 @@ int main(int argc, char **argv) {
                             int cl_E = double(trig.GetECCluster(0, i_cl)->energy);
 
                             TECGeom ec_geom(cl_U, cl_V, cl_W);
-                            
+
                             ec_geom.SetSector(sector);
 
                             double hall_x_cl = ec_geom.GetHallX_UV();
@@ -306,16 +307,17 @@ int main(int argc, char **argv) {
                             double v_coord_conv = 3.;
                             double w_coord_conv = 3.;
 
-                            int cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
-                            int cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
-                            int cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
+                            double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
+                            double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
+                            double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
                             int cl_E = double(trig.GetECCluster(0, i_cl)->energy);
+
 
                             TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
                             pcal_geom_clust.SetSector(sector);
 
-                            double hall_x_cl = pcal_geom_clust.GetHallX_UV();
-                            double hall_y_cl = pcal_geom_clust.GetHallY_UV();
+                            double hall_x_cl = pcal_geom_clust.GetHallX_VW();
+                            double hall_y_cl = pcal_geom_clust.GetHallY_VW();
 
                             h_PCal_yxc1->Fill(hall_x_cl, hall_y_cl);
 
@@ -323,6 +325,12 @@ int main(int argc, char **argv) {
 
                             h_PCal_Dalitz_Clust1->Fill(Dalitz, sector);
 
+//                            cout<<" \n\n\n\n ========== cluster info ============"<<endl;
+//                            cout << "U: " << trig.GetECCluster(0, i_cl)->Ustrip<< "     " << cl_U << endl;
+//                            cout << "V: " << trig.GetECCluster(0, i_cl)->Vstrip<< "     " << cl_V << endl;
+//                            cout << "W: " << trig.GetECCluster(0, i_cl)->Wstrip<< "     " << cl_W << endl;
+//                            cout<<"Dalitz = "<<Dalitz<<endl;
+                            
                             //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
 
                             h_PCalcl_t1->Fill(cl_time, sector);
@@ -390,7 +398,7 @@ int main(int argc, char **argv) {
 
         gDirectory->Write();
 
-    }    catch (evioException e) {
+    } catch (evioException e) {
         cerr << endl << e.toString() << endl;
         exit(EXIT_FAILURE);
     }

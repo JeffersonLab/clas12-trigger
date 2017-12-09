@@ -14,7 +14,9 @@ void Draw_VTP_hists(){
     
   TCanvas *c1 = new TCanvas("c1", "", 750, 750);
 
-  TFile *file_in = new TFile("VTP_out.root", "Read");
+  int run = 1847;
+  
+  TFile *file_in = new TFile(Form("VTP_out_%d.root", run), "Read");
 
   TH1D *h_HTCC_time1 = (TH1D*)file_in->Get("h_HTCC_time1");
   h_HTCC_time1->Draw();
