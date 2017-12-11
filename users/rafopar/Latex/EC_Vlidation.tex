@@ -1,0 +1,131 @@
+\documentclass[letterpaper,12pt]{article}
+%documentclass[superscriptaddress,preprintnumbers,amsmath,amssymb,aps,11pt]{revtex4}
+%\usepackage[]{authblk}
+%\usepackage{graphics}
+\usepackage[dvipdf]{graphics}
+%\usepackage{subfig}  % For subfloats
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{epsfig}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{authblk}
+\usepackage{url}
+
+\oddsidemargin = -14mm
+\topmargin = -2.9cm
+\textwidth = 19cm
+\textheight = 24cm
+
+\def \rarr {\rightarrow}
+\def \grinp {\includegraphics}
+\def \tw {\textwidth}
+\def\dfrac#1#2{\displaystyle{{#1}\over{#2}}}
+\def \dstl {\displaystyle}
+\definecolor{GREEN}{rgb}{0.,0.8,0}
+\definecolor{RED}{rgb}{1,0,0}
+\definecolor{ORANGE}{rgb}{1,0.5,0}
+
+\title{Validation of EC trigger using GEMC}
+\date \today
+\author{Rafyayel Paremuzyan}
+
+\begin{document}
+ \maketitle
+ To Validate EC Stage1 trigger, we have generated events that contain electron, in this case a reaction $\gamma p \rightarrow e^{-}e^{+}p$ was used, then this events
+ were passed through GEMC, and from GEMC knowing the actual kinematics (coordinate, energy and momentum) of electrons and positrons just before entering the Electromagnetic 
+ Calorimeter (EC), we looked into the EC trigger cluster banks to see if there exist a cluster close (by coordinate and energy) to the GEMC particle.
+ NOTE: All the detectors except EC were removed from the simulations to avoid creation multiple secondaries from the interaction of the original particle with other detectors.6
+ 
+ Steps are following: For each particle from GEMC that entered EC volume, it was checked, whether 
+ \begin{enumerate}
+  \item \label{enum:Steps_Trig_check} There is an EC trigger bank in that event
+  \item \label{enum:Steps_Sect_check}If yes, then, whether there is a trigger bank for that sector
+  \item \label{enum:Steps_Clust_check}If then, check if there is cluster(s) in that sector
+  \item \label{enum:Steps_dthdphi_check}If yes, then compare Trigger cluster(s) coordinates to the particle coordinates from the GEMC.
+ \end{enumerate}
+
+ In the Fig.\ref{fig:ECYXC_fails} shown ``$Y$ vs $X$" coordinate distributions of particle coordinates from the GEMC, that failed certain conditions in the List mentioned above.
+ (a) to (d) correspond conditions 1 to 4 in the list above correspondingly.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\label{fig:ECTrue_yxc_Trig_check}\grinp[width=0.45\tw]{../figs/ECTrue_yxc1.png}}
+ \subfloat[]{\label{fig:ECTrue_yxc_Sect_check}\grinp[width=0.45\tw]{../figs/ECTrue_yxc2.png}}\\
+ \subfloat[]{\label{fig:ECTrue_yxc_Clust_check}\grinp[width=0.45\tw]{../figs/ECTrue_yxc3.png}}
+ \subfloat[]{\label{fig:ECTrue_yxc_dthdphi_check}\grinp[width=0.45\tw]{../figs/ECTrue_yxc4.png}}\\
+ \caption{``$Y$ vs $X$" coordinate distributions of particle coordinates from the GEMC, that failed certain conditions in the List mentioned above.}
+ \label{fig:ECYXC_fails}
+ \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As one can see there are significant amount of events, when there is a VTP trigger bank in the corresponding sector, but no clusters are observed.
+These events also show distinct pattern on the EC face. In total these events are about $10\%$ of all GEMC particles.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \begin{figure}[!htb]
+  \centering
+  \subfloat[]{\label{fig:dth1}\grinp[width=0.45\tw]{../figs/dth1.png}}
+  \subfloat[]{\label{fig:dPhi1}\grinp[width=0.45\tw]{../figs/d_Ph1.png}}\\
+  \subfloat[]{\label{fig:Proj_dth1}\grinp[width=0.45\tw]{../figs/Proj_dTh1.png}}
+  \subfloat[]{\label{fig:Proj_dPhi1}\grinp[width=0.45\tw]{../figs/Proj_dPhi1.png}}
+  \caption{$\Delta \theta$ (left) and $\Delta \Phi$ (right) distributions as a function of sector number (top row) and integrated over all sectors (bottom). Red lines indicate cut limits on a corresponding variable.}
+  \label{fig:dthdphi}
+ \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Now let's look into matching of triggered clusters and GEMC particles. In Fig.\ref{fig:dthdphi} shown 
+$\Delta \theta$ (left) and $\Delta \Phi$ (right) distributions as a function of sector number (top row) and integrated over all sectors (bottom). Red lines indicate cut limits on a corresponding variable.
+This tells that trigger clusters are quite close to GEMC hits, and imposed cuts remove only tiny (less than $1\%$) fraction of GEMC events.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+ \centering
+ \subfloat[]{\label{fig:EC_E_Noclust}\grinp[width=0.45\tw]{../figs/EC_E3.png}}
+ \subfloat[]{\label{fig:ECYXcTrueMatched}\grinp[width=0.45\tw]{../figs/ECTrue_yxc_Mathced.png}}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Energy in sector 5}
+Looking energy distributions of clusters, seems Energy of clusters in sector 5 is quite different from other sector energies.
+In Fig.\ref{fig:TrigClust_E} Left shown Sector vs cluster Energy (in ADC units)). Middle: Energy distribution in sector 1. RIght: Energy distribution in sector 5.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+ \centering
+ \subfloat[]{\label{fig:TrigClustE_vsSect}\grinp[width=0.3\tw]{../figs/EC_cl_E.png}}
+ \subfloat[]{\label{fig:TrigClustE_sec1}\grinp[width=0.3\tw]{../figs/Proj_ECEcl_sec1.png}}
+ \subfloat[]{\label{fig:TrigClustE_sec5}\grinp[width=0.3\tw]{../figs/Proj_ECEcl_sec5.png}}
+ \caption{Left: Sector vs cluster Energy (in ADC units). Middle: Energy distribution in sector 1. RIght: Energy distribution in sector 5.}
+ \label{fig:TrigClust_E}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Overflow in U, V and W peaks}
+In Fig.\ref{fig:EC_peak_overflows} shown U (left), V (middle) and W (right) peak coordinate distributions. As one can see, there are few instances of overflow events.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htb]
+\centering
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_U_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_V_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_W_peak.png}}\\
+\caption{U (left), V (middle) and W (right) peak coordinate distributions. there are few instances of overflow events.}
+\label{fig:EC_peak_overflows}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Summary of questions/issues}
+\vskip 1cm
+About $10\%$ of electrons/positrons entering into EC, doesn't provide clusters. These events show distinct pattern on EC face.
+\vskip 1cm \noindent
+Energy of clusters in Sector 5 is quite different from other sector energies
+\vskip 1cm \noindent
+There are some overflows in EC coordinate distributions
+\vskip 2cm \noindent
+During the studying of matching trigger clusters and GEMC hits, I had to reverse order of readig V and W strips, in order to be able match  Trigger clusters to GEMC, otherwise they don't match. 
+This needs to be discussed and sorted out.
+
+\end{document}

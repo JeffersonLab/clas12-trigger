@@ -1,0 +1,146 @@
+\documentclass[letterpaper,12pt]{article}
+%documentclass[superscriptaddress,preprintnumbers,amsmath,amssymb,aps,11pt]{revtex4}
+%\usepackage[]{authblk}
+%\usepackage{graphics}
+\usepackage[dvipdf]{graphics}
+%\usepackage{subfig}  % For subfloats
+\usepackage{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{epsfig}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{authblk}
+\usepackage{url}
+
+\oddsidemargin = -14mm
+\topmargin = -2.9cm
+\textwidth = 19cm
+\textheight = 24cm
+
+\def \rarr {\rightarrow}
+\def \grinp {\includegraphics}
+\def \tw {\textwidth}
+\def\dfrac#1#2{\displaystyle{{#1}\over{#2}}}
+\def \dstl {\displaystyle}
+\definecolor{GREEN}{rgb}{0.,0.8,0}
+\definecolor{RED}{rgb}{1,0,0}
+\definecolor{ORANGE}{rgb}{1,0.5,0}
+
+
+\begin{document}
+
+ %%%%%%%%%% HTCC %%%%%%%%
+ \section{HTCC}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/HTCC_time1.png}}
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/n_HTCC_masks.png}} \\
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/n_HTCC_hits.png}}
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/HTCC_hits.png}}
+ \caption{HTCC relevant distributions}
+ \end{figure}
+\newpage
+ 
+ %%%%%%%%%% FTOF %%%%%%%%
+ \section{FTOF}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/FTOF_time1.png}}
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/n_FTOF_masks.png}} \\
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/n_FTOF_hits.png}}
+ \subfloat[]{\grinp[width=0.45\tw]{../figs/FTOF_hits.png}}
+ \caption{FTOF relevant distributions}
+ \end{figure}
+ \newpage
+ 
+  %%%%%%%%%% EC %%%%%%%%
+ \section{EC}
+ \subsection{Peaks}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_N_U_peaks.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_N_V_peaks.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_N_W_peaks.png}}\\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_t_U_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_t_V_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_t_W_peak.png}}\\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_U_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_V_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_W_peak.png}}\\
+ \caption{EC \textbf{Peak} relevant distributions}
+ \end{figure}
+\newpage
+
+ \subsection{Clusters}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_U_clust.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_V_clust.png}} 
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_coord_W_clust.png}} \\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/N_ECClust1.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_t_clust.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/EC_cl_E.png}}
+ \caption{EC \textbf{Cluster} relevant distributions}
+ \end{figure}
+\newpage
+
+ \subsection{peaks and cluster in Hall coordinate system}
+ \begin{figure}[!htb]
+ \centering
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/EC_yxc_UV1.png}}
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/EC_yxc_UW1.png}}
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/EC_yxc_VW1.png}}\\
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/EC_yxc1.png}}
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/EC_Dalitz_cl1.png}}\\
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/EC_Dalitz_peaka1}}
+ \end{figure}
+\newpage
+
+ 
+
+ \section{PCal}
+ \subsection{Peaks}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_N_U_peaks.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_N_V_peaks.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_N_W_peaks.png}}\\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_t_U_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_t_V_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_t_W_peak.png}}\\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_U_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_V_peak.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_W_peak.png}}\\
+ \caption{PCal \textbf{Peak} relevant distributions}
+ \end{figure}
+\newpage
+
+ \subsection{Clusters}
+ \begin{figure}[!htb]
+ \centering
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_U_clust.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_V_clust.png}} 
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_coord_W_clust.png}} \\
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/N_PCalClust1.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_t_clust.png}}
+ \subfloat[]{\grinp[width=0.32\tw]{../figs/PCal_cl_E.png}}
+ \caption{PCal \textbf{Cluster} relevant distributions}
+ \end{figure}
+\newpage
+
+\subsection{peaks and cluster in Hall coordinate system}
+ \begin{figure}[!htb]
+ \centering
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/PCal_yxc_UV1.png}}
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/PCal_yxc_UW1.png}}
+  \subfloat[]{\grinp[width=0.3\tw]{../figs/PCal_yxc_VW1.png}}\\
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/PCal_yxc1.png}}
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/PCal_Dalitz_cl1.png}}\\
+  \subfloat[]{\grinp[width=0.35\tw]{../figs/PCal_Dalitz_peaks1}}
+ \end{figure}
+\newpage
+
+\end{document}
