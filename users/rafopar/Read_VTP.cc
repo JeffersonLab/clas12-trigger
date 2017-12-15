@@ -32,8 +32,11 @@ int main(int argc, char **argv) {
     const int n_sect = 6;
     const int n_view = 3;
     const int vtp_tag = 57634;
-     const int adcECvtp_tagmin = 100;
-     const int adcECvtp_tagmax = 112;
+    const int adcECvtp_tagmin = 100;
+    const int adcECvtp_tagmax = 112;
+
+    const double ADC2GeV = 1./10000.;
+
 //    const int adcECvtp_tagmin = 60000;
 //    const int adcECvtp_tagmax = 60115;
 
@@ -53,7 +56,7 @@ int main(int argc, char **argv) {
     int n_files = fname_list->GetEntries();
     cout << "Number of Files is " << n_files << endl;
 
-    int run = 1894;
+    int run = 1995;
     //TFile *file_out = new TFile(Form("VTP_out_%s.root", argv[1]), "Recreate");
     TFile *file_out = new TFile(Form("Data/VTP_out_%d.root", run), "Recreate");
 
@@ -63,7 +66,7 @@ int main(int argc, char **argv) {
 
     TH2D *h_N_ECClust1 = new TH2D("h_N_ECClust1", "", 11, -0.5, 10.5, 7, -0.5, 6.5);
     TH2D *h_ECcl_t1 = new TH2D("h_ECcl_t1", "", 21, -0.5, 20.5, 7, -0.5, 6.5);
-    TH2D *h_ECcl_E1 = new TH2D("h_ECcl_E1", "", 200, 0., 30000., 7, -0.5, 6.5);
+    TH2D *h_ECcl_E1 = new TH2D("h_ECcl_E1", "", 200, 0., 3, 7, -0.5, 6.5);
     TH2D *h_ECcl_U1 = new TH2D("h_ECcl_U1", "", 41, -0.5, 40.5, 7, -0.5, 6.5);
     TH2D *h_ECcl_V1 = new TH2D("h_ECcl_V1", "", 41, -0.5, 40.5, 7, -0.5, 6.5);
     TH2D *h_ECcl_W1 = new TH2D("h_ECcl_W1", "", 41, -0.5, 40.5, 7, -0.5, 6.5);
@@ -90,7 +93,7 @@ int main(int argc, char **argv) {
 
     TH2D *h_N_PCalClust1 = new TH2D("h_N_PCalClust1", "", 11, -0.5, 10.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_t1 = new TH2D("h_PCalcl_t1", "", 21, -0.5, 20.5, 7, -0.5, 6.5);
-    TH2D *h_PCalcl_E1 = new TH2D("h_PCalcl_E1", "", 200, 0., 40000., 7, -0.5, 6.5);
+    TH2D *h_PCalcl_E1 = new TH2D("h_PCalcl_E1", "", 200, 0., 4., 7, -0.5, 6.5);
     TH2D *h_PCalcl_U1 = new TH2D("h_PCalcl_U1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_V1 = new TH2D("h_PCalcl_V1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_W1 = new TH2D("h_PCalcl_W1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
@@ -224,7 +227,7 @@ int main(int argc, char **argv) {
 		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / 8.;
 		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / 8.;
 		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / 8.;
-		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy);
+		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
 		  TECGeom ec_geom(cl_U, cl_V, cl_W);
 
@@ -333,7 +336,7 @@ int main(int argc, char **argv) {
 		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
 		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
 		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
-		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy);
+		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
 
 		  TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
