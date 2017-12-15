@@ -227,7 +227,7 @@ int main(int argc, char **argv) {
 		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / 8.;
 		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / 8.;
 		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / 8.;
-		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
+		  double cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
 		  TECGeom ec_geom(cl_U, cl_V, cl_W);
 
@@ -336,7 +336,7 @@ int main(int argc, char **argv) {
 		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
 		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
 		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
-		  int cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
+		  double cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
 
 		  TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
