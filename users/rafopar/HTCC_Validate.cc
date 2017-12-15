@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
 
     const double r2d = 57.295780;
     const int HTCC_true_tag = 601;
-    const int adcECvtp_tagmin = 60000;
-    const int adcECvtp_tagmax = 60115;
+    const int adcECvtp_tagmin = 100;
+    const int adcECvtp_tagmax = 115;
     const int vtp_tag = 57634;
     const int FADC_Mode1_tag = 57601;
     const int n_sect = 6;
