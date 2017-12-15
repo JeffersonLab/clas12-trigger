@@ -14,7 +14,7 @@ void Draw_VTP_hists(){
     
   TCanvas *c1 = new TCanvas("c1", "", 750, 750);
 
-  int run = 1894;
+  int run = 1995;
   
   TFile *file_in = new TFile(Form("VTP_out_%d.root", run), "Read");
 
@@ -168,7 +168,7 @@ void Draw_VTP_hists(){
   c1->Print("figs/EC_t_clust.png");
 
   TH2D *h_ECcl_E1 = (TH2D*)file_in->Get("h_ECcl_E1");
-  h_ECcl_E1->SetTitle("; cluster Energy [ADC units]; sector");
+  h_ECcl_E1->SetTitle("; cluster Energy [GeV]; sector");
   h_ECcl_E1->Draw("colz");
   c1->Print("figs/EC_cl_E.eps");
   c1->Print("figs/EC_cl_E.pdf");
@@ -203,7 +203,7 @@ void Draw_VTP_hists(){
   c1->Print("figs/PCal_t_clust.png");
 
   TH2D *h_PCalcl_E1 = (TH2D*)file_in->Get("h_PCalcl_E1");
-  h_PCalcl_E1->SetTitle("; cluster Energy [ADC units]; sector");
+  h_PCalcl_E1->SetTitle("; cluster Energy [GeV]; sector");
   h_PCalcl_E1->Draw("colz");
   c1->Print("figs/PCal_cl_E.eps");
   c1->Print("figs/PCal_cl_E.pdf");
