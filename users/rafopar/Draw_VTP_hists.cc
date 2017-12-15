@@ -16,7 +16,7 @@ void Draw_VTP_hists(){
 
   int run = 1995;
   
-  TFile *file_in = new TFile(Form("VTP_out_%d.root", run), "Read");
+  TFile *file_in = new TFile(Form("Data/VTP_out_%d.root", run), "Read");
 
   TH1D *h_HTCC_time1 = (TH1D*)file_in->Get("h_HTCC_time1");
   h_HTCC_time1->Draw();
