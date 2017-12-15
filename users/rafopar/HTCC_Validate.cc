@@ -56,7 +56,10 @@ int main(int argc, char** argv) {
     int n_files = fname_list->GetEntries();
     cout << "Number of Files is " << n_files << endl;
 
-    TFile *file_out = new TFile("HTCC_Validation.root", "Recreate");
+    const int run = 1894;
+    
+    //TFile *file_out = new TFile("HTCC_Validation.root", "Recreate");
+    TFile *file_out = new TFile(Form("HTCC_Validation_%d.root", run), "Recreate");
 
     TH2D *h_n_HTCC_trig_true_bans = new TH2D("h_n_HTCC_trig_true_bans", "", 10, -0.5, 9.5, 10, -0.5, 9.5);
     TH1D *h_n_HTCC_masks1 = new TH1D("h_n_HTCC_masks1", "", 10, -0.5, 9.5);

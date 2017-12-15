@@ -80,7 +80,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag)
     if (!((a_adcECvtp_tag > MCadcECvtp_tagmin && a_adcECvtp_tag < MCadcECvtp_tagmax) ||
             (a_adcECvtp_tag > DataadcECvtp_tagmin && a_adcECvtp_tag < DataadcECvtp_tagmax)))
     {
-        printf("Wrong tag number in %s, tag is %d Exiting", __func__, a_adcECvtp_tag);
+        printf("Wrong tag number in %s, tag is %d Exiting \n", __func__, a_adcECvtp_tag);
         exit(0);
     }
 
@@ -175,6 +175,7 @@ void TECTrig::ReadEventHeader()
 {
     has_EventHeader = true;
     fev_number = fit_data->range(26, 0);
+    //cout<<"Ev is "<<fev_number<<endl;
 }
 
 void TECTrig::ReadTriggerTime()
@@ -196,16 +197,19 @@ void TECTrig::ReadECTriggerPeak()
 {
     has_TrigPeak = true;
 
+//    cout<<"Kukukuku  VTP tag is "<<fECVTP_tag<<endl;
+//    cout<<"the peak word is "<<fit_data->range(29, 0)<<endl;
+    
     TEC_Peak cur_peak;
     cur_peak.inst = fit_data->range(26, 26);
     
     // ====== Test why no events in ECout are visible ====
-    if( cur_peak.inst ){
-        cout<<"Kuku inst is "<<cur_peak.inst<<endl;
-    }
-    else{
-        //cout<<"=============== Bobo inst is "<<cur_peak.inst<<endl;
-    }
+//    if( cur_peak.inst ){
+//        cout<<"Kuku inst is "<<cur_peak.inst<<endl;
+//    }
+//    else{
+//        //cout<<"=============== Bobo inst is "<<cur_peak.inst<<endl;
+//    }
     
     cur_peak.view = fit_data->range(25, 24);
 
@@ -219,8 +223,12 @@ void TECTrig::ReadECTriggerPeak()
     // Also bist 30 to 26 should be 0 as well 
     if (fit_data->range(31, 26))
     {
-        printf("Wrong Data Format in %s Exiting", __func__);
-        exit(0);
+        printf("Wrong Data Format in %s Exiting \n", __func__);
+        cout<<"Data is "<<fit_data->range(31, 26)<<endl;
+        cout<<*fit_data<<endl;
+        
+        throw "Wrong Data format in the ReadECTriggerPeak";
+//        exit(0);
     }
 
     cur_peak.coord = fit_data->range(25, 16);
