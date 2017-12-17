@@ -7,6 +7,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TFile.h>
+#include <TMath.h>
 #include <TCanvas.h>
 #include <TChain.h>
 #include <TStyle.h>
@@ -24,6 +25,7 @@ int main(int argc, char **argv) {
     const double Dalitz_ECout_max = 0.0833333;
     const double Dalitz_ECout_min = -0.0555556;
 
+    const double r2d = 57.2957795130823229;
     // ===== Put temporarly 2.75 for all
     const double U_conv = 2.75; // This converts U coordinate from the Trigger bank into coordinate real U coordinate
     const double V_conv = 3.; // This converts V coordinate from the Trigger bank into coordinate real V coordinate
@@ -36,6 +38,9 @@ int main(int argc, char **argv) {
     const int adcECvtp_tagmax = 112;
 
     const double ADC2GeV = 1./10000.;
+
+    const double E_bin_width = 0.3;
+    const int n_E_bins = 5;
 
 //    const int adcECvtp_tagmin = 60000;
 //    const int adcECvtp_tagmax = 60115;
@@ -75,6 +80,14 @@ int main(int argc, char **argv) {
     TH2D *h_EC_yxc_UV1 = new TH2D("h_EC_yxc_UV1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_EC_yxc_UW1 = new TH2D("h_EC_yxc_UW1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_EC_yxc_VW1 = new TH2D("h_EC_yxc_VW1", "", 200, -500., 500., 200, -500., 500.);
+    TH2D *h_EC_th_phi_cl1 = new TH2D("h_EC_th_phi_cl1", "", 360., 0., 360., 200, 0., 50.);
+
+    TH2D *h_EC_th_phi_cl_[n_E_bins];
+
+    for( int i = 0; i < n_E_bins; i++ ){
+      h_EC_th_phi_cl_[i] = new TH2D(Form("h_EC_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
+    }
+
 
     TH2D *h_PCal_yxc1 = new TH2D("h_PCal_yxc1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_PCal_yxc_UV1 = new TH2D("h_PCal_yxc_UV1", "", 200, -500., 500., 200, -500., 500.);
@@ -97,6 +110,14 @@ int main(int argc, char **argv) {
     TH2D *h_PCalcl_U1 = new TH2D("h_PCalcl_U1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_V1 = new TH2D("h_PCalcl_V1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCalcl_W1 = new TH2D("h_PCalcl_W1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
+    TH2D *h_PCal_th_phi_cl1 = new TH2D("h_PCal_th_phi_cl1", "", 360., 0., 360., 200, 0., 50.);
+
+    TH2D *h_PCal_th_phi_cl_[n_E_bins];
+
+    for( int i = 0; i < n_E_bins; i++ ){
+      h_PCal_th_phi_cl_[i] = new TH2D(Form("h_pcal_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
+    }
+
 
     for (int i_view = 0; i_view < n_view; i_view++) {
         h_N_ECpeaks1_[i_view] = new TH2D(Form("h_N_ECpeaks1_%d", i_view), "", 11, -0.5, 10.5, 7, -0.5, 6.5);
@@ -235,6 +256,17 @@ int main(int argc, char **argv) {
 
 		  double hall_x_cl = ec_geom.GetHallX_UV();
 		  double hall_y_cl = ec_geom.GetHallY_UV();
+		  double hall_z_cl = ec_geom.GetHallZ_UV();
+		  
+		  int E_bin = TMath::Min(int(cl_E/E_bin_width), n_E_bins - 1); // for not being out of range
+		  
+		  double phi_cl = atan2(hall_y_cl, hall_x_cl)*r2d + 30.;
+		  if( phi_cl < 0.) { phi_cl = phi_cl + 360.; }
+		  double th_cl = atan(sqrt(hall_x_cl*hall_x_cl + hall_y_cl*hall_y_cl)/hall_z_cl)*r2d;
+		  
+		  h_EC_th_phi_cl1->Fill(phi_cl, th_cl);
+		  
+		  h_EC_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
 
 		  h_EC_yxc1->Fill(hall_x_cl, hall_y_cl);
 		  //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
@@ -338,14 +370,23 @@ int main(int argc, char **argv) {
 		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
 		  double cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
+		  int E_bin = TMath::Min(int(cl_E/E_bin_width), n_E_bins - 1); // for not being out of range
 
 		  TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
 		  pcal_geom_clust.SetSector(sector);
 
 		  double hall_x_cl = pcal_geom_clust.GetHallX_VW();
 		  double hall_y_cl = pcal_geom_clust.GetHallY_VW();
+		  double hall_z_cl = pcal_geom_clust.GetHallZ_VW();
+
+		  double phi_cl = atan2(hall_y_cl, hall_x_cl)*r2d + 30.;
+		  if( phi_cl < 0.) { phi_cl = phi_cl + 360.; }
+		  double th_cl = atan(sqrt(hall_x_cl*hall_x_cl + hall_y_cl*hall_y_cl)/hall_z_cl)*r2d;
 
 		  h_PCal_yxc1->Fill(hall_x_cl, hall_y_cl);
+
+		  h_PCal_th_phi_cl1->Fill(phi_cl, th_cl);
+		  h_PCal_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
 
 		  double Dalitz = pcal_geom_clust.GetDalitz();
 
