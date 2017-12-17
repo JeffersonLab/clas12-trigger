@@ -37,13 +37,14 @@ int main(int argc, char **argv) {
     const int adcECvtp_tagmin = 100;
     const int adcECvtp_tagmax = 112;
 
-    const double ADC2GeV = 1./10000.;
+    const double ADC2GeV = 1. / 10000.;
 
     const double E_bin_width = 0.3;
     const int n_E_bins = 5;
 
-//    const int adcECvtp_tagmin = 60000;
-//    const int adcECvtp_tagmax = 60115;
+    int n_events_to_Analyze = 100000; // Default value
+    //    const int adcECvtp_tagmin = 60000;
+    //    const int adcECvtp_tagmax = 60115;
 
     TChain *ch1 = new TChain();
 
@@ -53,6 +54,10 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
+    if( argc >= 3 ){
+        n_events_to_Analyze = atoi[argv[2]];
+    }
+    
     string inp_file_patttern = argv[1];
     cout << inp_file_patttern << endl;
     ch1->Add(inp_file_patttern.c_str());
@@ -82,10 +87,10 @@ int main(int argc, char **argv) {
     TH2D *h_EC_yxc_VW1 = new TH2D("h_EC_yxc_VW1", "", 200, -500., 500., 200, -500., 500.);
     TH2D *h_EC_th_phi_cl1 = new TH2D("h_EC_th_phi_cl1", "", 360., 0., 360., 200, 0., 50.);
 
-    TH2D *h_EC_th_phi_cl_[n_E_bins];
+    TH2D * h_EC_th_phi_cl_[n_E_bins];
 
-    for( int i = 0; i < n_E_bins; i++ ){
-      h_EC_th_phi_cl_[i] = new TH2D(Form("h_EC_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
+    for (int i = 0; i < n_E_bins; i++) {
+        h_EC_th_phi_cl_[i] = new TH2D(Form("h_EC_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
     }
 
 
@@ -112,10 +117,10 @@ int main(int argc, char **argv) {
     TH2D *h_PCalcl_W1 = new TH2D("h_PCalcl_W1", "", 86, -0.5, 85.5, 7, -0.5, 6.5);
     TH2D *h_PCal_th_phi_cl1 = new TH2D("h_PCal_th_phi_cl1", "", 360., 0., 360., 200, 0., 50.);
 
-    TH2D *h_PCal_th_phi_cl_[n_E_bins];
+    TH2D * h_PCal_th_phi_cl_[n_E_bins];
 
-    for( int i = 0; i < n_E_bins; i++ ){
-      h_PCal_th_phi_cl_[i] = new TH2D(Form("h_pcal_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
+    for (int i = 0; i < n_E_bins; i++) {
+        h_PCal_th_phi_cl_[i] = new TH2D(Form("h_pcal_th_phi_cl_%d", i), "", 360., 0., 360., 200, 0., 50.);
     }
 
 
@@ -145,331 +150,340 @@ int main(int argc, char **argv) {
 
     try {
 
-      for (int ifile = 0; ifile < n_files; ifile++) {
+        unsigned int i_ev = 0;
 
-	evioFileChannel chan(fname_list->At(ifile)->GetTitle(), "r");
-	cout << "Running the file " << fname_list->At(ifile)->GetTitle() << endl;
-	chan.open();
-   
-      
-        // evioFileChannel chan(argv[1], "r");
-        // chan.open();
+        for (int ifile = 0; ifile < n_files; ifile++) {
 
-        while (chan.read()) {
+            evioFileChannel chan(fname_list->At(ifile)->GetTitle(), "r");
+            cout << "Running the file " << fname_list->At(ifile)->GetTitle() << endl;
+            chan.open();
 
-	  evioDOMTree tree(chan);
 
-	  evioDOMNodeListP nodelist1 = tree.getNodeList();
+            // evioFileChannel chan(argv[1], "r");
+            // chan.open();
 
-	  bool has_TOF = false;
-	  bool has_EC = false;
-	  bool has_PCal = false;
-	  bool has_HTCC = false;
+            while (chan.read()) {
 
-	  TECTrig trig; // adcECvtp_tag determines the vtp crate (or sector in another words)
+                i_ev = i_ev + 1;
 
-	  for (std::list<evioDOMNode*>::iterator it = nodelist1.get()->begin(); it != nodelist1.get()->end(); it++) {
+                evioDOMTree tree(chan);
 
-	    if ((*it)->tag >= adcECvtp_tagmin && (*it)->tag <= adcECvtp_tagmax) {
-	      adcECvtp_tag = (*it)->tag;
-	    }
+                evioDOMNodeListP nodelist1 = tree.getNodeList();
 
-	    if ((*it)->tag == vtp_tag) {
+                bool has_TOF = false;
+                bool has_EC = false;
+                bool has_PCal = false;
+                bool has_HTCC = false;
 
-	      //  TECTrig trig(*it, adcECvtp_tag); // adcECvtp_tag determines the vtp crate (or sector in another words)
-	      trig.SetevioDOMENodeSect(*it, adcECvtp_tag);
+                TECTrig trig; // adcECvtp_tag determines the vtp crate (or sector in another words)
 
-	      int detector = trig.GetDetector();
-	      int sector = trig.GetSector();
+                for (std::list<evioDOMNode*>::iterator it = nodelist1.get()->begin(); it != nodelist1.get()->end(); it++) {
 
-	      int ev_number = trig.GetEvNumber();
+                    if ((*it)->tag >= adcECvtp_tagmin && (*it)->tag <= adcECvtp_tagmax) {
+                        adcECvtp_tag = (*it)->tag;
+                    }
 
-	      if (detector == 1) { // ECal
+                    if ((*it)->tag == vtp_tag) {
 
-		vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
+                        //  TECTrig trig(*it, adcECvtp_tag); // adcECvtp_tag determines the vtp crate (or sector in another words)
+                        trig.SetevioDOMENodeSect(*it, adcECvtp_tag);
 
-		// ====== EC Peaks ======
-		for (int i_view = 0; i_view < n_view; i_view++) {
+                        int detector = trig.GetDetector();
+                        int sector = trig.GetSector();
 
-		  int n_ECpeaks = trig.GetNPeaks(0, i_view);
-		  h_N_ECpeaks1_[i_view]->Fill(n_ECpeaks, sector);
+                        int ev_number = trig.GetEvNumber();
 
-		  for (int i_peak = 0; i_peak < n_ECpeaks; i_peak++) {
+                        if (detector == 1) { // ECal
 
-		    h_t_ECpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
+                            vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
 
-		    double coord = double(trig.GetECPeak(0, i_view, i_peak)->coord) / 8.;
-		    h_coord_ECpeak1_[i_view]->Fill(coord, sector);
+                            // ====== EC Peaks ======
+                            for (int i_view = 0; i_view < n_view; i_view++) {
 
-		    v_Peaks_[i_view].push_back(trig.GetECPeak(0, i_view, i_peak));
-		  }
-		}
+                                int n_ECpeaks = trig.GetNPeaks(0, i_view);
+                                h_N_ECpeaks1_[i_view]->Fill(n_ECpeaks, sector);
 
-		for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
-		  for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
-		    for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
+                                for (int i_peak = 0; i_peak < n_ECpeaks; i_peak++) {
 
-		      //if( v_Peaks_[2].at(iW)->coord / 8. < 35 ){continue;}
+                                    h_t_ECpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
 
-		      TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., v_Peaks_[1].at(iV)->coord / 8., v_Peaks_[2].at(iW)->coord / 8.);
-		      //TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., 15., 57 - v_Peaks_[0].at(iU)->coord / 8.);
-		      ec_geom_peaks.SetSector(sector);
+                                    double coord = double(trig.GetECPeak(0, i_view, i_peak)->coord) / 8.;
+                                    h_coord_ECpeak1_[i_view]->Fill(coord, sector);
 
-		      double hall_x_UV = ec_geom_peaks.GetHallX_UV();
-		      double hall_y_UV = ec_geom_peaks.GetHallY_UV();
-		      h_EC_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
+                                    v_Peaks_[i_view].push_back(trig.GetECPeak(0, i_view, i_peak));
+                                }
+                            }
 
-		      double hall_x_UW = ec_geom_peaks.GetHallX_UW();
-		      double hall_y_UW = ec_geom_peaks.GetHallY_UW();
-		      h_EC_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
+                            for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
+                                for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
+                                    for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
 
-		      double hall_x_VW = ec_geom_peaks.GetHallX_VW();
-		      double hall_y_VW = ec_geom_peaks.GetHallY_VW();
-		      h_EC_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
+                                        //if( v_Peaks_[2].at(iW)->coord / 8. < 35 ){continue;}
 
-		      double Dalitz_peaks = ec_geom_peaks.GetDalitz();
+                                        TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., v_Peaks_[1].at(iV)->coord / 8., v_Peaks_[2].at(iW)->coord / 8.);
+                                        //TECGeom ec_geom_peaks(v_Peaks_[0].at(iU)->coord / 8., 15., 57 - v_Peaks_[0].at(iU)->coord / 8.);
+                                        ec_geom_peaks.SetSector(sector);
 
-		      h_Dalitz_Peaks1->Fill(Dalitz_peaks, sector);
-		    }
+                                        double hall_x_UV = ec_geom_peaks.GetHallX_UV();
+                                        double hall_y_UV = ec_geom_peaks.GetHallY_UV();
+                                        h_EC_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
 
-		  }
+                                        double hall_x_UW = ec_geom_peaks.GetHallX_UW();
+                                        double hall_y_UW = ec_geom_peaks.GetHallY_UW();
+                                        h_EC_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
 
-		}
+                                        double hall_x_VW = ec_geom_peaks.GetHallX_VW();
+                                        double hall_y_VW = ec_geom_peaks.GetHallY_VW();
+                                        h_EC_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
 
+                                        double Dalitz_peaks = ec_geom_peaks.GetDalitz();
 
-		// ====== EC Clusters =======
+                                        h_Dalitz_Peaks1->Fill(Dalitz_peaks, sector);
+                                    }
 
-		int n_cl = trig.GetNClust(0); // Argument is the EC instance, but now it should be 0 all the time
+                                }
 
-		h_N_ECClust1->Fill(n_cl, sector);
+                            }
 
-		for (int i_cl = 0; i_cl < n_cl; i_cl++) {
-		  int cl_time = trig.GetECCluster(0, i_cl)->time;
-		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / 8.;
-		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / 8.;
-		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / 8.;
-		  double cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
-		  TECGeom ec_geom(cl_U, cl_V, cl_W);
+                            // ====== EC Clusters =======
 
-		  ec_geom.SetSector(sector);
+                            int n_cl = trig.GetNClust(0); // Argument is the EC instance, but now it should be 0 all the time
 
-		  double hall_x_cl = ec_geom.GetHallX_UV();
-		  double hall_y_cl = ec_geom.GetHallY_UV();
-		  double hall_z_cl = ec_geom.GetHallZ_UV();
-		  
-		  int E_bin = TMath::Min(int(cl_E/E_bin_width), n_E_bins - 1); // for not being out of range
-		  
-		  double phi_cl = atan2(hall_y_cl, hall_x_cl)*r2d + 30.;
-		  if( phi_cl < 0.) { phi_cl = phi_cl + 360.; }
-		  double th_cl = atan(sqrt(hall_x_cl*hall_x_cl + hall_y_cl*hall_y_cl)/hall_z_cl)*r2d;
-		  
-		  h_EC_th_phi_cl1->Fill(phi_cl, th_cl);
-		  
-		  h_EC_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
+                            h_N_ECClust1->Fill(n_cl, sector);
 
-		  h_EC_yxc1->Fill(hall_x_cl, hall_y_cl);
-		  //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
+                            for (int i_cl = 0; i_cl < n_cl; i_cl++) {
+                                int cl_time = trig.GetECCluster(0, i_cl)->time;
+                                double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / 8.;
+                                double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / 8.;
+                                double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / 8.;
+                                double cl_E = double(trig.GetECCluster(0, i_cl)->energy) * ADC2GeV;
 
-		  double cl_Dalitz = ec_geom.GetDalitz();
+                                TECGeom ec_geom(cl_U, cl_V, cl_W);
 
-		  h_Dalitz_cl1->Fill(cl_Dalitz, sector);
+                                ec_geom.SetSector(sector);
 
-		  h_ECcl_t1->Fill(cl_time, sector);
-		  h_ECcl_U1->Fill(cl_U, sector);
-		  h_ECcl_V1->Fill(cl_V, sector);
-		  h_ECcl_W1->Fill(cl_W, sector);
-		  h_ECcl_E1->Fill(cl_E, sector);
-		}
+                                double hall_x_cl = ec_geom.GetHallX_UV();
+                                double hall_y_cl = ec_geom.GetHallY_UV();
+                                double hall_z_cl = ec_geom.GetHallZ_UV();
 
+                                int E_bin = TMath::Min(int(cl_E / E_bin_width), n_E_bins - 1); // for not being out of range
 
-		//cout<<"n_upeaks = "<<n_upeaks<<endl;
+                                double phi_cl = atan2(hall_y_cl, hall_x_cl) * r2d + 30.;
+                                if (phi_cl < 0.) {
+                                    phi_cl = phi_cl + 360.;
+                                }
+                                double th_cl = atan(sqrt(hall_x_cl * hall_x_cl + hall_y_cl * hall_y_cl) / hall_z_cl) * r2d;
 
-	      } else if (detector == 2) { // PCal
+                                h_EC_th_phi_cl1->Fill(phi_cl, th_cl);
 
-		vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
+                                h_EC_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
 
-		for (int i_view = 0; i_view < n_view; i_view++) {
+                                h_EC_yxc1->Fill(hall_x_cl, hall_y_cl);
+                                //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
 
-		  int n_PCalpeaks = trig.GetNPeaks(0, i_view);
-		  h_N_PCalpeaks1_[i_view]->Fill(n_PCalpeaks, sector);
+                                double cl_Dalitz = ec_geom.GetDalitz();
 
-		  for (int i_peak = 0; i_peak < n_PCalpeaks; i_peak++) {
+                                h_Dalitz_cl1->Fill(cl_Dalitz, sector);
 
-		    h_t_PCalpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
+                                h_ECcl_t1->Fill(cl_time, sector);
+                                h_ECcl_U1->Fill(cl_U, sector);
+                                h_ECcl_V1->Fill(cl_V, sector);
+                                h_ECcl_W1->Fill(cl_W, sector);
+                                h_ECcl_E1->Fill(cl_E, sector);
+                            }
 
-		    double coord_conv = 3.;
-		    if (i_view == 0) {
-		      coord_conv = 2.75;
-		    }
-		    double coord = double(trig.GetECPeak(0, i_view, i_peak)->coord) / coord_conv;
-		    h_coord_PCalpeak1_[i_view]->Fill(coord, sector);
 
-		    v_Peaks_[i_view].push_back(trig.GetECPeak(0, i_view, i_peak));
-		  }
-		}
+                            //cout<<"n_upeaks = "<<n_upeaks<<endl;
 
-		for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
-		  for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
-		    for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
+                        } else if (detector == 2) { // PCal
 
-		      TPCalGeom pcal_geom_peaks(v_Peaks_[0].at(iU)->coord / U_conv, v_Peaks_[1].at(iV)->coord / V_conv,
-						v_Peaks_[2].at(iW)->coord / W_conv);
-		      pcal_geom_peaks.SetSector(sector);
+                            vector<TEC_Peak*> v_Peaks_[3]; // 3 is U, V or W
 
-		      //                       double hall_x_UV = ec_geom_peaks.GetHallX_UV();
-		      //                       double hall_y_UV = ec_geom_peaks.GetHallY_UV();
-		      //                       h_EC_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
-		      //
-		      //                       double hall_x_UW = ec_geom_peaks.GetHallX_UW();
-		      //                       double hall_y_UW = ec_geom_peaks.GetHallY_UW();
-		      //                       h_EC_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
-		      //
-		      //                       double hall_x_VW = ec_geom_peaks.GetHallX_VW();
-		      //                       double hall_y_VW = ec_geom_peaks.GetHallY_VW();
-		      //                       h_EC_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
+                            for (int i_view = 0; i_view < n_view; i_view++) {
 
-		      double hall_x_UV = pcal_geom_peaks.GetHallX_UV();
-		      double hall_y_UV = pcal_geom_peaks.GetHallY_UV();
-		      h_PCal_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
-		      double hall_x_UW = pcal_geom_peaks.GetHallX_UW();
-		      double hall_y_UW = pcal_geom_peaks.GetHallY_UW();
-		      h_PCal_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
-		      double hall_x_VW = pcal_geom_peaks.GetHallX_VW();
-		      double hall_y_VW = pcal_geom_peaks.GetHallY_VW();
-		      h_PCal_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
+                                int n_PCalpeaks = trig.GetNPeaks(0, i_view);
+                                h_N_PCalpeaks1_[i_view]->Fill(n_PCalpeaks, sector);
 
-		      double Dalitz_peaks = pcal_geom_peaks.GetDalitz();
+                                for (int i_peak = 0; i_peak < n_PCalpeaks; i_peak++) {
 
-		      h_PCal_Dalitz_Peaks1->Fill(Dalitz_peaks, sector);
-		    }
+                                    h_t_PCalpeak1_[i_view]->Fill(trig.GetECPeak(0, i_view, i_peak)->time, sector);
 
-		  }
+                                    double coord_conv = 3.;
+                                    if (i_view == 0) {
+                                        coord_conv = 2.75;
+                                    }
+                                    double coord = double(trig.GetECPeak(0, i_view, i_peak)->coord) / coord_conv;
+                                    h_coord_PCalpeak1_[i_view]->Fill(coord, sector);
 
-		}
+                                    v_Peaks_[i_view].push_back(trig.GetECPeak(0, i_view, i_peak));
+                                }
+                            }
 
+                            for (int iU = 0; iU < v_Peaks_[0].size(); iU++) {
+                                for (int iV = 0; iV < v_Peaks_[1].size(); iV++) {
+                                    for (int iW = 0; iW < v_Peaks_[2].size(); iW++) {
 
+                                        TPCalGeom pcal_geom_peaks(v_Peaks_[0].at(iU)->coord / U_conv, v_Peaks_[1].at(iV)->coord / V_conv,
+                                                v_Peaks_[2].at(iW)->coord / W_conv);
+                                        pcal_geom_peaks.SetSector(sector);
 
-		// ====== PCal Clusters =======
+                                        //                       double hall_x_UV = ec_geom_peaks.GetHallX_UV();
+                                        //                       double hall_y_UV = ec_geom_peaks.GetHallY_UV();
+                                        //                       h_EC_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
+                                        //
+                                        //                       double hall_x_UW = ec_geom_peaks.GetHallX_UW();
+                                        //                       double hall_y_UW = ec_geom_peaks.GetHallY_UW();
+                                        //                       h_EC_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
+                                        //
+                                        //                       double hall_x_VW = ec_geom_peaks.GetHallX_VW();
+                                        //                       double hall_y_VW = ec_geom_peaks.GetHallY_VW();
+                                        //                       h_EC_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
 
-		int n_cl = trig.GetNClust(0); // Argument is the EC instance, but now it should be 0 all the time
+                                        double hall_x_UV = pcal_geom_peaks.GetHallX_UV();
+                                        double hall_y_UV = pcal_geom_peaks.GetHallY_UV();
+                                        h_PCal_yxc_UV1->Fill(hall_x_UV, hall_y_UV);
+                                        double hall_x_UW = pcal_geom_peaks.GetHallX_UW();
+                                        double hall_y_UW = pcal_geom_peaks.GetHallY_UW();
+                                        h_PCal_yxc_UW1->Fill(hall_x_UW, hall_y_UW);
+                                        double hall_x_VW = pcal_geom_peaks.GetHallX_VW();
+                                        double hall_y_VW = pcal_geom_peaks.GetHallY_VW();
+                                        h_PCal_yxc_VW1->Fill(hall_x_VW, hall_y_VW);
 
-		h_N_PCalClust1->Fill(n_cl, sector);
+                                        double Dalitz_peaks = pcal_geom_peaks.GetDalitz();
 
-		for (int i_cl = 0; i_cl < n_cl; i_cl++) {
+                                        h_PCal_Dalitz_Peaks1->Fill(Dalitz_peaks, sector);
+                                    }
 
-		  int cl_time = trig.GetECCluster(0, i_cl)->time;
+                                }
 
-		  // Temporarly all variables are set to 2.75
-		  double u_coord_conv = 2.75;
-		  double v_coord_conv = 3.;
-		  double w_coord_conv = 3.;
+                            }
 
-		  double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
-		  double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
-		  double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
-		  double cl_E = double(trig.GetECCluster(0, i_cl)->energy)*ADC2GeV;
 
-		  int E_bin = TMath::Min(int(cl_E/E_bin_width), n_E_bins - 1); // for not being out of range
 
-		  TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
-		  pcal_geom_clust.SetSector(sector);
+                            // ====== PCal Clusters =======
 
-		  double hall_x_cl = pcal_geom_clust.GetHallX_VW();
-		  double hall_y_cl = pcal_geom_clust.GetHallY_VW();
-		  double hall_z_cl = pcal_geom_clust.GetHallZ_VW();
+                            int n_cl = trig.GetNClust(0); // Argument is the EC instance, but now it should be 0 all the time
 
-		  double phi_cl = atan2(hall_y_cl, hall_x_cl)*r2d + 30.;
-		  if( phi_cl < 0.) { phi_cl = phi_cl + 360.; }
-		  double th_cl = atan(sqrt(hall_x_cl*hall_x_cl + hall_y_cl*hall_y_cl)/hall_z_cl)*r2d;
+                            h_N_PCalClust1->Fill(n_cl, sector);
 
-		  h_PCal_yxc1->Fill(hall_x_cl, hall_y_cl);
+                            for (int i_cl = 0; i_cl < n_cl; i_cl++) {
 
-		  h_PCal_th_phi_cl1->Fill(phi_cl, th_cl);
-		  h_PCal_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
+                                int cl_time = trig.GetECCluster(0, i_cl)->time;
 
-		  double Dalitz = pcal_geom_clust.GetDalitz();
+                                // Temporarly all variables are set to 2.75
+                                double u_coord_conv = 2.75;
+                                double v_coord_conv = 3.;
+                                double w_coord_conv = 3.;
 
-		  h_PCal_Dalitz_Clust1->Fill(Dalitz, sector);
+                                double cl_U = double(trig.GetECCluster(0, i_cl)->Ustrip) / u_coord_conv;
+                                double cl_V = double(trig.GetECCluster(0, i_cl)->Vstrip) / v_coord_conv;
+                                double cl_W = double(trig.GetECCluster(0, i_cl)->Wstrip) / w_coord_conv;
+                                double cl_E = double(trig.GetECCluster(0, i_cl)->energy) * ADC2GeV;
 
-		  //                            cout<<" \n\n\n\n ========== cluster info ============"<<endl;
-		  //                            cout << "U: " << trig.GetECCluster(0, i_cl)->Ustrip<< "     " << cl_U << endl;
-		  //                            cout << "V: " << trig.GetECCluster(0, i_cl)->Vstrip<< "     " << cl_V << endl;
-		  //                            cout << "W: " << trig.GetECCluster(0, i_cl)->Wstrip<< "     " << cl_W << endl;
-		  //                            cout<<"Dalitz = "<<Dalitz<<endl;
-                            
-		  //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
+                                int E_bin = TMath::Min(int(cl_E / E_bin_width), n_E_bins - 1); // for not being out of range
 
-		  h_PCalcl_t1->Fill(cl_time, sector);
-		  h_PCalcl_U1->Fill(cl_U, sector);
-		  h_PCalcl_V1->Fill(cl_V, sector);
-		  h_PCalcl_W1->Fill(cl_W, sector);
-		  h_PCalcl_E1->Fill(cl_E, sector);
-		}
+                                TPCalGeom pcal_geom_clust(cl_U, cl_V, cl_W);
+                                pcal_geom_clust.SetSector(sector);
 
+                                double hall_x_cl = pcal_geom_clust.GetHallX_VW();
+                                double hall_y_cl = pcal_geom_clust.GetHallY_VW();
+                                double hall_z_cl = pcal_geom_clust.GetHallZ_VW();
 
-	      } else if (detector == 4) { // HTCC
+                                double phi_cl = atan2(hall_y_cl, hall_x_cl) * r2d + 30.;
+                                if (phi_cl < 0.) {
+                                    phi_cl = phi_cl + 360.;
+                                }
+                                double th_cl = atan(sqrt(hall_x_cl * hall_x_cl + hall_y_cl * hall_y_cl) / hall_z_cl) * r2d;
 
-		int n_HTCC_masks = trig.GetNHTCCMasks();
-		h_n_HTCC_masks->Fill(n_HTCC_masks);
+                                h_PCal_yxc1->Fill(hall_x_cl, hall_y_cl);
 
-		for (int i_htcc = 0; i_htcc < n_HTCC_masks; i_htcc++) {
+                                h_PCal_th_phi_cl1->Fill(phi_cl, th_cl);
+                                h_PCal_th_phi_cl_[E_bin]->Fill(phi_cl, th_cl);
 
-		  THTCC_mask *cur_mask = trig.GetHTCCMask(i_htcc);
+                                double Dalitz = pcal_geom_clust.GetDalitz();
 
-		  h_HTCC_time1->Fill(cur_mask->time);
+                                h_PCal_Dalitz_Clust1->Fill(Dalitz, sector);
 
-		  int n_hits = cur_mask->chan.size();
+                                //                            cout<<" \n\n\n\n ========== cluster info ============"<<endl;
+                                //                            cout << "U: " << trig.GetECCluster(0, i_cl)->Ustrip<< "     " << cl_U << endl;
+                                //                            cout << "V: " << trig.GetECCluster(0, i_cl)->Vstrip<< "     " << cl_V << endl;
+                                //                            cout << "W: " << trig.GetECCluster(0, i_cl)->Wstrip<< "     " << cl_W << endl;
+                                //                            cout<<"Dalitz = "<<Dalitz<<endl;
 
-		  h_n_HTCC_hits->Fill(n_hits);
+                                //cout<<"Ev. number is "<<ev_number<<"    n_cl is "<<n_cl<<"    sector is "<<sector<<"    cl energy is "<<trig.GetECCluster(0, i_cl)->energy<<endl;
 
-		  for (int i_ch = 0; i_ch < n_hits; i_ch++) {
+                                h_PCalcl_t1->Fill(cl_time, sector);
+                                h_PCalcl_U1->Fill(cl_U, sector);
+                                h_PCalcl_V1->Fill(cl_V, sector);
+                                h_PCalcl_W1->Fill(cl_W, sector);
+                                h_PCalcl_E1->Fill(cl_E, sector);
+                            }
 
-		    h_HTCC_hit_chan1->Fill(cur_mask->chan.at(i_ch));
-		  }
-		}
 
-	      } else if (detector == 3) { // FTOF
+                        } else if (detector == 4) { // HTCC
 
-		int n_FTOF_masks = trig.GetNFTOFMasks();
+                            int n_HTCC_masks = trig.GetNHTCCMasks();
+                            h_n_HTCC_masks->Fill(n_HTCC_masks);
 
-		h_n_FTOF_masks->Fill(n_FTOF_masks, sector);
+                            for (int i_htcc = 0; i_htcc < n_HTCC_masks; i_htcc++) {
 
-		for (int i_ftof = 0; i_ftof < n_FTOF_masks; i_ftof++) {
+                                THTCC_mask *cur_mask = trig.GetHTCCMask(i_htcc);
 
-		  TFTOF_mask *cur_mask = trig.GetFTOFMask(i_ftof);
-		  h_FTOF_time1->Fill(cur_mask->time, sector);
+                                h_HTCC_time1->Fill(cur_mask->time);
 
-		  int n_hits = cur_mask->chan.size();
+                                int n_hits = cur_mask->chan.size();
 
-		  h_n_FTOF_hits->Fill(n_hits, sector);
+                                h_n_HTCC_hits->Fill(n_hits);
 
-		  for (int i_ch = 0; i_ch < n_hits; i_ch++) {
-		    h_FTOF_hit_chan1->Fill(cur_mask->chan.at(i_ch), sector);
-		  }
+                                for (int i_ch = 0; i_ch < n_hits; i_ch++) {
 
-		}
+                                    h_HTCC_hit_chan1->Fill(cur_mask->chan.at(i_ch));
+                                }
+                            }
 
+                        } else if (detector == 3) { // FTOF
 
-	      }
+                            int n_FTOF_masks = trig.GetNFTOFMasks();
 
-	    }
+                            h_n_FTOF_masks->Fill(n_FTOF_masks, sector);
 
-	  }
+                            for (int i_ftof = 0; i_ftof < n_FTOF_masks; i_ftof++) {
 
+                                TFTOF_mask *cur_mask = trig.GetFTOFMask(i_ftof);
+                                h_FTOF_time1->Fill(cur_mask->time, sector);
 
+                                int n_hits = cur_mask->chan.size();
 
+                                h_n_FTOF_hits->Fill(n_hits, sector);
 
+                                for (int i_ch = 0; i_ch < n_hits; i_ch++) {
+                                    h_FTOF_hit_chan1->Fill(cur_mask->chan.at(i_ch), sector);
+                                }
 
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+
+
+                if( i_ev >= n_events_to_Analyze ){continue;}
+
+            }
+
+            if( i_ev >= n_events_to_Analyze ){continue;}
         }
 
-      }
-       
 
     } catch (evioException e) {
         cerr << endl << e.toString() << endl;
         exit(EXIT_FAILURE);
     }
 
- gDirectory->Write();
+    gDirectory->Write();
 }
