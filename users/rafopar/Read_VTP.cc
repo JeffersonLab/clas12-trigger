@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
     TObjArray *fname_list = ch1->GetListOfFiles();
     int n_files = fname_list->GetEntries();
     cout << "Number of Files is " << n_files << endl;
+    cout << "Number of Tot. events to analyze1 " << n_events_to_Analyze << endl;
 
     int run = 1995;
     //TFile *file_out = new TFile(Form("VTP_out_%s.root", argv[1]), "Recreate");
@@ -166,6 +167,8 @@ int main(int argc, char **argv) {
 
                 i_ev = i_ev + 1;
 
+                cout<<"i_ev = "<<i_ev<<endl;
+                
                 evioDOMTree tree(chan);
 
                 evioDOMNodeListP nodelist1 = tree.getNodeList();
@@ -472,11 +475,11 @@ int main(int argc, char **argv) {
 
 
 
-                if( i_ev >= n_events_to_Analyze ){continue;}
+                if( i_ev >= n_events_to_Analyze ){ cout<<"Reached to the Limit of specified events to analyze"<<endl; break;}
 
             }
 
-            if( i_ev >= n_events_to_Analyze ){continue;}
+            if( i_ev >= n_events_to_Analyze ){ break;}
         }
 
 
