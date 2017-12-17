@@ -13,10 +13,12 @@
 
 #include "TTrigBit.hh"
 
+TTrigBit::TTrigBit() {
+}
+
 TTrigBit::TTrigBit(evio::evioDOMNode* it, int a_crate_tag) {
 
     SetevioDOMENodeCrateID(it, a_crate_tag);
-
 }
 
 void TTrigBit::SetevioDOMENodeCrateID(evio::evioDOMNode* it, int a_crate_tag) {

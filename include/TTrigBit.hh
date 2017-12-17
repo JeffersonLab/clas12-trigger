@@ -23,6 +23,7 @@
 
 class TTrigBit {
 public:
+    TTrigBit();
     TTrigBit(evio::evioDOMNode*, int);
     //TTrigBit(const TTrigBit& orig);
 
