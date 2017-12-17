@@ -24,7 +24,7 @@
 class TTrigBit {
 public:
     TTrigBit(evio::evioDOMNode*, int);
-    TTrigBit(const TTrigBit& orig);
+    //TTrigBit(const TTrigBit& orig);
 
     bool Main() {return ftrword.range(0, 0);};  // Return whether the main trigger is fired
     bool El_Sec(int); // return true if the electron trigger in the sector is fired, sect should be in the (0-5) range

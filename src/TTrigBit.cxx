@@ -74,8 +74,8 @@ bool TTrigBit::PCal_Sec(int a_sec) {
     return ftrword.range(13 + a_sec, 13 + a_sec);
 }
 
-TTrigBit::TTrigBit(const TTrigBit& orig) {
-}
+//TTrigBit::TTrigBit(const TTrigBit& orig) {//
+//}
 
 TTrigBit::~TTrigBit() {
 }
