@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     }
 
     if( argc >= 3 ){
-        n_events_to_Analyze = atoi[argv[2]];
+        n_events_to_Analyze = atoi(argv[2]);
     }
     
     string inp_file_patttern = argv[1];
