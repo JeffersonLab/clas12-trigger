@@ -167,8 +167,6 @@ int main(int argc, char **argv) {
 
                 i_ev = i_ev + 1;
 
-                cout<<"i_ev = "<<i_ev<<endl;
-                
                 evioDOMTree tree(chan);
 
                 evioDOMNodeListP nodelist1 = tree.getNodeList();
