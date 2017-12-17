@@ -31,11 +31,12 @@ public:
     bool El_Sec(int); // return true if the electron trigger in the sector is fired, sect should be in the (0-5) range
     bool HTCC_Sec(int); // return true if the HTCC trigger in the sector is fired, sect should be in the (0-5) range
     bool PCal_Sec(int); // return true if the PCal trigger in the sector is fired, sect should be in the (0-5) range
-    bool PC_Sec(int); // return true if the EC trigger in the sector is fired, sect should be in the (0-5) range
+    bool EC_Sec(int); // return true if the EC trigger in the sector is fired, sect should be in the (0-5) range
     bool HTCCPCal() {return ftrword.range(25, 25);}; // return true if the HTCC-PCal coincidence trigger is fired
     bool HTCCEC(){return ftrword.range(26, 26);}; // return true if the HTCC-EC coincidence trigger is fired
     bool PCalEC(){return ftrword.range(27, 27);};; // return true if the PCal-EC coincidence trigger is fired
     bool Pulser(){return ftrword.range(31, 31);};; // return true if the pulser trigger is fired
+    bool GetBit(int i_bit) {return ftrword.range(i_bit, i_bit);}; // return bit i_bit
     
     void SetevioDOMENodeCrateID(evio::evioDOMNode*, int);
     void ResetAll();

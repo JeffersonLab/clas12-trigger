@@ -39,7 +39,7 @@ void TTrigBit::SetevioDOMENodeCrateID(evio::evioDOMNode* it, int a_crate_tag) {
 
     funprscaled_trword(31, 0) = (data_values->at(6)).range(31, 0);
     ftrword(31, 0) = (data_values->at(4)).range(31, 0);
-
+    
 }
 
 // return true if the electron trigger in the sector is fired, sect should be in the (0-5) range
@@ -75,6 +75,18 @@ bool TTrigBit::PCal_Sec(int a_sec) {
 
     return ftrword.range(13 + a_sec, 13 + a_sec);
 }
+
+// return true if the PCal trigger in the sector is fired, sect should be in the (0-5) range
+bool TTrigBit::EC_Sec(int a_sec) {
+
+    if (a_sec < 0 || a_sec > 5) {
+        printf("Wrong sector is given %s, Sector should be in thr (0-5) range, but it is  %d Exiting \n", __func__, a_sec);
+        exit(0);
+    }
+
+    return ftrword.range(19 + a_sec, 19 + a_sec);
+}
+
 
 //TTrigBit::TTrigBit(const TTrigBit& orig) {//
 //}
