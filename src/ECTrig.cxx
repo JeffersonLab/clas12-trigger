@@ -334,12 +334,18 @@ void TECTrig::ReadFTOFTrigMask() {
 void TECTrig::ReadTrigger() {
     has_Trigger = true;
 
-    ftrig_time = fit_data->range(26, 16);
-    ftrig_lane(31, 16) = fit_data->range(15, 0);
+    Trig_word cur_trg;
+    
+    cur_trg.tr_time = fit_data->range(26, 16);
+    cur_trg.tr_word(15, 0) = fit_data->range(15, 0);
     // Go to the next word
     fit_data = std::next(fit_data, 1);
 
-    ftrig_lane(15, 0) = fit_data->range(31, 16);
+    cur_trg.tr_word(31, 16) = fit_data->range(31, 16);
+    
+    fv_TrigWords.push_back(cur_trg);
+    
+    fnTrigWords = fnTrigWords + 1;
 }
 
 TEC_Peak* TECTrig::GetECPeak(int aind) {
@@ -358,6 +364,17 @@ TEC_Peak* TECTrig::GetECPeak(int ainst, int aview, int aind) {
         printf("Request for out of range element in %s Exiting the program", __func__);
         exit(0);
     }
+}
+
+Trig_word *TECTrig::GetTrigWord(int aind){
+
+    if( aind < fnTrigWords){
+        return &fv_TrigWords.at(aind);
+    } else {
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(0);
+    }
+    
 }
 
 int TECTrig::GetNPeaks(int ainst, int aview) {
@@ -500,9 +517,13 @@ void TECTrig::ResetAll() {
     fv_ECAllClusters.clear();
     fv_ECAllClusters.shrink_to_fit();
 
+    fv_TrigWords.clear();
+    fv_TrigWords.shrink_to_fit();
+    
     fnAllPeaks = 0;
     fnAllClusters = 0;
     fnHTCC_Masks = 0;
+    fnTrigWords = 0;
 
     has_BlockHeader = false;
     has_BlockTrailer = false;

@@ -43,6 +43,10 @@ typedef struct{
     int time;                       // time shows the channel in the readout window
 } TFTOF_mask;
 
+typedef struct{
+    int tr_time;                    // trigger time with the 4ns resolution
+    ap_int<32> tr_word;             // The trigger word
+}Trig_word;
 
 class TECTrig
 {
@@ -78,6 +82,7 @@ public:
   TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
   THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
   TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
+  Trig_word *GetTrigWord(int);         // Return pointer to the Trig word
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
   int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event window beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
@@ -114,11 +119,13 @@ private:
 //  vector<TEC_Cluster*> fv_ECClusters[n_inst];
   vector<THTCC_mask> fv_HTCCMasks;
   vector<TFTOF_mask> fv_FTOFMasks;
+  vector<Trig_word> fv_TrigWords;
   
   int fnAllPeaks;
   int fnPeaks[n_inst][n_view];
   int fnAllClusters;
   int fnClusters[n_inst];
+  int fnTrigWords;      // Number of triggers in the current event readout
   
   int fpeak_coord_hls;
 
