@@ -79,7 +79,7 @@ public:
   THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
   TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
-  int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event winfow beginning
+  int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event window beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
 
   // ====== Diagnostic functions =====
@@ -166,7 +166,7 @@ private:
   static const unsigned short int type_FT_clust = 7;
   static const unsigned short int type_FTOF_clust = 8;
   
-  static const unsigned short int type_trigger = 15;
+  static const unsigned short int type_trigger = 13;
 
   static const int UNDEF = -9999;
 //==================== When MC ======================  
