@@ -78,7 +78,7 @@ public:
   TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
   THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
   TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
-  int GetTrigLane() {return ftrig_lane;}; // trigger number, i.e. which trigger is fired
+  int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
   int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event winfow beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
 
