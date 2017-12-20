@@ -32,13 +32,15 @@ int main(int argc, char** argv) {
 
     const double r2d = 57.295780;
     const int HTCC_true_tag = 601;
-    const int adcECvtp_tagmin = 100;
-    const int adcECvtp_tagmax = 115;
+    const int vtp_tagmin_Data = 90;
+    const int vtp_tagmax_Data = 115;
+    const int vtp_tagmin_GEMC = 60000;
+    const int vtp_tagmax_GEMC = 60115;
     const int vtp_tag = 57634;
     const int FADC_Mode1_tag = 57601;
     const int n_sect = 6;
 
-    int adcvtp_tag;
+    int adcvtp_tag = -1;
 
     TChain *ch1 = new TChain();
 
@@ -56,14 +58,18 @@ int main(int argc, char** argv) {
     int n_files = fname_list->GetEntries();
     cout << "Number of Files is " << n_files << endl;
 
-    const int run = 1894;
+    const int run = 1995;
     
     //TFile *file_out = new TFile("HTCC_Validation.root", "Recreate");
     TFile *file_out = new TFile(Form("HTCC_Validation_%d.root", run), "Recreate");
 
     TH2D *h_n_HTCC_trig_true_bans = new TH2D("h_n_HTCC_trig_true_bans", "", 10, -0.5, 9.5, 10, -0.5, 9.5);
     TH1D *h_n_HTCC_masks1 = new TH1D("h_n_HTCC_masks1", "", 10, -0.5, 9.5);
+    TH1D *h_n_HTCC_masks2 = new TH1D("h_n_HTCC_masks2", "", 10, -0.5, 9.5);
     TH1D *h_n_HTCC_hits1 = new TH1D("h_n_HTCC_hits1", "", 10, -0.5, 9.5);
+    TH1D *h_n_HTCC_hits2 = new TH1D("h_n_HTCC_hits2", "", 10, -0.5, 9.5);
+    TH1D *h_HTCC_Mask_dist1 = new TH1D("h_HTCC_Mask_dist1", "", 49, -0.5, 48.5);
+
 
     TH2D *h_HTCC_True_yxc1 = new TH2D("h_HTCC_True_yxc1", "", 800, -220., 220., 800, -220., 220.);
     TH2D *h_HTCC_th_phi_true1 = new TH2D("h_HTCC_th_phi_true1", "", 200, 0., 360., 200, 60., 100.);
@@ -124,14 +130,16 @@ int main(int argc, char** argv) {
                         //cout<<"Kuku"<<size_HTCC_bank<<endl;
                         htcc_true.SetevioDOMNode(*it);
 
-                    } else if ((*it)->tag >= adcECvtp_tagmin && (*it)->tag <= adcECvtp_tagmax) {
+                    } else if ( ((*it)->tag >= vtp_tagmin_Data && (*it)->tag <= vtp_tagmax_Data) || ((*it)->tag >= vtp_tagmin_GEMC && (*it)->tag <= vtp_tagmax_GEMC)  ) {
                         adcvtp_tag = (*it)->tag;
 
                     } else if ((*it)->tag == vtp_tag) {
+
+		      //cout<<"adcvtptag = "<<adcvtp_tag<<endl;
                         TECTrig trig(*it, adcvtp_tag);
 
                         // Check if the detector is HTCC
-
+			
                         switch (trig.GetDetector()) {
                             case 1: ec_trig.push_back(trig);
                                 break;
@@ -211,15 +219,39 @@ int main(int argc, char** argv) {
 
 
                         if (n_htcc_banks == 0) {
-                            h_HTCC_th_phi_true2->Fill(phi_true, th_true);
-
+			  h_HTCC_th_phi_true2->Fill(phi_true, th_true);
+			 
+			  
+ 
                         }
 
-
+			
                     }
 
 
                 }
+
+		
+
+		// ======== HTCC from data, without requiring a truth information =========
+		for (int i_htcc_trig = 0; i_htcc_trig < n_htcc_banks; i_htcc_trig++) {
+		  
+		  int n_cur_htcc_masks = htcc_trig.at(i_htcc_trig).GetNHTCCMasks();
+		  
+		  h_n_HTCC_masks2->Fill(n_cur_htcc_masks);
+		  
+		  for (int imask = 0; imask < n_cur_htcc_masks; imask++) {
+		    
+		    THTCC_mask *htcc_mask = htcc_trig.at(i_htcc_trig).GetHTCCMask(imask);
+		    vector<int> hit_channels = htcc_mask->chan;
+		    h_n_HTCC_hits2->Fill(hit_channels.size());
+		    
+		    for (int i_chan = 0; i_chan < hit_channels.size(); i_chan++) {
+		      h_HTCC_Mask_dist1->Fill(hit_channels.at(i_chan));
+		    }
+		  }
+
+		}
 
 
                 // ======================= EC - PCal matching ================
@@ -246,6 +278,8 @@ int main(int argc, char** argv) {
                         for (int i_ec_trg = 0; i_ec_trg < n_ec_banks; i_ec_trg++) {
 
                             int n_ec_clust = ec_trig.at(i_ec_trg).GetNAllClust();
+
+			    
 
                             for (int i_ec_clust = 0; i_ec_clust < n_ec_clust; i_ec_clust++) {
 
