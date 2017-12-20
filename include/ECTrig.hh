@@ -129,7 +129,7 @@ private:
   int fnFTOF_Masks;
   
   int ftrig_inst;
-  int ftrig_lane;
+  ap_int<32> ftrig_lane;
   int ftrig_time;
 
   long long int ftrg_time;
