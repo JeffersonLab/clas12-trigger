@@ -83,6 +83,7 @@ public:
   THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
   TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
   Trig_word *GetTrigWord(int);         // Return pointer to the Trig word
+  int GetNTrig() {return fnTrigWords;}; //Return number of triggers in the VTP Bank
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
   int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event window beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
