@@ -341,7 +341,7 @@ void TECTrig::ReadTrigger() {
     // Go to the next word
     fit_data = std::next(fit_data, 1);
 
-    cur_trg.tr_word(31, 16) = fit_data->range(31, 16);
+    cur_trg.tr_word(31, 16) = fit_data->range(15, 0);
     
     fv_TrigWords.push_back(cur_trg);
     

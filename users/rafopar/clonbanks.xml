@@ -402,26 +402,55 @@
 		       0(23:0)         "TIMEL"
 		       1(23:0)         "TIMEH"
 
+
+
             0(31:27)=0x10+0x04 "EC_PEAK"
                0(26:26)        "PEAK_INST"
                0(25:24)        "PEAK_VIEW"
-               0(23:15)        "PEAK_COORD"
-               0(14:02)        "PEAK_ENERGY"
-               1(10:00)        "PEAK_TIME"
+               0(23:16)        "PEAK_TIME"
+               1(25:16)        "PEAK_COORD"
+               1(15:00)        "PEAK_ENERGY"
+
+<!--            0(31:27)=0x10+0x05 "EC_CLUSTER"
+               0(26:26)        "CLUSTER_INST"
+               0(25:17)        "CLUSTER_COORDW"
+               0(16:08)        "CLUSTER_COORDV"
+               0(07:00)        "CLUSTER_COORDU_H"
+               1(30:30)        "CLUSTER_COORDU_L"
+               1(29:17)        "CLUSTER_ENERGY"
+               1(10:00)        "CLUSTER_TIME"-->
 
             0(31:27)=0x10+0x05 "EC_CLUSTER"
                0(26:26)        "CLUSTER_INST"
-               0(25:17)        "CLISTER_COORDW"
-               0(16:08)        "CLISTER_COORDV"
-               0(07:00)        "CLISTER_COORDU_H"
-               1(30:30)        "CLISTER_COORDU_L"
-               1(29:17)        "CLISTER_ENERGY"
-               1(10:00)        "CLUSTER_TIME"
+               0(23:16)        "CLUSTER_TIME"
+               0(15:00)        "CLUSTER_ENERGY"
+               1(29:20)        "CLUSTER_COORDW"
+               1(19:10)        "CLUSTER_COORDV"
+               1(09:00)        "CLUSTER_COORDU"
 
-            0(31:27)=0x10+0x06 "TRIGGER"
-               0(16:16)        "TRIG_INST"
-               0(15:11)        "TRIG_LANE"
-               0(10:00)        "TRIG_TIME"
+            0(31:27)=0x10+0x06 "HTCC_CLUSTER"
+               0(26:16)        "CLUSTER_TIME"
+               1(16:00)        "CLUSTER_MASK_HIGH"
+               2(30:00)        "CLUSTER_MASK_LOW"
+
+            0(31:27)=0x10+0x07 "FT CLUSTER"
+               0(15:15)        "H2TAG"
+               0(14:14)        "H1TAG"
+               0(13,10)        "NHITS"
+               0(9,5)          "COORDY"
+               0(4,0)          "COORDX"
+               1(29,16)        "ENERGY"
+               1(10,0)         "TIME"
+
+            0(31:27)=0x10+0x08 "FTOF_CLUSTER"
+               0(26:16)        "CLUSTER_TIME"
+               1(30:00)        "CLUSTER_MASK_HIGH"
+               2(30:00)        "CLUSTER_MASK_LOW"
+
+            0(31:27)=0x10+0x0D "TRIGGER"
+               0(26:16)        "TRIG_TIME"
+               0(15:0)         "TRIG_PATTERN(15:0)"
+               1(15:0)         "TRIG_PATTERN(31:16)"
 
             0(31:27)=0x10+0x0E "DNV"
             0(31:27)=0x10+0x0F "FILLER"
@@ -431,9 +460,60 @@
 
 
 
+	<dictEntry name="SSP-RICH Hadrware Data" tag="0xe123" num="0" type="uint32">
+		<description>
+
+            0(31:27)=0x10+0x00 "BLKHDR"
+               0(26:22)        "SLOTID"
+               0(17:08)        "BLOCK_NUMBER"
+               0(07:00)        "BLOCK_LEVEL"
+
+            0(31:27)=0x10+0x01 "BLKTLR"
+               0(26:22)        "SLOTID"
+               0(21:0)         "NWORDS"
+
+            0(31:27)=0x10+0x02 "EVTHDR"
+		       0(26:22)        "SLOTID"
+		       0(21:0)         "EVENTNUM"
+
+            0(31:27)=0x10+0x03 "TRGTIME"
+		       0(23:0)         "TIMEL"
+		       1(23:0)         "TIMEH"
+
+            0(31:27)=0x10+0x07 "FIBER"
+		       0(26:22)        "FIBER"
+		       0(21:0)         "EVENTNUM"
+
+            0(31:27)=0x10+0x08 "TDC"
+               0(26:26)        "EDGE"
+               0(23:16)        "CHAN"
+               0(14:0)         "TDC"
+
+            0(31:27)=0x10+0x0E "DNV"
+            0(31:27)=0x10+0x0F "FILLER"
+
+		</description>
+	</dictEntry>
 
 
+    <dictEntry name="SSP-RICH Composite Data" tag="0xe124" num="0" type="composite">
+      <description format="c,i,l,N(c,c,s)">
+        c "slot number"
+        i "trigger number"
+        l "time stamp"
+        N "number of channels fired"
+        c "fiber number"
+        c "channel number"
+        s "1b edge, 15b tdc time"
+      </description>
+    </dictEntry>
 
+
+	<dictEntry name="SIS3801 Scalers raw format" tag="0xe125" num="0" type="uint32">
+		<description>
+
+		</description>
+	</dictEntry>
 
 
 
@@ -482,6 +562,15 @@
         </description>
     </dictEntry>
 
+
+
+    <dictEntry name="DC segment array" tag="0xd104" num="0" type="composite">
+        <description format="N(7s)">
+			N	"the number of long words (15 for now)"
+            7   "the number of 16bit words"
+            s   "16bit wire mask"
+        </description>
+    </dictEntry>
 
 
 </xmlDict>
