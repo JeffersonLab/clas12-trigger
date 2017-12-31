@@ -73,7 +73,8 @@ void TECGeom::SetSector(int aSect){
 
    GetHallCoordinates(fx_UW, fy_UW, &fx_UW_Hall, &fy_UW_Hall, &fz_UW_Hall);
    GetHallCoordinates(fx_UV, fy_UV, &fx_UV_Hall, &fy_UV_Hall, &fz_UV_Hall);
-   GetHallCoordinates(fx_VW, fy_UV, &fx_VW_Hall, &fy_VW_Hall, &fz_VW_Hall);
+   GetHallCoordinates(fx_VW, fy_VW, &fx_VW_Hall, &fy_VW_Hall, &fz_VW_Hall);
+   //GetHallCoordinates(fx_VW, fy_UV, &fx_VW_Hall, &fy_VW_Hall, &fz_VW_Hall);
 }
 
 void TECGeom::GetHallCoordinates(double ax, double ay, double *out_x_glob, double *out_y_glob, double *out_z_glob){
