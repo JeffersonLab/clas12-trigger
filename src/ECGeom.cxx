@@ -50,6 +50,8 @@ TECGeom::TECGeom(double aU, double aV, double aW){ // U, V and W are strip coord
   //fx_UW = fx0_V - (fLV/fLW)*fW + fLU*cos(falpha_V)*(fLU - fU)/fLU;
   fy_UW = fU*sin(falpha_V);
   
+  
+  // This part of the code seems is not a good thing to do, I should not use Dalitz ??
   double u_calc = fLU*(2. - fV/fLV - fW/fLW);  // Using Dalitz rule calculate U, and then calculate x as UW
   //fx_VW = fx0_V - (fLV/fLW)*fW + fLU*cos(falpha_V)*(fLU - u_calc)/fLU;
   fx_VW = fx0_W - fW*fLV/fLW +(fLU - u_calc)*cos(falpha_V);
