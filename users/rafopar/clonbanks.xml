@@ -447,6 +447,23 @@
                1(30:00)        "CLUSTER_MASK_HIGH"
                2(30:00)        "CLUSTER_MASK_LOW"
 
+            0(31:27)=0x10+0x09 "CTOF_CLUSTER"
+               0(26:16)        "CLUSTER_TIME"
+               1(16:00)        "CLUSTER_MASK_HIGH"
+               2(30:00)        "CLUSTER_MASK_LOW"
+
+            0(31:27)=0x10+0x0A "CND_CLUSTER"
+               0(26:16)        "CLUSTER_TIME"
+               0(09:00)        "CLUSTER_MASK_HIGH"
+               1(30:00)        "CLUSTER_MASK_MIDDLE"
+               2(30:00)        "CLUSTER_MASK_LOW"
+
+            0(31:27)=0x10+0x0C "FT_HODO"
+               0(21:21)        "HODO_LAYER"
+               0(20:10)        "HODO_TIME"
+               0(09:05)        "CAL_Y"
+               0(04:00)        "CAL_X"
+
             0(31:27)=0x10+0x0D "TRIGGER"
                0(26:16)        "TRIG_TIME"
                0(15:0)         "TRIG_PATTERN(15:0)"

@@ -44,6 +44,16 @@ typedef struct{
 } TFTOF_mask;
 
 typedef struct{
+    vector<int> chan;               // Vector of channels that are fired 
+    int time;                       // time shows the channel in the readout window
+} TCTOF_mask;
+
+typedef struct{
+    vector<int> chan;               // Vector of channels that are fired 
+    int time;                       // time shows the channel in the readout window
+} TCND_mask;
+
+typedef struct{
     int tr_time;                    // trigger time with the 4ns resolution
     ap_int<32> tr_word;             // The trigger word
 }Trig_word;
@@ -63,6 +73,10 @@ public:
   bool HasTrigTime() {return has_TrigTime;};
   bool HasTrigPeak() {return has_TrigPeak;};
   bool HasTrigClust() {return has_TrigClust;};
+  bool HasHTCCMask() {return has_HTCCMask ;};
+  bool HasFTOFMask() {return has_FTOFMask ;};
+  bool HasCTOFMask() {return has_CTOFMask ;};
+  bool HasCNDMask() {return has_CNDMask ;};
   bool HasTrigger() {return has_Trigger;};
 
   int GetNwords() { return has_BlockTrailer ? fnwords: UNDEF; }
@@ -76,12 +90,16 @@ public:
   int GetNClust( int );
   int GetNHTCCMasks() {return fnHTCC_Masks;}    // Return number of THTCC_Hits objects
   int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of THTCC_Hits objects
+  int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of THTCC_Hits objects
+  int GetNCNDMasks() {return fnCND_Masks;}    // Return number of THTCC_Hits objects
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
   TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
   THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
   TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
+  TCTOF_mask *GetCTOFMask(int);        // Return pointer to the CTOF mask
+  TCND_mask *GetCNDMask(int);          // Return pointer to the CND mask
   Trig_word *GetTrigWord(int);         // Return pointer to the Trig word
   int GetNTrig() {return fnTrigWords;}; //Return number of triggers in the VTP Bank
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
@@ -100,7 +118,9 @@ private:
   static const int n_inst = 2;
   static const int n_view = 3;
   static const int n_HTCC_chan = 48;                            // NUmber of HTCC channels;
+  static const int n_CTOF_chan = 48;                            // NUmber of Max FTOF channels per sector/panel;
   static const int n_FTOF_chan = 62;                            // NUmber of Max FTOF channels per sector/panel;
+  static const int n_CND_chan = 72;                             // Number of CND channels 24(chan per layer)*3 (layers)
   std::vector<ap_int<32> >::iterator fit_data;
   int fECVTP_tag;
   int fDet;       // The detector, 0 = global trigger, 1 = EC, 2 = PCal
@@ -120,6 +140,8 @@ private:
 //  vector<TEC_Cluster*> fv_ECClusters[n_inst];
   vector<THTCC_mask> fv_HTCCMasks;
   vector<TFTOF_mask> fv_FTOFMasks;
+  vector<TCTOF_mask> fv_CTOFMasks;
+  vector<TCND_mask> fv_CNDMasks;
   vector<Trig_word> fv_TrigWords;
   
   int fnAllPeaks;
@@ -135,6 +157,8 @@ private:
 
   int fnHTCC_Masks;
   int fnFTOF_Masks;
+  int fnCTOF_Masks;
+  int fnCND_Masks;
   
   int ftrig_inst;
   ap_int<32> ftrig_lane;
@@ -152,6 +176,8 @@ private:
   void ReadECTriggerCluster();               // This will read EC/PCal Trigger clusters
   void ReadHTCCTrigMask();                   // This will read HTCC Trigger mask
   void ReadFTOFTrigMask();                   // This will read FTOF Trigger mask
+  void ReadCTOFTrigMask();                   // This will read CTOF Trigger mask
+  void ReadCNDTrigMask();                     // This will read CND Trigger mask
   void ReadTrigger();
   
   bool has_BlockHeader;
@@ -163,6 +189,8 @@ private:
   bool has_Trigger;
   bool has_HTCCMask;
   bool has_FTOFMask;
+  bool has_CTOFMask;
+  bool has_CNDMask;
 
   static const unsigned short int type_blk_head = 0;
   static const unsigned short int type_blk_trail = 1;
@@ -173,6 +201,8 @@ private:
   static const unsigned short int type_HTCC_clust = 6;
   static const unsigned short int type_FT_clust = 7;
   static const unsigned short int type_FTOF_clust = 8;
+  static const unsigned short int type_CTOF_CLUSTER = 9;
+  static const unsigned short int type_CND_CLUSTER = 10;
   
   static const unsigned short int type_trigger = 13;
 

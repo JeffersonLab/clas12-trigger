@@ -53,7 +53,7 @@ map<int, int> TECTrig::EC_vtp_Detector = {
 //    {101, 1},    {102, 1},    {103, 1},    {104, 1},    {105, 1},    {106, 1}, // ECal
 //    {107, 2},    {108, 2},    {109, 2},    {110, 2},    {111, 2},    {112, 2}, // PCal
 //    {94, 3},     {95, 3},     {96, 3},     {97, 3},     {98, 3},     {99, 3}, // FTOF
-//    {93, 4} // HTCC
+//    {93, 4} // HTCC, CTOF
 //};
 
 TECTrig::TECTrig() {
@@ -118,6 +118,8 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
                     break;
                 case type_FTOF_clust: ReadFTOFTrigMask();
                     break;
+                case type_CTOF_CLUSTER: ReadCTOFTrigMask();
+                    break;
             }
 
         } else {
@@ -139,8 +141,8 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
 
 
     fnHTCC_Masks = fv_HTCCMasks.size();
-
     fnFTOF_Masks = fv_FTOFMasks.size();
+    fnCTOF_Masks = fv_FTOFMasks.size();
 }
 
 void TECTrig::ReadBlockHeader() {
@@ -331,6 +333,74 @@ void TECTrig::ReadFTOFTrigMask() {
     fv_FTOFMasks.push_back(cur_mask);
 }
 
+void TECTrig::ReadCTOFTrigMask(){
+    has_CTOFMask = true;
+    
+    TCTOF_mask cur_mask;
+    cur_mask.time = fit_data->range(26, 16);
+
+    //    std::cout << "1st Word of CTOF " << (bitset<32>(*fit_data)) << endl;
+
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+
+    // CTOF mask is a 48 bit word, each bit tells whether that channel is fired
+    // Highest 17 bits of the mask are in one word (16, 0),
+    // and the rest 31 are in subsequent word (30, 0)
+
+    ap_int<n_CTOF_chan> CTOF_mask;
+    CTOF_mask(47, 31) = fit_data->range(16, 0);
+
+    //  std::cout << "2nd Word of CTOF " << (bitset<32>(*fit_data)) << endl;
+
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+
+    CTOF_mask(30, 0) = fit_data->range(30, 0);
+
+    //std::cout << "3rd Word of CTOF " << (bitset<32>(*fit_data)) << endl;
+
+    // Now lets check which channels are fired
+    for (int i = 0; i < n_CTOF_chan; i++) {
+        if (CTOF_mask(i, i)) {
+            cur_mask.chan.push_back(n_CTOF_chan - i - 1);
+        }
+    }
+
+    fv_CTOFMasks.push_back(cur_mask);    
+}
+
+void TECTrig::ReadCNDTrigMask(){
+    has_CNDMask = true;
+    
+    TCND_mask cur_mask;
+    cur_mask.time = fit_data->range(26, 16);
+    
+    // CND mask is a 72 bit word (24 chan/layer * 3 layers), 
+    // 1st 24 bits is a coincidence between L1 and L2
+    // 2nd 24 bits is a coincidence between L2 and L3
+    // 3rd 24 bits is a coincidence between L1 and L2 and L3
+    
+    ap_int<n_CND_chan> CND_mask;
+    CND_mask(71, 62) = fit_data->range(9, 0);
+    
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+    CND_mask(61, 31) = fit_data->range(30, 0);
+
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+    CND_mask(30, 0) = fit_data->range(30, 0);
+    
+        for (int i = 0; i < n_CND_chan; i++) {
+        if (CND_mask(i, i)) {
+            cur_mask.chan.push_back(n_CND_chan - i - 1);
+        }
+    }
+
+    fv_CNDMasks.push_back(cur_mask);
+}
+
 void TECTrig::ReadTrigger() {
     has_Trigger = true;
 
@@ -437,6 +507,25 @@ TFTOF_mask* TECTrig::GetFTOFMask(int aind) {
 
 }
 
+TCTOF_mask* TECTrig::GetCTOFMask(int aind) {
+    if (aind >= fv_CTOFMasks.size()) {
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    return &fv_CTOFMasks.at(aind);
+}
+
+TCND_mask* TECTrig::GetCNDMask(int aind){
+    
+     if (aind >= fv_CNDMasks.size()) {
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    return &fv_CNDMasks.at(aind);
+}
+
 void TECTrig::PrintECCluster(int aind) {
     if (aind < fnAllClusters) {
         cout << "fv_ECAllClusters.size() = " << fv_ECAllClusters.size() << endl;
@@ -509,6 +598,8 @@ void TECTrig::ResetAll() {
     fv_HTCCMasks.shrink_to_fit();
     fv_FTOFMasks.clear();
     fv_FTOFMasks.shrink_to_fit();
+    fv_CTOFMasks.clear();
+    fv_CTOFMasks.shrink_to_fit();
 
     ftrg_time = 0;
 
@@ -533,4 +624,6 @@ void TECTrig::ResetAll() {
     has_TrigClust = false;
     has_Trigger = false;
     has_HTCCMask = false;
+    has_FTOFMask = false;
+    has_CTOFMask = false;
 }
