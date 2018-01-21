@@ -89,9 +89,9 @@ public:
   int GetNAllClust() {return fnAllClusters;}
   int GetNClust( int );
   int GetNHTCCMasks() {return fnHTCC_Masks;}    // Return number of THTCC_Hits objects
-  int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of THTCC_Hits objects
-  int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of THTCC_Hits objects
-  int GetNCNDMasks() {return fnCND_Masks;}    // Return number of THTCC_Hits objects
+  int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of TFTOF_mask objects
+  int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of TCTOF_mask objects
+  int GetNCNDMasks() {return fnCND_Masks;}    // Return number of TCND_mask objects
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
@@ -209,7 +209,7 @@ private:
   static const int UNDEF = -9999;
 //==================== When MC ======================  
   static const int MCadcECvtp_tagmax = 60115; 
-  static const int MCadcECvtp_tagmin = 60092; 
+  static const int MCadcECvtp_tagmin = 60090; 
   static const int DataadcECvtp_tagmax = 115; 
   static const int DataadcECvtp_tagmin = 92;
 

@@ -34,7 +34,7 @@ map<int, int> TECTrig::EC_vtp_Detector = {
     {60107, 2},    {60108, 2},    {60109, 2},    {60110, 2},    {60111, 2},    {60112, 2}, // PCal
     {60094, 3},    {60095, 3},    {60096, 3},    {60097, 3},    {60098, 3},    {60099, 3}, // FTOF
     {60093, 4}, // HTCC, CTOF
-    {60092, 5}, // HTCC, CTOF
+    {60092, 5}, // CND
     // ================= Data ==============
     {101, 1},    {102, 1},    {103, 1},    {104, 1},    {105, 1},    {106, 1}, // ECal
     {107, 2},    {108, 2},    {109, 2},    {110, 2},    {111, 2},    {112, 2}, // PCal
@@ -90,6 +90,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
 
     fDet = EC_vtp_Detector[fECVTP_tag];
 
+    
     vector<ap_int<32> > *data_values = (vector<ap_int < 32 >> *)it->getVector<uint32_t>();
 
     for (fit_data = data_values->begin(); fit_data != data_values->end(); fit_data++) {
@@ -124,6 +125,8 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
                     break;
                 case type_CTOF_CLUSTER: ReadCTOFTrigMask();
                     break;
+                case type_CND_CLUSTER: ReadCNDTrigMask();
+                    break;
             }
 
         } else {
@@ -146,7 +149,10 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
 
     fnHTCC_Masks = fv_HTCCMasks.size();
     fnFTOF_Masks = fv_FTOFMasks.size();
-    fnCTOF_Masks = fv_FTOFMasks.size();
+    fnCTOF_Masks = fv_CTOFMasks.size();
+    fnCND_Masks  = fv_CNDMasks.size();
+    
+    //cout<<"fnCTOF_Masks = "<<fnCTOF_Masks<<endl;
 }
 
 void TECTrig::ReadBlockHeader() {
@@ -345,13 +351,13 @@ void TECTrig::ReadCTOFTrigMask(){
 
     //    std::cout << "1st Word of CTOF " << (bitset<32>(*fit_data)) << endl;
 
-    // Go to the next word
-    fit_data = std::next(fit_data, 1);
-
     // CTOF mask is a 48 bit word, each bit tells whether that channel is fired
     // Highest 17 bits of the mask are in one word (16, 0),
     // and the rest 31 are in subsequent word (30, 0)
 
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);    
+    
     ap_int<n_CTOF_chan> CTOF_mask;
     CTOF_mask(47, 31) = fit_data->range(16, 0);
 
@@ -367,10 +373,11 @@ void TECTrig::ReadCTOFTrigMask(){
     // Now lets check which channels are fired
     for (int i = 0; i < n_CTOF_chan; i++) {
         if (CTOF_mask(i, i)) {
+            
             cur_mask.chan.push_back(n_CTOF_chan - i - 1);
         }
     }
-
+    //cout<<"fDet = "<<fDet<<endl;
     fv_CTOFMasks.push_back(cur_mask);    
 }
 
@@ -604,6 +611,8 @@ void TECTrig::ResetAll() {
     fv_FTOFMasks.shrink_to_fit();
     fv_CTOFMasks.clear();
     fv_CTOFMasks.shrink_to_fit();
+    fv_CNDMasks.clear();
+    fv_CNDMasks.shrink_to_fit();
 
     ftrg_time = 0;
 
@@ -618,6 +627,9 @@ void TECTrig::ResetAll() {
     fnAllPeaks = 0;
     fnAllClusters = 0;
     fnHTCC_Masks = 0;
+    fnFTOF_Masks = 0;
+    fnCTOF_Masks = 0;
+    fnCND_Masks = 0;
     fnTrigWords = 0;
 
     has_BlockHeader = false;
