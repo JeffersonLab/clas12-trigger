@@ -592,6 +592,8 @@ void TECTrig::ResetAll() {
     ftrig_lane = UNDEF;
     ftrig_time = UNDEF;
 
+    fDet = UNDEF;
+    
     for (int i = 0; i < n_inst; i++) {
 
         fv_ind_ECCluster[i].clear();
