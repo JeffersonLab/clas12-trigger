@@ -30,14 +30,14 @@ TDetTrue::TDetTrue(evio::evioDOMNode* it) {
 
 void TDetTrue::SetevioDOMNode(evio::evioDOMNode* it) {
 
-    if (!(it->tag == ECTrueTag || it->tag == PCalTrueTag || it->tag == HTCCTrueTag)) {
-        cout << "Sorry this doesn't seem to be an EC or PCal True bank " << endl;
-        cout << "The EC/PCal bank tag should be " << ECTrueTag << " or " << PCalTrueTag << endl;
+    if (!(it->tag == ECTrueTag || it->tag == PCalTrueTag || it->tag == HTCCTrueTag || it->tag == FTOFTrueTag)) {
+        cout << "Sorry this doesn't seem to be an EC, PCal, HTCC or FTOF True bank " << endl;
+        cout << "The EC/PCal/HTCC/FTOF bank tag should be " << ECTrueTag << ", " << PCalTrueTag<<" , "<< HTCCTrueTag<<"   , "<< FTOFTrueTag<<endl;
         cout << "The Program is exiting " << endl;
         exit(1);
     }
 
-    // For some reason in HTCC True bank, mother id is naver 0, I guess it only treats optical
+    // For some reason in HTCC True bank, mother id is never 0, I guess it only treats optical
     // photons, which are originated from the generated particle, that is why, a new ad hoc
     // variable will created, for track id for Mother particle, and for HTCC it will
     // be equal to 1, and for PCal and EC, (probably all non Cherenkov Detectors) be 0.

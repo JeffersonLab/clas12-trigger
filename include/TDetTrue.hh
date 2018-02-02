@@ -39,6 +39,7 @@ private:
 
     static const int ECTrueTag = 1601;
     static const int PCalTrueTag = 1501;
+    static const int FTOFTrueTag = 1001;
     static const int HTCCTrueTag = 601;
     static const int em_pid = 11;
     static const int ep_pid = -11;

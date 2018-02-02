@@ -110,7 +110,6 @@ private:
     void ReadHTCCTrigMask(); // This will read HTCC Trigger mask
     void ReadFTOFTrigMask(); // This will read FTOF Trigger mask
     void ReadTrigger();
-
     bool HasBlockHeader() {return has_BlockHeader;};
     bool HasBlockTrailer() {return has_BlockTrailer;};
     bool HasEventHeader() {return has_EventHeader;};
