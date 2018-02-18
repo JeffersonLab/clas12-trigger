@@ -15,8 +15,9 @@ map<int, int> TECTrig::EC_vtp_sector = {
     // ================= GEMC ==============
     {60101, 0},    {60102, 1},    {60103, 2},    {60104, 3},    {60105, 4},    {60106, 5}, // ECal
     {60107, 0},    {60108, 1},    {60109, 2},    {60110, 3},    {60111, 4},    {60112, 5}, // PCal
+    {61107, 0},    {61108, 1},    {61109, 2},    {61110, 3},    {61111, 4},    {61112, 5}, // PCaalU
     {60094, 0},    {60095, 1},    {60096, 2},    {60097, 3},    {60098, 4},    {60099, 5}, // FTOF
-    {60093, 7}, // HTCC , CTOF
+    {61093, 7}, // HTCC , CTOF
     {60092, 7}, // CND
     // ================= Data ==============
     {101, 0},    {102, 1},    {103, 2},    {104, 3},    {105, 4},    {106, 5}, // ECal
@@ -32,8 +33,9 @@ map<int, int> TECTrig::EC_vtp_Detector = {
     {100, 0}, // Global trigger
     {60101, 1},    {60102, 1},    {60103, 1},    {60104, 1},    {60105, 1},    {60106, 1}, // ECal
     {60107, 2},    {60108, 2},    {60109, 2},    {60110, 2},    {60111, 2},    {60112, 2}, // PCal
+    {61107, 6},    {61108, 6},    {61109, 6},    {61110, 6},    {61111, 6},    {61112, 6}, // PCalU
     {60094, 3},    {60095, 3},    {60096, 3},    {60097, 3},    {60098, 3},    {60099, 3}, // FTOF
-    {60093, 4}, // HTCC, CTOF
+    {61093, 4}, // HTCC, CTOF
     {60092, 5}, // CND
     // ================= Data ==============
     {101, 1},    {102, 1},    {103, 1},    {104, 1},    {105, 1},    {106, 1}, // ECal
@@ -89,7 +91,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
     // Determine which detector is
 
     fDet = EC_vtp_Detector[fECVTP_tag];
-
+    //cout<<" fECVTP_tag =  "<<fECVTP_tag<<"    Detector number is "<<fDet<<endl;
     
     vector<ap_int<32> > *data_values = (vector<ap_int < 32 >> *)it->getVector<uint32_t>();
 
@@ -104,6 +106,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
 
             //cout<<"Data type is "<<data_type<<endl;
 
+            
             switch (data_type) {
                 case type_blk_head: ReadBlockHeader();
                     break;
@@ -127,11 +130,13 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
                     break;
                 case type_CND_CLUSTER: ReadCNDTrigMask();
                     break;
+                case type_PCalU: ReadPCalU();
+                    break;
             }
 
         } else {
             //     cout<<"Data continuation word<<setw(15)"<<(*fit_data)<<setw(36)<<bitset<32>(*fit_data)<<endl;
-        }
+            }
 
     }
     //cout<<"======******====== END OF VTP Hadrware Data ======******======"<<endl;
@@ -146,7 +151,7 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
         }
     }
 
-
+    fnPCalU_Masks = fv_PCalUMasks.size();
     fnHTCC_Masks = fv_HTCCMasks.size();
     fnFTOF_Masks = fv_FTOFMasks.size();
     fnCTOF_Masks = fv_CTOFMasks.size();
@@ -267,9 +272,43 @@ void TECTrig::ReadECTriggerCluster() {
     fv_ind_ECCluster[cur_clust.inst].push_back(fv_ECAllClusters.size() - 1);
 }
 
+
+void TECTrig::ReadPCalU() {
+    has_PCalU = true;
+    T1DMask cur_mask;
+    cur_mask.time = fit_data->range(26, 16);
+    
+    // PCalU mask is a 68 bit word, each bit tells whether that channel is fired
+    // Highest 6 bits of the mask are in one word (5, 0),
+    // middle 32 bits of the mask are in the 2nd word (31-0), and
+    // the remaining lowest 32 bits are in the 3rd word (31-0)
+
+    ap_int<n_PCalU_chan> PCalU_mask;
+    
+    PCalU_mask(67, 62) = fit_data->range(5, 0);
+    
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+    PCalU_mask(61, 31) = fit_data->range(30, 0);
+   
+    // Go to the next word
+    fit_data = std::next(fit_data, 1);
+    PCalU_mask(30, 0) = fit_data->range(30, 0);
+
+     // Now lets check which channels are fired
+    for (int i = 0; i < n_PCalU_chan; i++) {
+        if (PCalU_mask(i, i)) {
+            cur_mask.chan.push_back(i);
+        }
+    }
+
+    fv_PCalUMasks.push_back(cur_mask);
+   
+}
+
 void TECTrig::ReadHTCCTrigMask() {
     has_HTCCMask = true;
-    THTCC_mask cur_mask;
+    T1DMask cur_mask;
 
     cur_mask.time = fit_data->range(26, 16);
 
@@ -309,10 +348,10 @@ void TECTrig::ReadHTCCTrigMask() {
 void TECTrig::ReadFTOFTrigMask() {
     has_FTOFMask = true;
 
-    TFTOF_mask cur_mask;
+    T1DMask cur_mask;
     cur_mask.time = fit_data->range(26, 16);
 
-    //    std::cout << "1st Word of FTOF " << (bitset<32>(*fit_data)) << endl;
+    //std::cout << "1st Word of FTOF " << (bitset<32>(*fit_data)) << endl;
 
     // Go to the next word
     fit_data = std::next(fit_data, 1);
@@ -336,7 +375,7 @@ void TECTrig::ReadFTOFTrigMask() {
     // Now lets check which channels are fired
     for (int i = 0; i < n_FTOF_chan; i++) {
         if (FTOF_mask(i, i)) {
-            cur_mask.chan.push_back(n_FTOF_chan - i - 1);
+            cur_mask.chan.push_back(i);
         }
     }
 
@@ -346,7 +385,7 @@ void TECTrig::ReadFTOFTrigMask() {
 void TECTrig::ReadCTOFTrigMask(){
     has_CTOFMask = true;
     
-    TCTOF_mask cur_mask;
+    T1DMask cur_mask;
     cur_mask.time = fit_data->range(26, 16);
 
     //    std::cout << "1st Word of CTOF " << (bitset<32>(*fit_data)) << endl;
@@ -384,7 +423,7 @@ void TECTrig::ReadCTOFTrigMask(){
 void TECTrig::ReadCNDTrigMask(){
     has_CNDMask = true;
     
-    TCND_mask cur_mask;
+    T1DMask cur_mask;
     cur_mask.time = fit_data->range(26, 16);
     
     // CND mask is a 72 bit word (24 chan/layer * 3 layers), 
@@ -493,7 +532,23 @@ TEC_Cluster* TECTrig::GetECCluster(int ainst, int aind) {
     }
 }
 
-THTCC_mask* TECTrig::GetHTCCMask(int aind) {
+T1DMask* TECTrig::GetPCalUMask(int aind){
+ 
+    if (aind >= fnPCalU_Masks  ) {
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    if (fDet != 6 || fDet != 2) {
+        cout << "Requesting for PCalU mask, but this seems, is not PCalU VTP data, " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+
+    return &fv_PCalUMasks.at(aind);
+}
+
+T1DMask* TECTrig::GetHTCCMask(int aind) {
     if (aind >= fv_HTCCMasks.size()) {
         printf("Request for out of range element in %s Exiting the program", __func__);
         exit(1);
@@ -508,7 +563,7 @@ THTCC_mask* TECTrig::GetHTCCMask(int aind) {
     return &fv_HTCCMasks.at(aind);
 }
 
-TFTOF_mask* TECTrig::GetFTOFMask(int aind) {
+T1DMask* TECTrig::GetFTOFMask(int aind) {
     if (aind >= fv_FTOFMasks.size()) {
         printf("Request for out of range element in %s Exiting the program", __func__);
         exit(1);
@@ -518,7 +573,7 @@ TFTOF_mask* TECTrig::GetFTOFMask(int aind) {
 
 }
 
-TCTOF_mask* TECTrig::GetCTOFMask(int aind) {
+T1DMask* TECTrig::GetCTOFMask(int aind) {
     if (aind >= fv_CTOFMasks.size()) {
         printf("Request for out of range element in %s Exiting the program", __func__);
         exit(1);
@@ -527,7 +582,7 @@ TCTOF_mask* TECTrig::GetCTOFMask(int aind) {
     return &fv_CTOFMasks.at(aind);
 }
 
-TCND_mask* TECTrig::GetCNDMask(int aind){
+T1DMask* TECTrig::GetCNDMask(int aind){
     
      if (aind >= fv_CNDMasks.size()) {
         printf("Request for out of range element in %s Exiting the program", __func__);
@@ -607,6 +662,8 @@ void TECTrig::ResetAll() {
         }
     }
 
+    fv_PCalUMasks.clear();
+    fv_PCalUMasks.shrink_to_fit();
     fv_HTCCMasks.clear();
     fv_HTCCMasks.shrink_to_fit();
     fv_FTOFMasks.clear();
@@ -628,6 +685,7 @@ void TECTrig::ResetAll() {
     
     fnAllPeaks = 0;
     fnAllClusters = 0;
+    fnPCalU_Masks = 0;
     fnHTCC_Masks = 0;
     fnFTOF_Masks = 0;
     fnCTOF_Masks = 0;

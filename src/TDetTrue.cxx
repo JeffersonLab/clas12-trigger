@@ -30,7 +30,7 @@ TDetTrue::TDetTrue(evio::evioDOMNode* it) {
 
 void TDetTrue::SetevioDOMNode(evio::evioDOMNode* it) {
 
-    if (!(it->tag == ECTrueTag || it->tag == PCalTrueTag || it->tag == HTCCTrueTag || it->tag == FTOFTrueTag)) {
+    if (!(it->tag == ECTrueTag || it->tag == PCalTrueTag || it->tag == HTCCTrueTag || it->tag == FTOFTrueTag || it->tag == CTOFTrueTag)) {
         cout << "Sorry this doesn't seem to be an EC, PCal, HTCC or FTOF True bank " << endl;
         cout << "The EC/PCal/HTCC/FTOF bank tag should be " << ECTrueTag << ", " << PCalTrueTag<<" , "<< HTCCTrueTag<<"   , "<< FTOFTrueTag<<endl;
         cout << "The Program is exiting " << endl;

@@ -41,8 +41,11 @@ private:
     static const int PCalTrueTag = 1501;
     static const int FTOFTrueTag = 1001;
     static const int HTCCTrueTag = 601;
+    static const int CTOFTrueTag = 401;
     static const int em_pid = 11;
     static const int ep_pid = -11;
+    static const int mum_pid = 13;
+    static const int mup_pid = -13;
     static const int gamma_pid = 22;
     static const int prot_pid = 2212;
  

@@ -36,22 +36,32 @@ typedef struct{
 typedef struct{
     vector<int> chan;               // Vector of channels that are fired 
     int time;                       // time shows the channel in the readout window
-} THTCC_mask;
+} T1DMask;
 
-typedef struct{
-    vector<int> chan;               // Vector of channels that are fired 
-    int time;                       // time shows the channel in the readout window
-} TFTOF_mask;
-
-typedef struct{
-    vector<int> chan;               // Vector of channels that are fired 
-    int time;                       // time shows the channel in the readout window
-} TCTOF_mask;
-
-typedef struct{
-    vector<int> chan;               // Vector of channels that are fired 
-    int time;                       // time shows the channel in the readout window
-} TCND_mask;
+//typedef struct{
+//    vector<int> chan;               // Vector of channels that are fired 
+//    int time;                       // time shows the channel in the readout window
+//} TPCalU_mask;
+//
+//typedef struct{
+//    vector<int> chan;               // Vector of channels that are fired 
+//    int time;                       // time shows the channel in the readout window
+//} T1DMask;
+//
+//typedef struct{
+//    vector<int> chan;               // Vector of channels that are fired 
+//    int time;                       // time shows the channel in the readout window
+//} TFTOF_mask;
+//
+//typedef struct{
+//    vector<int> chan;               // Vector of channels that are fired 
+//    int time;                       // time shows the channel in the readout window
+//} TCTOF_mask;
+//
+//typedef struct{
+//    vector<int> chan;               // Vector of channels that are fired 
+//    int time;                       // time shows the channel in the readout window
+//} TCND_mask;
 
 typedef struct{
     int tr_time;                    // trigger time with the 4ns resolution
@@ -88,18 +98,20 @@ public:
   int GetNPeaks(int, int); // Instance (0=in, 1 = out), view (0=U,1=V,2=W)
   int GetNAllClust() {return fnAllClusters;}
   int GetNClust( int );
+  int GetNPCalUMasks() {return fnPCalU_Masks;}    // Return number of THTCC_Hits objects
   int GetNHTCCMasks() {return fnHTCC_Masks;}    // Return number of THTCC_Hits objects
-  int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of TFTOF_mask objects
-  int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of TCTOF_mask objects
-  int GetNCNDMasks() {return fnCND_Masks;}    // Return number of TCND_mask objects
+  int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of FTOF masks (T1DMask objects)
+  int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of CTOF masks (T1DMask objects)
+  int GetNCNDMasks() {return fnCND_Masks;}      // Return number of CND_mask (T1DMask objects)
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
   TEC_Cluster *GetECCluster(int, int); // (instance(0.1), index )
-  THTCC_mask *GetHTCCMask(int);        // Return pointer to the HTCC mask
-  TFTOF_mask *GetFTOFMask(int);        // Return pointer to the FTOF mask
-  TCTOF_mask *GetCTOFMask(int);        // Return pointer to the CTOF mask
-  TCND_mask *GetCNDMask(int);          // Return pointer to the CND mask
+  T1DMask *GetPCalUMask(int);        // Return pointer to the PCalU mask
+  T1DMask *GetHTCCMask(int);         // Return pointer to the HTCC mask
+  T1DMask *GetFTOFMask(int);         // Return pointer to the FTOF mask
+  T1DMask *GetCTOFMask(int);         // Return pointer to the CTOF mask
+  T1DMask *GetCNDMask(int);          // Return pointer to the CND mask
   Trig_word *GetTrigWord(int);         // Return pointer to the Trig word
   int GetNTrig() {return fnTrigWords;}; //Return number of triggers in the VTP Bank
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
@@ -117,6 +129,7 @@ public:
 private:
   static const int n_inst = 2;
   static const int n_view = 3;
+  static const int n_PCalU_chan = 68;                           // NUmber of PCal U channels;
   static const int n_HTCC_chan = 48;                            // NUmber of HTCC channels;
   static const int n_CTOF_chan = 48;                            // NUmber of Max FTOF channels per sector/panel;
   static const int n_FTOF_chan = 62;                            // NUmber of Max FTOF channels per sector/panel;
@@ -138,10 +151,11 @@ private:
   vector<TEC_Cluster> fv_ECAllClusters;
   vector<int> fv_ind_ECCluster[n_inst];
 //  vector<TEC_Cluster*> fv_ECClusters[n_inst];
-  vector<THTCC_mask> fv_HTCCMasks;
-  vector<TFTOF_mask> fv_FTOFMasks;
-  vector<TCTOF_mask> fv_CTOFMasks;
-  vector<TCND_mask> fv_CNDMasks;
+  vector<T1DMask> fv_PCalUMasks;
+  vector<T1DMask> fv_HTCCMasks;
+  vector<T1DMask> fv_FTOFMasks;
+  vector<T1DMask> fv_CTOFMasks;
+  vector<T1DMask> fv_CNDMasks;
   vector<Trig_word> fv_TrigWords;
   
   int fnAllPeaks;
@@ -155,6 +169,7 @@ private:
   ap_ufixed<9, 6> fclust_coord_Y_hls;
   ap_fixed<9, 6> fclust_coord_X_hls;
 
+  int fnPCalU_Masks;
   int fnHTCC_Masks;
   int fnFTOF_Masks;
   int fnCTOF_Masks;
@@ -174,6 +189,7 @@ private:
   void ReadTriggerTime();
   void ReadECTriggerPeak();                  // This will read EC/PCal Trigger peaks
   void ReadECTriggerCluster();               // This will read EC/PCal Trigger clusters
+  void ReadPCalU();                          // This will read U strips in PCal that are above threshold
   void ReadHTCCTrigMask();                   // This will read HTCC Trigger mask
   void ReadFTOFTrigMask();                   // This will read FTOF Trigger mask
   void ReadCTOFTrigMask();                   // This will read CTOF Trigger mask
@@ -186,6 +202,7 @@ private:
   bool has_TrigTime;
   bool has_TrigPeak;
   bool has_TrigClust;
+  bool has_PCalU;
   bool has_Trigger;
   bool has_HTCCMask;
   bool has_FTOFMask;
@@ -204,13 +221,14 @@ private:
   static const unsigned short int type_CTOF_CLUSTER = 9;
   static const unsigned short int type_CND_CLUSTER = 10;
   
+  static const unsigned short int type_PCalU = 11;
   static const unsigned short int type_trigger = 13;
 
   static const int UNDEF = -9999;
 //==================== When MC ======================  
-  static const int MCadcECvtp_tagmax = 60115; 
-  static const int MCadcECvtp_tagmin = 60090; 
-  static const int DataadcECvtp_tagmax = 115; 
+  static const int MCadcECvtp_tagmax = 61115;
+  static const int MCadcECvtp_tagmin = 60090;
+  static const int DataadcECvtp_tagmax = 115;
   static const int DataadcECvtp_tagmin = 92;
 
   //==================== When MC ======================
