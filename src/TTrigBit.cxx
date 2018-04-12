@@ -40,7 +40,9 @@ void TTrigBit::SetevioDOMENodeCrateID(evio::evioDOMNode* it, int a_crate_tag) {
     funprscaled_trword(31, 0) = (data_values->at(6)).range(31, 0);
     ftrword(31, 0) = (data_values->at(4)).range(31, 0);
     ftrword2(31, 0) = (data_values->at(5)).range(31, 0);
-    ftrig_time = (int)(data_values->at(2)).range(31, 0);
+    ftrtime(47, 16) = data_values->at(2).range(31, 0);
+    ftrtime(15, 0) = data_values->at(3).range(15, 0);
+    ftrig_time = (long)ftrtime.range(47, 0);
 }
 
 // return true if the electron trigger in the sector is fired, sect should be in the (0-5) range
