@@ -41,7 +41,7 @@ void TTrigBit::SetevioDOMENodeCrateID(evio::evioDOMNode* it, int a_crate_tag) {
     ftrword(31, 0) = (data_values->at(4)).range(31, 0);
     ftrword2(31, 0) = (data_values->at(5)).range(31, 0);
     ftrtime(31, 0) = data_values->at(2).range(31, 0);
-    ftrtime(15, 0) = data_values->at(3).range(47, 32);
+    ftrtime(47, 32) = data_values->at(3).range(15, 0);
     ftrig_time = (long)ftrtime.range(47, 0);
 }
 
