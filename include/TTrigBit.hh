@@ -46,6 +46,7 @@ public:
     ap_int<32> funprscaled_trword;
     ap_int<32> ftrword;
     ap_int<32> ftrword2; // This is the 2nd trigger work front panel trigger input, after signal stretching;
+    int ftrig_time; // in 4ns steps
 
 private:
 
