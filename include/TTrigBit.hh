@@ -34,9 +34,10 @@ public:
     bool EC_Sec(int); // return true if the EC trigger in the sector is fired, sect should be in the (0-5) range
     bool HTCCPCal() {return ftrword.range(25, 25);}; // return true if the HTCC-PCal coincidence trigger is fired
     bool HTCCEC(){return ftrword.range(26, 26);}; // return true if the HTCC-EC coincidence trigger is fired
-    bool PCalEC(){return ftrword.range(27, 27);};; // return true if the PCal-EC coincidence trigger is fired
-    bool Pulser(){return ftrword.range(31, 31);};; // return true if the pulser trigger is fired
+    bool PCalEC(){return ftrword.range(27, 27);}; // return true if the PCal-EC coincidence trigger is fired
+    bool Pulser(){return ftrword.range(31, 31);}; // return true if the pulser trigger is fired
     bool GetBit(int i_bit) {return ftrword.range(i_bit, i_bit);}; // return bit i_bit
+    bool GetFCupBit() {return ftrword2.range(FCup_trig_bit,FCup_trig_bit ); };   // Checks whether the FCup tr word is active
     
     void SetevioDOMENodeCrateID(evio::evioDOMNode*, int);
     void ResetAll();
@@ -44,13 +45,15 @@ public:
 
     ap_int<32> funprscaled_trword;
     ap_int<32> ftrword;
+    ap_int<32> ftrword2; // This is the 2nd trigger work front panel trigger input, after signal stretching;
 
 private:
 
     static const int ftrig_crat_ID = 37;
 
     std::vector<ap_int<32> >::iterator fit_data;
-
+    
+    const int FCup_trig_bit = 7; // Counting from 0
 
 };
 
