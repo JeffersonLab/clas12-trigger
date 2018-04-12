@@ -38,6 +38,7 @@ public:
     bool Pulser(){return ftrword.range(31, 31);}; // return true if the pulser trigger is fired
     bool GetBit(int i_bit) {return ftrword.range(i_bit, i_bit);}; // return bit i_bit
     bool GetFCupBit() {return ftrword2.range(FCup_trig_bit,FCup_trig_bit ); };   // Checks whether the FCup tr word is active
+    int GetTrigTime() {return ftrig_time;};
     
     void SetevioDOMENodeCrateID(evio::evioDOMNode*, int);
     void ResetAll();
