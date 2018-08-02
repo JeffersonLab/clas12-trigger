@@ -1,13 +1,14 @@
-CC              = g++
+CC              = g++ -std=c++11
 CC_OBJ_FLAGS    = -c -fPIC
 CC_Shared_FLAGS = -shared -Wl,-soname,libTrigDiag.so
-ROOT_CFLAGS     = $(shell /usr/local/apps/root/root/bin/root-config --cflags)
-ROOT_LIBS       = $(shell /usr/local/apps/root/root/bin/root-config --libs)
+ROOT_CFLAGS     = $(shell /usr/local/apps/root/root_6_12_04/bin/root-config --cflags)
+ROOT_LIBS       = $(shell /usr/local/apps/root/root_6_12_04/bin/root-config --libs)
+CODA		= /Work/apps/coda
 CODA_FLAGS	= -I${CODA}/Linux-x86_64/include
 HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 libTrigDIAG	= libTrigDiag
 
-all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o TCLAS12Cherenkov.o ECGeom.o PCalGeom.o TDetTrue.o
+all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS12TrigCand.o TCLAS12Cherenkov.o ECGeom.o PCalGeom.o TDetTrue.o TTrigBit.o VTPRoot.o
 		rm -f ${libTrigDIAG}.so*
 		$(CC) $(CC_Shared_FLAGS) -o lib/${libTrigDIAG}.so.1.0.1 $?
 		cd lib;\
@@ -16,6 +17,9 @@ all:		ECTrig.o ECGeom.o TCLAAS12Detector.o TCLAS12Calo.o TRECHB_particle.o TCLAS
 
 ECTrig.o:	src/ECTrig.cxx include/ECTrig.hh
 		$(CC) $(CC_OBJ_FLAGS) src/ECTrig.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+
+TTrigBit.o:	src/TTrigBit.cxx include/TTrigBit.hh
+		$(CC) $(CC_OBJ_FLAGS) src/TTrigBit.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
 
 ECGeom.o:	src/ECGeom.cxx include/ECGeom.hh
 		$(CC) $(CC_OBJ_FLAGS) src/ECGeom.cxx -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
@@ -42,6 +46,9 @@ TCLAS12Calo.o:	src/TCLAS12Calo.cxx include/TCLAS12Calo.hh
 
 TCLAS12Cherenkov.o:	src/TCLAS12Cherenkov.cxx include/TCLAS12Cherenkov.hh
 			$(CC) $(CC_OBJ_FLAGS) src/TCLAS12Cherenkov.cxx -o $@ $(ROOT_CFLAGS) -I./include
+
+VTPRoot.o:	src/VTPRoot.cxx include/VTPRoot.hh
+		$(CC) $(CC_OBJ_FLAGS) src/VTPRoot.cxx -o $@ $(ROOT_CFLAGS) $(HLS_FLAGS) -I./include
 
 clean:
 		rm -f lib/*.so.* lib/*.so *.o
