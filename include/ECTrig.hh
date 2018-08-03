@@ -38,6 +38,15 @@ typedef struct{
     int time;                       // time shows the channel in the readout window
 } T1DMask;
 
+typedef struct{
+    vector<int> sl;                 // Vector of SuperLayers that gave signal
+    bool is_inbend;                 // Is the road inbending
+    bool is_outbend;                // Is the road outbending
+    bool is_valid;                  // Is the rad valid, i.e. did it match a lookup table
+    int  time;
+    vector<int> tof_match;          // Vector of channels in ftof that roads point to
+} TDCRoad;
+
 //typedef struct{
 //    vector<int> chan;               // Vector of channels that are fired 
 //    int time;                       // time shows the channel in the readout window
@@ -118,6 +127,12 @@ public:
   int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event window beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
 
+  bool IsRoadInbending() {return fDCRoad.is_inbend;};
+  bool IsRoadOutbending() {return fDCRoad.is_outbend;};
+  bool IsRoadValid() {return fDCRoad.is_valid;};
+  vector<int> *GetRoad_SLs() {return &(fDCRoad.sl) ;};                // Returns pointer of the vector of superlayers of roads
+  vector<int> *GetRoad_FTOFMatch() {return &(fDCRoad.tof_match) ;};   // Returns the pointer to the vector of FTOF channels of ROADs
+  
   // ====== Diagnostic functions =====
   void PrintECCluster( int );
   void PrintECCluster( int, int );
@@ -134,6 +149,7 @@ private:
   static const int n_CTOF_chan = 48;                            // NUmber of Max FTOF channels per sector/panel;
   static const int n_FTOF_chan = 62;                            // NUmber of Max FTOF channels per sector/panel;
   static const int n_CND_chan = 72;                             // Number of CND channels 24(chan per layer)*3 (layers)
+  static const int n_max_DC_segments = 6;                       // Number of maximum DC segments
   std::vector<ap_int<32> >::iterator fit_data;
   int fECVTP_tag;
   int fDet;       // The detector, 0 = global trigger, 1 = EC, 2 = PCal
@@ -157,6 +173,8 @@ private:
   vector<T1DMask> fv_CTOFMasks;
   vector<T1DMask> fv_CNDMasks;
   vector<Trig_word> fv_TrigWords;
+  
+  TDCRoad fDCRoad;  //TDCRoad object
   
   int fnAllPeaks;
   int fnPeaks[n_inst][n_view];
@@ -193,8 +211,10 @@ private:
   void ReadHTCCTrigMask();                   // This will read HTCC Trigger mask
   void ReadFTOFTrigMask();                   // This will read FTOF Trigger mask
   void ReadCTOFTrigMask();                   // This will read CTOF Trigger mask
-  void ReadCNDTrigMask();                     // This will read CND Trigger mask
+  void ReadCNDTrigMask();                    // This will read CND Trigger mask
   void ReadTrigger();
+  void Check2ndlvltype();                    // Since we ran out of types, for type "1100" next 4 bits will be used for checking types
+  void ReadDCRoad();                         // This method will read DCRoad VTP bank
   
   bool has_BlockHeader;
   bool has_BlockTrailer;
@@ -208,6 +228,7 @@ private:
   bool has_FTOFMask;
   bool has_CTOFMask;
   bool has_CNDMask;
+  bool has_DCRoad;
 
   static const unsigned short int type_blk_head = 0;
   static const unsigned short int type_blk_trail = 1;
@@ -223,6 +244,10 @@ private:
   
   static const unsigned short int type_PCalU = 11;
   static const unsigned short int type_trigger = 13;
+  
+  static const unsigned short int type_2ndlvl = 12;
+  static const unsigned short int type_2ndlvl_DCroad = 0;
+  
 
   static const int UNDEF = -9999;
 //==================== When MC ======================  
