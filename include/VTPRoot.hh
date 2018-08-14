@@ -61,6 +61,17 @@ typedef struct{
 }Trig_word;
 
 
+typedef struct{
+    vector<int> sl;                 // Vector of SuperLayers that gave signal
+    bool is_inbend;                 // Is the road inbending
+    bool is_outbend;                // Is the road outbending
+    bool is_valid;                  // Is the rad valid, i.e. did it match a lookup table
+    int  time;
+    vector<int> tof_match;          // Vector of channels in ftof that roads point to
+} TDCRoad;
+
+
+
 class VTPRoot {
 public:
     VTPRoot();
@@ -82,6 +93,12 @@ public:
     int GetNECPeaks(int, int);          // Number of EC peaks, 1st argument is the sector [0-5], 2nd is the view (0=U, 1=V, 2=W)
     int GetNPCalPeaks(int, int);        // Number of PCal peaks, 1st argument is the sector [0-5], 2nd is the view (0=U, 1=V, 2=W)
     
+    bool IsRoadInbending() {return fDCRoad.is_inbend;};
+    bool IsRoadOutbending() {return fDCRoad.is_outbend;};
+    bool IsRoadValid() {return fDCRoad.is_valid;};
+    vector<int> *GetRoad_SLs() {return &(fDCRoad.sl) ;};                // Returns pointer of the vector of superlayers of roads
+    vector<int> *GetRoad_FTOFMatch() {return &(fDCRoad.tof_match) ;};   // Returns the pointer to the vector of FTOF channels of ROADs
+   
     
     // The reason for returning pointer instead of an actual object is that, for the later case it will copy the object
     // in a new address, which requires more memory and CPU resources.
@@ -110,6 +127,10 @@ private:
     void ReadHTCCTrigMask(); // This will read HTCC Trigger mask
     void ReadFTOFTrigMask(); // This will read FTOF Trigger mask
     void ReadTrigger();
+    void Check2ndlvltype(); // Since we ran out of types, for type "1100" next 4 bits will be used for checking types
+    void ReadDCRoad(); // This method will read DCRoad VTP bank
+    
+    
     bool HasBlockHeader() {return has_BlockHeader;};
     bool HasBlockTrailer() {return has_BlockTrailer;};
     bool HasEventHeader() {return has_EventHeader;};
@@ -128,7 +149,8 @@ private:
     bool has_Trigger;
     bool has_HTCCMask;
     bool has_FTOFMask;
-
+    bool has_DCRoad;
+    
     long long int ftrg_time;
     int fDet; // The detector, 0 = global trigger, 1 = EC, 2 = PCal
     int fSector; // sector
@@ -143,7 +165,7 @@ private:
     static const int nView = 3; // Number of views in the Calorimeter
     static const int n_HTCC_chan = 48; // NUmber of HTCC channels;
     static const int n_FTOF_chan = 62; // NUmber of Max FTOF channels per sector/panel;
-
+    static const int n_max_DC_segments = 6;                       // Number of maximum DC segments
 
     vector<long>::iterator fit_crates;
     vector<ap_int < 64 >> ::iterator fit_words;
@@ -162,7 +184,10 @@ private:
     static const unsigned short int type_FTOF_clust = 8;
 
     static const unsigned short int type_trigger = 13;
+    static const unsigned short int type_switch2ndlvl = 12;
+    static const unsigned short int type_2ndlvl_DCroad = 0;
 
+  
     static const int UNDEF = -9999;   
 
     static map<int, int> EC_vtp_sector; // Mapping tag number to the sector
@@ -180,6 +205,8 @@ private:
     
     vector<Trig_word> fv_TrigWords;                                     // Vector of trigger words in this event
 
+    
+    TDCRoad fDCRoad;  //TDCRoad object
     
     int fnTrigWords; // Number of triggers in the current event readout
     int fnHTCCMasks; // Number of masks in HTCC VTP crate

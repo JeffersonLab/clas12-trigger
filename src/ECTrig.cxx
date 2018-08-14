@@ -202,6 +202,8 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
                     break;
                 case type_PCalU: ReadPCalU();
                     break;
+                case type_switch2ndlvl: Check2ndlvltype();
+                    break;
             }
 
         } else {

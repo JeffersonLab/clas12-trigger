@@ -245,7 +245,7 @@ private:
   static const unsigned short int type_PCalU = 11;
   static const unsigned short int type_trigger = 13;
   
-  static const unsigned short int type_2ndlvl = 12;
+  static const unsigned short int type_switch2ndlvl = 12;
   static const unsigned short int type_2ndlvl_DCroad = 0;
   
 

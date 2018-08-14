@@ -138,6 +138,8 @@ void VTPRoot::ReadCrate( int CrateID, int ind, int nWords ){
                     break;
                 case type_FTOF_clust: ReadFTOFTrigMask();
                     break;
+                case type_switch2ndlvl: Check2ndlvltype();
+                    break;                    
                    
             }
 
@@ -151,6 +153,22 @@ void VTPRoot::ReadCrate( int CrateID, int ind, int nWords ){
     
 
 }
+
+
+void VTPRoot::Check2ndlvltype(){
+  
+    ap_uint<4> type_2ndlvl = fit_words->range(26, 23);
+
+    switch (type_2ndlvl) {
+
+        case type_2ndlvl_DCroad: ReadDCRoad();
+            break;
+
+    }
+
+    
+}
+
 
 void VTPRoot::ReadBlockHeader() {
     has_BlockHeader = true;
@@ -251,6 +269,43 @@ void VTPRoot::ReadECTriggerPeak() {
 //    fv_ind_ECPeak[cur_peak.inst][cur_peak.view].push_back(fv_ECAllPeaks.size() - 1);
 }
 
+void VTPRoot::ReadDCRoad() {
+
+    has_DCRoad = true;
+
+    ap_int<n_max_DC_segments> dc_segm_mask = fit_words->range(22, 17);
+
+     // Now lets check which segments of the road exist
+    for (int i = 0; i < n_max_DC_segments; i++) {
+        if( dc_segm_mask(i, i) ){
+            (fDCRoad.sl).push_back(i);
+        }
+    }
+    
+    fDCRoad.is_inbend = fit_words->range(11, 11);
+    fDCRoad.is_outbend = fit_words->range(10, 10);
+    fDCRoad.is_valid = fit_words->range(9, 9);
+    fDCRoad.time = fit_words->range(8, 0);
+    
+     // Go to the next word
+    fit_words = std::next(fit_words, 1);
+    
+    ap_int<n_FTOF_chan> Road_FTOF_mask;
+    Road_FTOF_mask(61, 31) = fit_words->range(30, 0);
+    
+    // Go to the next word
+    fit_words = std::next(fit_words, 1);
+
+    Road_FTOF_mask(30, 0) = fit_words->range(30, 0);
+    
+    for( int i = 0; i < n_FTOF_chan; i++ ) {
+        if (Road_FTOF_mask(i, i)) {
+            fDCRoad.tof_match.push_back(i);
+        }
+
+    }
+    
+}
 
 void VTPRoot::ReadECTriggerCluster() {
     has_TrigClust = true;
