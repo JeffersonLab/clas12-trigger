@@ -97,6 +97,7 @@ public:
   bool HasCTOFMask() {return has_CTOFMask ;};
   bool HasCNDMask() {return has_CNDMask ;};
   bool HasTrigger() {return has_Trigger;};
+  bool HasDCRoad() {return has_DCRoad;};
 
   int GetNwords() { return has_BlockTrailer ? fnwords: UNDEF; }
   int GetSlotID() { return (has_BlockHeader || has_BlockTrailer) ? fslotid : UNDEF; }
