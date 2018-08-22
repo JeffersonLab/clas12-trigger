@@ -252,9 +252,9 @@ private:
 
   static const int UNDEF = -9999;
 //==================== When MC ======================  
-  static const int MCadcECvtp_tagmax = 61115;
+  static const int MCadcECvtp_tagmax = 61120;
   static const int MCadcECvtp_tagmin = 60090;
-  static const int DataadcECvtp_tagmax = 115;
+  static const int DataadcECvtp_tagmax = 120;
   static const int DataadcECvtp_tagmin = 92;
 
   //==================== When MC ======================
