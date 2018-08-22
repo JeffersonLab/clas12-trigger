@@ -254,8 +254,8 @@ private:
 //==================== When MC ======================  
   static const int MCadcECvtp_tagmax = 61120;
   static const int MCadcECvtp_tagmin = 60090;
-  static const int DataadcECvtp_tagmax = 120;
-  static const int DataadcECvtp_tagmin = 92;
+  static const int DataadcECvtp_tagmax = 125;
+  static const int DataadcECvtp_tagmin = 80;
 
   //==================== When MC ======================
 //  static const int adcECvtp_tagmax = 115; // VTP bank tags are in the range 100 - 112
