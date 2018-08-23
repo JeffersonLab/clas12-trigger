@@ -131,6 +131,7 @@ public:
   bool IsRoadInbending() {return fDCRoad.is_inbend;};
   bool IsRoadOutbending() {return fDCRoad.is_outbend;};
   bool IsRoadValid() {return fDCRoad.is_valid;};
+  int  GetRoadTime() {return fDCRoad.time;};
   vector<int> *GetRoad_SLs() {return &(fDCRoad.sl) ;};                // Returns pointer of the vector of superlayers of roads
   vector<int> *GetRoad_FTOFMatch() {return &(fDCRoad.tof_match) ;};   // Returns the pointer to the vector of FTOF channels of ROADs
   
