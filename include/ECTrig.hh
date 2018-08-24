@@ -113,6 +113,7 @@ public:
   int GetNFTOFMasks() {return fnFTOF_Masks;}    // Return number of FTOF masks (T1DMask objects)
   int GetNCTOFMasks() {return fnCTOF_Masks;}    // Return number of CTOF masks (T1DMask objects)
   int GetNCNDMasks() {return fnCND_Masks;}      // Return number of CND_mask (T1DMask objects)
+  int GetNDCRoads() {return fNDCRoads;};        // Return number of DC Roads
   TEC_Peak *GetECPeak( int );
   TEC_Peak *GetECPeak( int, int, int ); // (instance(0,1), view(0, 1, 2), index  )
   TEC_Cluster *GetECCluster( int );
@@ -122,18 +123,22 @@ public:
   T1DMask *GetFTOFMask(int);         // Return pointer to the FTOF mask
   T1DMask *GetCTOFMask(int);         // Return pointer to the CTOF mask
   T1DMask *GetCNDMask(int);          // Return pointer to the CND mask
-  Trig_word *GetTrigWord(int);         // Return pointer to the Trig word
+  Trig_word *GetTrigWord(int);       // Return pointer to the Trig word
+  TDCRoad *GetDCRoad(int);           // Return pointer to the i-th DCRoad, argument is the index of the DCRoad
+  
+  
   int GetNTrig() {return fnTrigWords;}; //Return number of triggers in the VTP Bank
   int GetTrigLane() {return ftrig_lane(31, 0);}; // trigger number, i.e. which trigger is fired
   int GetLocalTrigTime() {return ftrig_time;}; // Trig time wrt the start of the event window beginning
   int GetTrigInst() {return ftrig_inst;}; // 0=EC_in, 1=EC_out
+  
 
-  bool IsRoadInbending() {return fDCRoad.is_inbend;};
-  bool IsRoadOutbending() {return fDCRoad.is_outbend;};
-  bool IsRoadValid() {return fDCRoad.is_valid;};
-  int  GetRoadTime() {return fDCRoad.time;};
-  vector<int> *GetRoad_SLs() {return &(fDCRoad.sl) ;};                // Returns pointer of the vector of superlayers of roads
-  vector<int> *GetRoad_FTOFMatch() {return &(fDCRoad.tof_match) ;};   // Returns the pointer to the vector of FTOF channels of ROADs
+  bool IsRoadInbending(int);                        // Is the road at given index is Inbending
+  bool IsRoadOutbending(int);                       // Is the road at given index is Outbending
+  bool IsRoadValid(int);                            // Is the road at given index is Valid
+  int  GetRoadTime(int);                            // TIme of the road at the given index
+  vector<int> *GetRoad_SLs(int);                    // Returns pointer of the vector of superlayers of roads
+  vector<int> *GetRoad_FTOFMatch(int);              // Returns the pointer to the vector of FTOF channels of ROADs
   
   // ====== Diagnostic functions =====
   void PrintECCluster( int );
@@ -175,25 +180,26 @@ private:
   vector<T1DMask> fv_CTOFMasks;
   vector<T1DMask> fv_CNDMasks;
   vector<Trig_word> fv_TrigWords;
-  
+  vector<TDCRoad>   fv_DCRoad;          // Vector of DCRoads in the given bank
   TDCRoad fDCRoad;  //TDCRoad object
   
-  int fnAllPeaks;
-  int fnPeaks[n_inst][n_view];
-  int fnAllClusters;
-  int fnClusters[n_inst];
+  int fnAllPeaks;                   // Number of all peaks including ECin and EC out
+  int fnPeaks[n_inst][n_view];      // Number of peaks in given instance (EC_in/out) and given view (u/v/w)
+  int fnAllClusters;                // Number of all clusters
+  int fnClusters[n_inst];           // Number of clusters in the given instance (EC_in/out)
   int fnTrigWords;      // Number of triggers in the current event readout
-  
+  int fNDCRoads;            // Number of DCRoads in the event from a given sector 
   int fpeak_coord_hls;
 
   ap_ufixed<9, 6> fclust_coord_Y_hls;
   ap_fixed<9, 6> fclust_coord_X_hls;
 
-  int fnPCalU_Masks;
-  int fnHTCC_Masks;
-  int fnFTOF_Masks;
-  int fnCTOF_Masks;
-  int fnCND_Masks;
+  int fnPCalU_Masks;        // Number of PCU masks in the event from a given sector
+  int fnHTCC_Masks;         // Number of HTCC masks in the event
+  int fnFTOF_Masks;         // Number of FTOF masks in the event from a given sector
+  int fnCTOF_Masks;         // Number of CTOF masks in the event 
+  int fnCND_Masks;          // Number of CND masks in the event
+
   
   int ftrig_inst;
   ap_int<32> ftrig_lane;

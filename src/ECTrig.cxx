@@ -164,7 +164,8 @@ void TECTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_adcECvtp_tag) {
     fnFTOF_Masks = fv_FTOFMasks.size();
     fnCTOF_Masks = fv_CTOFMasks.size();
     fnCND_Masks = fv_CNDMasks.size();
-
+    
+    fNDCRoads = fv_DCRoad.size();
     //cout<<"fnCTOF_Masks = "<<fnCTOF_Masks<<endl;
 }
 
@@ -491,19 +492,22 @@ void TECTrig::ReadDCRoad(){
 
     has_DCRoad = true;
     
+    TDCRoad cur_road;
+    
     ap_int<n_max_DC_segments> dc_segm_mask = fit_data->range(22, 17);
+    
     
      // Now lets check which segments of the road exist
     for (int i = 0; i < n_max_DC_segments; i++) {
         if( dc_segm_mask(i, i) ){
-            (fDCRoad.sl).push_back(i);
+            (cur_road.sl).push_back(i);
         }
     }
     
-    fDCRoad.is_inbend = fit_data->range(11, 11);
-    fDCRoad.is_outbend = fit_data->range(10, 10);
-    fDCRoad.is_valid = fit_data->range(9, 9);
-    fDCRoad.time = fit_data->range(8, 0);
+    cur_road.is_inbend = fit_data->range(11, 11);
+    cur_road.is_outbend = fit_data->range(10, 10);
+    cur_road.is_valid = fit_data->range(9, 9);
+    cur_road.time = fit_data->range(8, 0);
     
      // Go to the next word
     fit_data = std::next(fit_data, 1);
@@ -520,10 +524,12 @@ void TECTrig::ReadDCRoad(){
     
     for( int i = 0; i < n_FTOF_chan; i++ ) {
         if (Road_FTOF_mask(i, i)) {
-            fDCRoad.tof_match.push_back(i);
+            cur_road.tof_match.push_back(i);
         }
 
     }
+    
+    fv_DCRoad.push_back(cur_road);
 }
 
 
@@ -651,6 +657,58 @@ T1DMask* TECTrig::GetCNDMask(int aind) {
     return &fv_CNDMasks.at(aind);
 }
 
+
+bool TECTrig::IsRoadInbending(int aind){
+
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad.at(aind).is_inbend;
+}
+
+bool TECTrig::IsRoadOutbending(int aind){
+
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad.at(aind).is_outbend;
+}
+
+bool TECTrig::IsRoadValid(int aind){
+
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad.at(aind).is_valid;
+}
+
+vector<int> *TECTrig::GetRoad_SLs(int aind){
+ 
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return &fv_DCRoad.at(aind).sl;
+}
+
+vector<int> *TECTrig::GetRoad_FTOFMatch(int aind){
+ 
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return &fv_DCRoad.at(aind).tof_match;
+}
+
+
 void TECTrig::PrintECCluster(int aind) {
     if (aind < fnAllClusters) {
         cout << "fv_ECAllClusters.size() = " << fv_ECAllClusters.size() << endl;
@@ -738,12 +796,9 @@ void TECTrig::ResetAll() {
     fv_ECAllPeaks.shrink_to_fit();
     fv_ECAllClusters.clear();
     fv_ECAllClusters.shrink_to_fit();
-
-    fDCRoad.sl.clear();
-    fDCRoad.sl.shrink_to_fit();
     
-    fDCRoad.tof_match.clear();
-    fDCRoad.tof_match.shrink_to_fit();
+    fv_DCRoad.clear();
+    fv_DCRoad.shrink_to_fit();
     
     fv_TrigWords.clear();
     fv_TrigWords.shrink_to_fit();
