@@ -678,6 +678,17 @@ bool TECTrig::IsRoadOutbending(int aind){
     return fv_DCRoad.at(aind).is_outbend;
 }
 
+int TECTrig::GetRoadTime(int aind){
+
+    if(aind >= fNDCRoads){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    return fv_DCRoad.at(aind).time;
+    
+}
+
 bool TECTrig::IsRoadValid(int aind){
 
     if(aind >= fNDCRoads){
