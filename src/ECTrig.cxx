@@ -494,7 +494,8 @@ void TECTrig::ReadDCRoad(){
     
     TDCRoad cur_road;
     
-    ap_int<n_max_DC_segments> dc_segm_mask = fit_data->range(22, 17);
+    ap_int<n_max_DC_segments> dc_segm_mask;
+    dc_segm_mask(n_max_DC_segments - 1, 0) = fit_data->range(22, 17);
     
     
      // Now lets check which segments of the road exist
