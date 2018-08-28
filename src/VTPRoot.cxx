@@ -32,6 +32,9 @@ map<int, int> VTPRoot::EC_vtp_sector = {
     {60094, 0},    {60095, 1},    {60096, 2},    {60097, 3},    {60098, 4},    {60099, 5}, // FTOF
     {60093, 7}, // HTCC
     // ================= Data ==============
+    {113, 0},     {114, 1},     {115, 2},     {116, 3},     {117, 4},     {118, 5}, // DC Region3
+    {118, 0},     {119, 1},     {120, 2},     {121, 3},     {122, 4},     {123, 5}, // DC Region1
+    {86, 0},      {87, 1},      {88, 2},      {89, 3},      {90, 4},      {91, 5}, // DC Region2    
     {101, 0},    {102, 1},    {103, 2},    {104, 3},    {105, 4},    {106, 5}, // ECal
     {107, 0},    {108, 1},    {109, 2},    {110, 3},    {111, 4},    {112, 5}, // PCal
     {94, 0},     {95, 1},     {96, 2},     {97, 3},     {98, 4},     {99, 5},  // PCal
@@ -50,7 +53,11 @@ map<int, int> VTPRoot::EC_vtp_Detector = {
     {101, 1},    {102, 1},    {103, 1},    {104, 1},    {105, 1},    {106, 1}, // ECal
     {107, 2},    {108, 2},    {109, 2},    {110, 2},    {111, 2},    {112, 2}, // PCal
     {94, 3},     {95, 3},     {96, 3},     {97, 3},     {98, 3},     {99, 3},  // FTOF
-    {93, 4} // HTCC
+    {93, 4}, // HTCC
+    {92, 5}, // CND    
+    {113, 6},     {114, 6},     {115, 6},     {116, 6},     {117, 6},     {118, 6}, // DC Region 3
+    {86, 7},      {87, 7},      {88, 7},      {89, 7},      {90, 7},      {91, 7},  // DC Region 2
+    {119, 8},     {120, 8},     {121, 8},     {122, 8},     {123, 8},     {124, 8}  // DC Region 1    
 };
 
 VTPRoot::VTPRoot() {
@@ -90,18 +97,20 @@ void VTPRoot::SetVectors(vector<long> *v_crID, vector<long> *v_words){
     
     fnTrigWords = fv_TrigWords.size();
     fnHTCCMasks = fv_HTCCMasks.size();
-    
-    for( int iSec = 0; iSec < nSect; iSec++ ){
+
+    for (int iSec = 0; iSec < nSect; iSec++) {
         fnFTOFMasks[iSec] = fv_FTOFMasks[iSec].size();
         fnECClusters[iSec] = fv_ECClusters[iSec].size();
         fnPCalClusters[iSec] = fv_PCalClusters[iSec].size();
+        fNDCRoads[iSec] = fv_DCRoad[iSec].size();
         
-        for( int iView = 0; iView < nView; iView++ ){
+        for (int iView = 0; iView < nView; iView++) {
             fnECPeaks[iSec][iView] = fv_ECPeaks[iSec][iView].size();
             fnPCalPeaks[iSec][iView] = fv_PCalPeaks[iSec][iView].size();
         }
     }
 
+    
 }
 
 void VTPRoot::ReadCrate( int CrateID, int ind, int nWords ){
@@ -149,7 +158,6 @@ void VTPRoot::ReadCrate( int CrateID, int ind, int nWords ){
         }
         
     }
-    
     
 
 }
@@ -272,20 +280,22 @@ void VTPRoot::ReadECTriggerPeak() {
 void VTPRoot::ReadDCRoad() {
 
     has_DCRoad = true;
+    
+    TDCRoad cur_road;
 
     ap_int<n_max_DC_segments> dc_segm_mask = fit_words->range(22, 17);
 
      // Now lets check which segments of the road exist
     for (int i = 0; i < n_max_DC_segments; i++) {
         if( dc_segm_mask(i, i) ){
-            (fDCRoad.sl).push_back(i);
+            (cur_road.sl).push_back(i);
         }
     }
     
-    fDCRoad.is_inbend = fit_words->range(11, 11);
-    fDCRoad.is_outbend = fit_words->range(10, 10);
-    fDCRoad.is_valid = fit_words->range(9, 9);
-    fDCRoad.time = fit_words->range(8, 0);
+    cur_road.is_inbend = fit_words->range(11, 11);
+    cur_road.is_outbend = fit_words->range(10, 10);
+    cur_road.is_valid = fit_words->range(9, 9);
+    cur_road.time = fit_words->range(8, 0);
     
      // Go to the next word
     fit_words = std::next(fit_words, 1);
@@ -300,11 +310,19 @@ void VTPRoot::ReadDCRoad() {
     
     for( int i = 0; i < n_FTOF_chan; i++ ) {
         if (Road_FTOF_mask(i, i)) {
-            fDCRoad.tof_match.push_back(i);
+            cur_road.tof_match.push_back(i);
         }
 
     }
     
+    if( fSector < 0 || fSector > 5 ){
+        cout<<"Sector is "<<fSector<<endl;
+        cout<<"It should be in the [0-5] range "<<endl;
+        cout<<"Exiting"<<endl;
+        exit(1);
+    }    
+    
+    fv_DCRoad[fSector].push_back(cur_road);
 }
 
 void VTPRoot::ReadECTriggerCluster() {
@@ -689,6 +707,131 @@ Trig_word* VTPRoot::GetTrigWord(int ind) {
     return &fv_TrigWords.at(ind);
 }
 
+int VTPRoot::GetNDCRoads(int asec) {
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+
+}       
+
+bool VTPRoot::IsRoadInbending(int asec, int aind){
+    
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad[asec].at(aind).is_inbend;
+}
+
+bool VTPRoot::IsRoadOutbending(int asec, int aind){
+    
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad[asec].at(aind).is_outbend ;
+}
+
+bool VTPRoot::IsRoadValid(int asec, int aind){
+    
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad[asec].at(aind).is_valid;
+}
+
+int VTPRoot::GetRoadTime(int asec, int aind){
+    
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+    
+    return fv_DCRoad[asec].at(aind).time;
+}
+
+vector<int> *VTPRoot::GetRoad_SLs(int asec, int aind){
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    return &fv_DCRoad[asec].at(aind).sl;
+}
+
+
+vector<int> *VTPRoot::GetRoad_FTOFMatch(int asec, int aind){
+    if (asec < 0 || asec >= nSect) {
+        printf("Request for out of range element in %s", __func__);
+        cout << "Sector is " << asec << endl;
+        cout << "It should be in the [0-5] range " << endl;
+        cout << "Exiting" << endl;
+        exit(1);
+    }
+    
+
+    if(aind >= fNDCRoads[asec]){
+        printf("Request for out of range element in %s Exiting the program", __func__);
+        exit(1);
+    }
+
+    return &fv_DCRoad[asec].at(aind).tof_match;
+}
+
+
 
 //VTPRoot::VTPRoot(const VTPRoot& orig) {
 //}
@@ -729,8 +872,11 @@ void VTPRoot::ResetAll() {
         fv_FTOFMasks[iSect].clear();
         fv_FTOFMasks[iSect].shrink_to_fit();
         fnFTOFMasks[iSect] = 0;
-        
-        for( int iview = 0; iview < nView; iview++ ){
+
+        fv_DCRoad[iSect].clear();
+        fv_DCRoad[iSect].shrink_to_fit();
+
+    for( int iview = 0; iview < nView; iview++ ){
             fv_PCalPeaks[iSect][iview].clear();
             fv_PCalPeaks[iSect][iview].shrink_to_fit();
             fnPCalPeaks[iSect][iview] = 0;
@@ -741,6 +887,7 @@ void VTPRoot::ResetAll() {
         }
     }
 
+    
     has_BlockHeader = false;
     has_BlockTrailer = false;
     has_EventHeader = false;

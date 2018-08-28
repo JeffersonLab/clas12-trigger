@@ -93,12 +93,15 @@ public:
     int GetNECPeaks(int, int);          // Number of EC peaks, 1st argument is the sector [0-5], 2nd is the view (0=U, 1=V, 2=W)
     int GetNPCalPeaks(int, int);        // Number of PCal peaks, 1st argument is the sector [0-5], 2nd is the view (0=U, 1=V, 2=W)
     
-    bool IsRoadInbending() {return fDCRoad.is_inbend;};
-    bool IsRoadOutbending() {return fDCRoad.is_outbend;};
-    bool IsRoadValid() {return fDCRoad.is_valid;};
-    vector<int> *GetRoad_SLs() {return &(fDCRoad.sl) ;};                // Returns pointer of the vector of superlayers of roads
-    vector<int> *GetRoad_FTOFMatch() {return &(fDCRoad.tof_match) ;};   // Returns the pointer to the vector of FTOF channels of ROADs
-   
+    int GetNDCRoads(int );        // Return number of DC Roads in the sector asec
+    bool IsRoadInbending(int asec, int aind); // Is the road in sector asec and given index aind is Inbending
+    bool IsRoadOutbending(int asec, int aind); // Is the road in sector asec and given index aind is Outbending
+    bool IsRoadValid(int asec, int aind); // Is the road in sector asec and given index aind is  Valid
+    int GetRoadTime(int asec, int aind); // TIme of the road at the given sector and given index
+    vector<int> *GetRoad_SLs(int asec, int aind); // Returns pointer of the vector of superlayers of roads of a givens sector and given index of that sector
+    vector<int> *GetRoad_FTOFMatch(int asec, int aind); // Returns the pointer to the vector of FTOF channels of ROADs from a sector asec and index aind
+    
+    
     
     // The reason for returning pointer instead of an actual object is that, for the later case it will copy the object
     // in a new address, which requires more memory and CPU resources.
@@ -204,7 +207,7 @@ private:
     vector<TFTOF_mask> fv_FTOFMasks[nSect];                             // vector of FTOF masks for the corresponding sector 
     
     vector<Trig_word> fv_TrigWords;                                     // Vector of trigger words in this event
-
+    vector<TDCRoad>   fv_DCRoad[nSect];                                 // Vector of DC Roads
     
     TDCRoad fDCRoad;  //TDCRoad object
     
@@ -215,7 +218,7 @@ private:
     int fnPCalClusters[nSect]; // Number of PCal clusters in VTP crate for a corresponding sector
     int fnECPeaks[nSect][nView]; // Number of EC peaks in VTTP crate for the corresponding sector and view (u, v, w)
     int fnPCalPeaks[nSect][nView]; // Number of PCal peaks in VTTP crate for the corresponding sector and view (u, v, w)
-
+    int fNDCRoads[nSect];            // Number of DCRoads in the event from a given sector 
 //    int fnPCalPeaks[nSect][nView];
 //    int fnECPeaks[nSect][nView];
 //    

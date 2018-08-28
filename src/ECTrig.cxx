@@ -22,7 +22,7 @@ map<int, int> TECTrig::EC_vtp_sector = {
     // ================= Data ==============
     {113, 0},     {114, 1},     {115, 2},     {116, 3},     {117, 4},     {118, 5}, // DC Region3
     {118, 0},     {119, 1},     {120, 2},     {121, 3},     {122, 4},     {123, 5}, // DC Region1
-    {86, 0},      {87, 1},      {88, 2},      {89, 3},      {90, 4},      {91, 5}, // DC Region3
+    {86, 0},      {87, 1},      {88, 2},      {89, 3},      {90, 4},      {91, 5}, // DC Region2
     {101, 0},     {102, 1},     {103, 2},     {104, 3},     {105, 4},     {106, 5}, // ECal
     {107, 0},     {108, 1},     {109, 2},     {110, 3},     {111, 4},     {112, 5}, // PCal
     {94, 0},      {95, 1},      {96, 2},      {97, 3},      {98, 4},      {99, 5}, // PCal
@@ -515,8 +515,6 @@ void TECTrig::ReadDCRoad(){
 
     ap_int<n_FTOF_chan> Road_FTOF_mask;
     Road_FTOF_mask(61, 31) = fit_data->range(30, 0);
-
-    //  std::cout << "2nd Word of FTOF " << (bitset<32>(*fit_data)) << endl;
 
     // Go to the next word
     fit_data = std::next(fit_data, 1);
