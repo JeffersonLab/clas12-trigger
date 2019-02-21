@@ -37,7 +37,7 @@ map<int, int> VTPRoot::EC_vtp_sector = {
     {86, 0},      {87, 1},      {88, 2},      {89, 3},      {90, 4},      {91, 5}, // DC Region2    
     {101, 0},    {102, 1},    {103, 2},    {104, 3},    {105, 4},    {106, 5}, // ECal
     {107, 0},    {108, 1},    {109, 2},    {110, 3},    {111, 4},    {112, 5}, // PCal
-    {94, 0},     {95, 1},     {96, 2},     {97, 3},     {98, 4},     {99, 5},  // PCal
+    {94, 0},     {95, 1},     {96, 2},     {97, 3},     {98, 4},     {99, 5},  // FTOF
     {93, 7} // HTCC
 
 };
@@ -716,6 +716,7 @@ int VTPRoot::GetNDCRoads(int asec) {
         exit(1);
     }
 
+    return fNDCRoads[asec];
 }       
 
 bool VTPRoot::IsRoadInbending(int asec, int aind){
