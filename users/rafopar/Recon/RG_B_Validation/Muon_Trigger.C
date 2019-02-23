@@ -74,10 +74,10 @@ void Muon_Trigger::Loop() {
     const int VTP_EC_tmax = 8; // We will consider VTP clusters that have time between VTP_PCal_tmin and VTP_PCal_tmax
     const int VTP_EC_tmin = 7;
 
-    //TFile *file_out = new TFile("Data/skimmed_Muon_Trigger.root", "Recreate");
-    TFile *file_out = new TFile("Muon_Trigger.root", "Recreate");
+    TFile *file_out = new TFile(Form("Data/skimmed_Muon_Trigger_%d.root", frun), "Recreate");
+    //TFile *file_out = new TFile(Form("Muon_Trigger_%d.root", frun), "Recreate");
 
-    //TTree *skim_tree = fChain->CloneTree(0);
+    TTree *skim_tree = fChain->CloneTree(0);
 
 
     TH2D *h_vz_sec1 = new TH2D("h_vz_sec1", "", 200, -20., 20., 7, -0.5, 6.5);
@@ -111,8 +111,8 @@ void Muon_Trigger::Loop() {
 
 
     Long64_t nbytes = 0, nb = 0;
-    for (Long64_t jentry = 0; jentry < nentries; jentry++) {
-    //for (Long64_t jentry = 0; jentry < 100000; jentry++) {
+    //for (Long64_t jentry = 0; jentry < nentries; jentry++) {
+    for (Long64_t jentry = 0; jentry < 1000000; jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);
@@ -257,12 +257,12 @@ void Muon_Trigger::Loop() {
 
         int n_pairs = pair_indexes.size();
 
-//                if( n_pairs >= 1 ){
-//                    skim_tree->Fill();
-//                }
+                if( n_pairs >= 1 ){
+                    skim_tree->Fill();
+                }
 
         //cout<<"Number of pairs is"<<n_pairs<<endl;
-
+ 
         for (int ipair = 0; ipair < n_pairs; ipair++) {
             int ind1 = pair_indexes.at(ipair).first;
             int ind2 = pair_indexes.at(ipair).second;
@@ -276,6 +276,16 @@ void Muon_Trigger::Loop() {
 
             //cout<<"sec = "<<sec<<"    Sec2 = "<<sec2<<endl;
 
+            int q1 = REC_Particle_pid->at(ind1);
+            int q2 = REC_Particle_pid->at(ind2);
+            
+            // ================
+            // ================ Selecting events with 1 neg and 1 pos tracks
+            // ================
+            
+            
+            if( !(q1 + q2 == 0) ) {continue;}
+            
             double EPcal_1 = REC_Calorimeter_energy->at(ind_PCal[ind1] - 1);
             double EPcal_2 = REC_Calorimeter_energy->at(ind_PCal[ind2] - 1);
 

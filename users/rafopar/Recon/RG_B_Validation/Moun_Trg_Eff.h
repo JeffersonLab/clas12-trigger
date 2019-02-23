@@ -21,6 +21,8 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
+   
+   int frun;
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
@@ -351,7 +353,7 @@ public :
    TBranch        *b_ECAL_clusters_widthV;   //!
    TBranch        *b_ECAL_clusters_widthW;   //!
 
-   Moun_Trg_Eff(TTree *tree=0);
+   Moun_Trg_Eff(int, TTree *tree=0);
    virtual ~Moun_Trg_Eff();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -365,12 +367,15 @@ public :
 #endif
 
 #ifdef Moun_Trg_Eff_cxx
-Moun_Trg_Eff::Moun_Trg_Eff(TTree *tree) : fChain(0) 
+Moun_Trg_Eff::Moun_Trg_Eff(int arun, TTree *tree) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
 
+   frun = arun;    
+       
+       
 #ifdef SINGLE_TREE
       // The following code should be used if you want this class to access
       // a single tree instead of a chain
@@ -385,7 +390,8 @@ Moun_Trg_Eff::Moun_Trg_Eff(TTree *tree) : fChain(0)
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("Moun_Trg_Eff","");
-      chain->Add("Data/Muon_Trg_Eff_skimmed.root/hipo2root");
+      //chain->Add(Form("Data/Muon_Trg_Eff_skimmed_%d.root/hipo2root", frun));
+      chain->Add(Form("Data/mon_clas_00%d.evio.*.root/hipo2root", frun));
       //chain->Add("Data/mon_clas_006286.evio.*.root/hipo2root");
       //chain->Add("Data/mon_clas_006286.evio.00000.root/hipo2root");
       tree = chain;

@@ -62,7 +62,18 @@ void Moun_Trg_Eff::Loop() {
 
     const double E_PCal_MIN = 0.01; // in GeV ftom rgb_v6.trg
     const double E_EC_MIN = 0.04; // in GeV ftom rgb_v6.trg
+    const double E_EC_MAX = 0.12; // in GeV ftom rgb_v6.trg
 
+    map<int, int> probe_1st_bit;
+    
+    probe_1st_bit[6286] = 24;
+    probe_1st_bit[6299] = 14;
+    //probe_1st_bit[6299] = 14;
+    
+    // ========
+    cout<<"frun = "<<frun<<"     Probe 1st bit is "<<probe_1st_bit[frun]<<endl;
+    
+    
     const int tr_word_size = 32;
 
     double vz_min_[n_sect] = {-12., -12., -12., -18., -12, -12};
@@ -78,7 +89,7 @@ void Moun_Trg_Eff::Loop() {
     const double Etot_cut_[n_sect] = {0.12, 0.12, 0.12, 0.12, 0.12, 0.12};
 
     //TFile *file_out = new TFile("Data/Muon_Trg_Eff_skimmed.root", "Recreate");
-    TFile *file_out = new TFile("Muon_Trg_Eff.root", "Recreate");
+    TFile *file_out = new TFile(Form("Muon_Trg_Eff_%d.root", frun), "Recreate");
 
     //TTree *skim_tree = fChain->CloneTree(0);
     
@@ -102,11 +113,15 @@ void Moun_Trg_Eff::Loop() {
     TH2D *h_PCal_yxc_pos_all1 = new TH2D("h_PCal_yxc_pos_all1", "", 200, -400., 400., 200, -400., 400.);
     TH2D *h_PCal_yxc_pos_missed1 = new TH2D("h_PCal_yxc_pos_missed1", "", 200, -400., 400., 200, -400., 400.);
     
+    TH2D *h_t_PCal_pos_neg1 = new TH2D("h_t_PCal_pos_neg1", "", 200, 150., 250., 200, 150., 250);
+    
+    TH1D *h_t_HTCC_mask_time1 = new TH1D("h_t_HTCC_mask_time1", "", 101, -0.5, 100.5);
     
     Long64_t nentries = fChain->GetEntriesFast();
 
     Long64_t nbytes = 0, nb = 0;
-    for (Long64_t jentry = 0; jentry < nentries; jentry++) {
+    //for (Long64_t jentry = 0; jentry < nentries; jentry++) {
+    for (Long64_t jentry = 0; jentry < 6000000; jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);
@@ -169,10 +184,6 @@ void Moun_Trg_Eff::Loop() {
                 continue;
             }
 
-
-
-
-
             // Require signal in FTOF1b
             if (!(ind_FTOF1b[ipart] >= 1)) {
                 continue;
@@ -190,7 +201,7 @@ void Moun_Trg_Eff::Loop() {
 
 
             // ======= Tracks should have energy depositions in the calorimeter above some thresholds, defined in the trg file
-            if (!(E_PCal > E_PCal_MIN && (E_ECin + E_ECout > E_EC_MIN))) {
+            if (!(E_PCal > E_PCal_MIN && (E_ECin + E_ECout > E_EC_MIN) && ( (E_ECin + E_ECout) < E_EC_MAX) ) ){
                 continue;
             }
 
@@ -269,6 +280,11 @@ void Moun_Trg_Eff::Loop() {
 
         int n_tr_words = vtp1.GetNTrigWords();
 
+        
+        int n_HTCC_masks = vtp1.GetNHTCCMasks();
+        
+        //cout<<"n_HTCC_masks = "<<n_HTCC_masks<<endl;
+        
         vector<int> vtp_time_neg_pos_roads[n_sect];    // VTP time of bits 24-29 // rgb_v6.trg
 
         for( int i_tr_word = 0; i_tr_word < n_tr_words; i_tr_word++ ){
@@ -278,7 +294,7 @@ void Moun_Trg_Eff::Loop() {
             ap_int<tr_word_size> cur_word = cur_trg_word->tr_word;
 
             for( int ibite = 0; ibite < n_sect; ibite++ ){
-                if( cur_word(24 + ibite, 24 + ibite) ){
+                if( cur_word(probe_1st_bit[frun] + ibite, probe_1st_bit[frun] + ibite) ){
                     vtp_time_neg_pos_roads[ibite].push_back(cur_trg_word->tr_time);
                 }
             }
@@ -329,6 +345,10 @@ void Moun_Trg_Eff::Loop() {
                 double PCal_y_pos = REC_Calorimeter_y->at(ind_PCal[ind_pos] - 1);
                 double PCal_x_pos = REC_Calorimeter_x->at(ind_PCal[ind_pos] - 1);
                 
+                double t_PCal_neg = REC_Calorimeter_time->at(ind_PCal[ind_neg] - 1);
+                double t_PCal_pos = REC_Calorimeter_time->at(ind_PCal[ind_pos] - 1);
+                
+                h_t_PCal_pos_neg1->Fill(t_PCal_neg, t_PCal_pos);
                 
                 // Check, if neg_pos_road_sector bit is fired
                 int n_bits = vtp_time_neg_pos_roads[sec_neg].size();
@@ -352,6 +372,19 @@ void Moun_Trg_Eff::Loop() {
                     }
                 
                 }
+                
+                // =============== Ben wants to check HTCC mask times ===============
+                
+                
+                if( n_HTCC_masks > 0 ){
+                    THTCC_mask *cur_htcc_mask = vtp1.GetHTCCMask(0);
+                    
+                    int cur_htcc_mask_time = cur_htcc_mask->time;
+                    
+                    h_t_HTCC_mask_time1->Fill(cur_htcc_mask_time);                  
+                }
+                                
+                
             }
 
         }

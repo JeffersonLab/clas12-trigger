@@ -22,7 +22,14 @@ using namespace std;
  */
 int main(int argc, char** argv) {
 
-    Muon_Trigger t;
+    if( argc < 2 ){
+        cout<<"Exiting please providr a run number"<<endl;
+        exit(1);
+    }
+    
+    int run = atoi(argv[1]);   
+    
+    Muon_Trigger t(run);
     t.Loop();
     
     return 0;

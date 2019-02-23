@@ -20,6 +20,8 @@ class Muon_Trigger {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+   
+   int frun;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -697,7 +699,7 @@ public :
    TBranch        *b_FTOF_hits_pathLength;   //!
    TBranch        *b_FTOF_hits_pathLengthThruBar;   //!
 
-   Muon_Trigger(TTree *tree=0);
+   Muon_Trigger(int, TTree *tree=0);
    virtual ~Muon_Trigger();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -711,12 +713,13 @@ public :
 #endif
 
 #ifdef Muon_Trigger_cxx
-Muon_Trigger::Muon_Trigger(TTree *tree) : fChain(0) 
+Muon_Trigger::Muon_Trigger(int arun, TTree *tree) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
 
+       frun = arun;
 #ifdef SINGLE_TREE
       // The following code should be used if you want this class to access
       // a single tree instead of a chain
@@ -731,8 +734,8 @@ Muon_Trigger::Muon_Trigger(TTree *tree) : fChain(0)
       // The following code should be used if you want this class to access a chain
       // of trees.
       TChain * chain = new TChain("Moun_Trigger","");
-      chain->Add("Data/skimmed_Muon_Trigger.root/hipo2root");
-      //chain->Add("Data/mon_clas_006243.evio.*.root/hipo2root");
+      //chain->Add("Data/skimmed_Muon_Trigger.root/hipo2root");
+      chain->Add(Form("Data/mon_clas_00%d.evio.*.root/hipo2root", frun));
       //chain->Add("Data/mon_clas_006243.evio.00107.root/hipo2root");
       tree = chain;
 #endif // SINGLE_TREE

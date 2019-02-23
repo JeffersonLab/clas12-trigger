@@ -22,7 +22,14 @@ using namespace std;
  */
 int main(int argc, char** argv) {
 
-     Moun_Trg_Eff t;
+    if( argc < 2 ){
+        cout<<"Exiting please providr a run number"<<endl;
+        exit(1);
+    }
+    
+    int run = atoi(argv[1]);
+    
+     Moun_Trg_Eff t(run);
     
      t.Loop();
     
