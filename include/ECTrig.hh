@@ -47,30 +47,6 @@ typedef struct{
     vector<int> tof_match;          // Vector of channels in ftof that roads point to
 } TDCRoad;
 
-//typedef struct{
-//    vector<int> chan;               // Vector of channels that are fired 
-//    int time;                       // time shows the channel in the readout window
-//} TPCalU_mask;
-//
-//typedef struct{
-//    vector<int> chan;               // Vector of channels that are fired 
-//    int time;                       // time shows the channel in the readout window
-//} T1DMask;
-//
-//typedef struct{
-//    vector<int> chan;               // Vector of channels that are fired 
-//    int time;                       // time shows the channel in the readout window
-//} TFTOF_mask;
-//
-//typedef struct{
-//    vector<int> chan;               // Vector of channels that are fired 
-//    int time;                       // time shows the channel in the readout window
-//} TCTOF_mask;
-//
-//typedef struct{
-//    vector<int> chan;               // Vector of channels that are fired 
-//    int time;                       // time shows the channel in the readout window
-//} TCND_mask;
 
 typedef struct{
     int tr_time;                    // trigger time with the 4ns resolution
