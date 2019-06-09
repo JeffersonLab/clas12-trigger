@@ -186,6 +186,7 @@ private:
     static const unsigned short int type_FT_clust = 7;
     static const unsigned short int type_FTOF_clust = 8;
 
+    static const unsigned short int type_CND_CLUSTER = 10;
     static const unsigned short int type_trigger = 13;
     static const unsigned short int type_switch2ndlvl = 12;
     static const unsigned short int type_2ndlvl_DCroad = 0;
