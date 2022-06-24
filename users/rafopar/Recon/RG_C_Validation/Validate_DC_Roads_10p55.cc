@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     }
 
 
-    const double Eb = 2.2;
+    const double Eb = 10.55;
     const double Mp = 0.9383;
     const double r2d = 57.295780;
     const int HTCC_TYPE = 15;
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     hipo::bank bRecEvent(factory.getSchema("REC::Event"));
     hipo::bank bHTCCRec(factory.getSchema("HTCC::rec"));
 
-    TFile *file_out = new TFile("Validate_DC_Roads_WithTSBits_2p1.root", "Recreate");
+    TFile *file_out = new TFile("Validate_DC_Roads_WithTSBits_10p55.root", "Recreate");
     TH1D *h_vtp_tr_time = new TH1D("h_vtp_tr_time", "", 102, -0.5, 101.5);
     TH1D *h_vtp_tr_bits1 = new TH1D("h_vtp_tr_bits1", "", 33, -0.5, 32.5);
 
@@ -134,6 +134,20 @@ int main(int argc, char** argv) {
     TH2D *h_th_P_Missed2 = new TH2D("h_th_P_Missed2", "", 200, 0., Eb, 200, 0., 45);
     TH2D *h_th_P_Missed3 = new TH2D("h_th_P_Missed3", "", 200, 0., Eb, 200, 0., 45);
 
+    TH2D *h_th_phi_Allep1 = new TH2D("h_th_phi_Allep1", "", 200, 0., 360., 200, 0., 45.);
+    TH2D *h_th_phi_Missed_ep2 = new TH2D("h_th_phi_Missed_ep2", "", 200, 0., 360., 200, 0., 45.);
+    TH2D *h_th_P_Allep1 = new TH2D("h_th_P_Allep1", "", 200, 0., Eb, 200, 0., 45);
+    TH2D *h_th_P_Allep2 = new TH2D("h_th_P_Allep2", "", 200, 0., Eb, 200, 0., 45);
+    TH2D *h_th_P_Missed_ep2 = new TH2D("h_th_P_Missed_ep2", "", 200, 0., Eb, 200, 0., 45);
+    TH2D *h_th_P_Missed_ep3 = new TH2D("h_th_P_Missed_ep3", "", 200, 0., Eb, 200, 0., 45);
+
+
+
+    TH1D *h_TS_bits0 = new TH1D("h_TS_bits0", "", 33, -0.5, 32.5);
+    TH1D *h_TS_bits_pos = new TH1D("h_TS_bits_pos", "", 33, -0.5, 32.5);
+    TH1D *h_TS_bits_neg = new TH1D("h_TS_bits_neg", "", 33, -0.5, 32.5);
+    TH1D *h_TS_bits_ep = new TH1D("h_TS_bits_ep", "", 33, -0.5, 32.5);
+    TH1D *h_TS_bits_em = new TH1D("h_TS_bits_em", "", 33, -0.5, 32.5);
     TH1D *h_TS_bits1 = new TH1D("h_TS_bits1", "", 33, -0.5, 32.5);
     TH1D *TrgBits1 = new TH1D("TrgBits1", "", 65, -0.5, 64.5);
 
@@ -143,7 +157,7 @@ int main(int argc, char** argv) {
 
     int evCounter = 0;
 
-    const int nMaxEventsToProcess = 1000000;
+    const int nMaxEventsToProcess = 10000000;
 
     try {
 
@@ -172,6 +186,18 @@ int main(int argc, char** argv) {
 
             vector<int> v_vtp_time;
             vector<ap_int < 32 >> v_vtp_trbit;
+
+
+            long TS_TrgWord = bRunConfig.getLong("trigger", 0);
+
+
+            for (int ibit = 0; ibit < 32; ibit++) {
+
+                if (TS_TrgWord & (1 << ibit)) {
+                    h_TS_bits0->Fill(ibit);
+                }
+            }
+
 
             for (int ii = 0; ii < bVTP.getRows(); ii++) {
 
@@ -211,14 +237,24 @@ int main(int argc, char** argv) {
             bool em_NoDCBits[n_sect + 1] = {0}; // Trg bits for e- w/o DR_Roads. 0 for Allsec, 1,2,3,4,5,6 for each sec
             bool em_WithDCBits[n_sect + 1] = {0}; // Trg bits for e- w DR_Roads. 0 for Allsec, 1,2,3,4,5,6 for each sec
             bool ep_WithDCBits[n_sect + 1] = {0}; // Trg bits for e- w DR_Roads. 0 for Allsec, 1,2,3,4,5,6 for each sec
-            bool em_RecInSec[n_sect] = {0}; // em_is reconstructed in a given sector
+            bool ep_RecInSec[n_sect] = {0}; // ep is reconstructed in a given sector
+            bool em_RecInSec[n_sect] = {0}; // em is reconstructed in a given sector
 
             int nPart = bRecPart.getRows();
 
+            bool anyepRec = false;
             bool anyemRec = false;
 
+            int n_posFD = 0;
+            int n_negFD = 0;
+            int n_posFD_[6] = {0};
+            int n_negFD_[6] = {0};
+            int n_epFD_[6] = {0};
+            int n_emFD_[6] = {0};
+            int n_epFD = 0;
             int n_emFD = 0;
             vector< RecParticle> v_em;
+            vector< RecParticle> v_ep;
 
             map<int, int> ind_HTCC;
             map<int, int> ind_PCal;
@@ -275,9 +311,9 @@ int main(int argc, char** argv) {
                 RecParticle recp(bRecPart, bRecCal, bRecCherenkov, ipart, ind_PCal[ipart], ind_ECin[ipart], ind_ECout[ipart], ind_HTCC[ipart]);
 
                 // ==== Select only negatives
-                if (recp.charge() >= 0) {
-                    continue;
-                }
+                //                if (recp.charge() >= 0) {
+                //                    continue;
+                //                }
 
                 int sect_particle = int(recp.phi() / 60.);
 
@@ -423,19 +459,24 @@ int main(int argc, char** argv) {
                     em_RecInSec[sec] = true;
                     n_emFD = n_emFD + 1;
                     v_em.push_back(recp);
+                } else if (recp.pid() == -11 && TMath::Abs(recp.status()) > 2000 && TMath::Abs(recp.status()) < 4000 && trg_E_threshold_pass && HTCC_pass) {
+                    anyepRec = true;
+                    ep_RecInSec[sec] = true;
+                    n_epFD = n_epFD + 1;
+                    v_ep.push_back(recp);
                 }
+
+
             }
 
             h_nemFD1->Fill(n_emFD);
 
-            if (n_emFD < 1) {
+            if (n_emFD < 1 && n_epFD < 1) {
                 continue;
             }
 
-            long TS_TrgWord = bRunConfig.getLong("trigger", 0);
-
             em_WithDCBits[0] = TS_TrgWord & 1 ? true : false;
-            //em_NoDCBits[0] = TS_TrgWord & 128 ? true : false; // 128 is bit 7
+            ep_WithDCBits[0] = TS_TrgWord & 128 ? true : false; // 128 is bit 7
             em_NoDCBits[0] = TS_TrgWord & 16384 ? true : false; // 16384 is bit 14
 
             for (int ibit = 0; ibit < 32; ibit++) {
@@ -447,8 +488,10 @@ int main(int argc, char** argv) {
 
             for (int ibit = 0; ibit < 6; ibit++) {
                 long secBitWithDC = TMath::Power(2, ibit + 1);
+                long secBitWithDCep = TMath::Power(2, ibit + 8);
                 long secBitNoDC = TMath::Power(2, ibit + 15);
                 em_WithDCBits[ibit + 1] = TS_TrgWord & secBitWithDC;
+                ep_WithDCBits[ibit + 1] = TS_TrgWord & secBitWithDCep;
                 em_NoDCBits[ibit + 1] = TS_TrgWord & secBitNoDC;
             }
 
@@ -467,40 +510,60 @@ int main(int argc, char** argv) {
 
             //cout << "   TS word ============= " << TS_TrgWord << endl;
 
-            double th_em = acos(v_em.at(0).pz() / v_em.at(0).p()) * TMath::RadToDeg();
+            if (n_emFD > 0) {
+                double th_em = acos(v_em.at(0).pz() / v_em.at(0).p()) * TMath::RadToDeg();
 
-            for (int iSec = 0; iSec < n_sect; iSec++) {
+                for (int iSec = 0; iSec < n_sect; iSec++) {
 
-                //cout<<em_RecInSec[iSec]<<"   "<<em_NoDCBits[iSec + 1]<<"   "<<em_WithDCBits[iSec + 1]<<endl;
+                    //cout<<em_RecInSec[iSec]<<"   "<<em_NoDCBits[iSec + 1]<<"   "<<em_WithDCBits[iSec + 1]<<endl;
 
-                if (em_RecInSec[iSec] && em_NoDCBits[iSec + 1]) {
+                    if (em_RecInSec[iSec] && em_NoDCBits[iSec + 1]) {
 
 
-                    //cout<<v_em.at(0).p()<<"   "<<v_em.at(0).pz()<<endl;
+                        //cout<<v_em.at(0).p()<<"   "<<v_em.at(0).pz()<<endl;
 
-                    h_th_P_Allem2->Fill(v_em.at(0).p(), th_em);
-                    h_vz_em2->Fill(v_em.at(0).vz());
-                    if (em_WithDCBits[iSec + 1]) {
-                        h_DC_RoadBitsets1->Fill(1);
+                        h_th_P_Allem2->Fill(v_em.at(0).p(), th_em);
+                        h_vz_em2->Fill(v_em.at(0).vz());
+                        if (em_WithDCBits[iSec + 1]) {
+                            h_DC_RoadBitsets1->Fill(1);
+                        } else {
+                            h_DC_RoadBitsets1->Fill(0);
+                            h_th_P_Missed3->Fill(v_em.at(0).p(), th_em);
+                            h_vz_em_missed3->Fill(v_em.at(0).vz());
+                        }
+                    }
+
+                }
+
+                if (anyemRec && em_NoDCBits[0]) {
+                    h_th_phi_Allem1->Fill(v_em.at(0).phi(), th_em);
+                    h_th_P_Allem1->Fill(v_em.at(0).p(), th_em);
+
+                    if (em_WithDCBits[0]) {
+                        h_DC_RoadBitsets2->Fill(1);
                     } else {
-                        h_DC_RoadBitsets1->Fill(0);
-                        h_th_P_Missed3->Fill(v_em.at(0).p(), th_em);
-                        h_vz_em_missed3->Fill(v_em.at(0).vz());
+                        h_DC_RoadBitsets2->Fill(0);
+                        h_th_phi_Missed2->Fill(v_em.at(0).phi(), th_em);
+                        h_th_P_Missed2->Fill(v_em.at(0).p(), th_em);
                     }
                 }
 
             }
 
-            if (anyemRec && em_NoDCBits[0]) {
-                h_th_phi_Allem1->Fill(v_em.at(0).phi(), th_em);
-                h_th_P_Allem1->Fill(v_em.at(0).p(), th_em);
 
-                if (em_WithDCBits[0]) {
-                    h_DC_RoadBitsets2->Fill(1);
-                } else {
-                    h_DC_RoadBitsets2->Fill(0);
-                    h_th_phi_Missed2->Fill(v_em.at(0).phi(), th_em);
-                    h_th_P_Missed2->Fill(v_em.at(0).p(), th_em);
+            if (n_epFD > 0) {
+                double th_ep = acos(v_ep.at(0).pz() / v_ep.at(0).p()) * TMath::RadToDeg();
+
+                for (int iSec = 0; iSec < n_sect; iSec++) {
+                    if (ep_RecInSec[iSec] && em_NoDCBits[iSec + 1]) {
+                        h_th_P_Allep2->Fill(v_ep.at(0).p(), th_ep);
+
+                        if (ep_WithDCBits[iSec + 1]) {
+
+                        } else {
+                            h_th_P_Missed_ep3->Fill(v_ep.at(0).p(), th_ep);
+                        }
+                    }
                 }
             }
 

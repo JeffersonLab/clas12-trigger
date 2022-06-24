@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in $@
+do
+  o=`basename $i`
+  ~gavalian/jaw-2.3/bin/hipoutils.sh -reduce -ct 'REC::Particle://pid==11&&status<-2000&&i==0[EQ]1' -o $o $i
+done
+
