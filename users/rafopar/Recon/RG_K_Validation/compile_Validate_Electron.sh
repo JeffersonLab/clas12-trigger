@@ -1,0 +1,1 @@
+g++ Validate_Electron.cc -o Validate_Electron.exe `root-config --cflags --libs` -I/local/work/builds/Vivado_HLS/2015.4/include/ -I$CLAS12Trig/include -L$CLAS12Trig_LIB -lTrigDiag -L$EVIO/lib -levioxx -levio -lexpat -lpthread -L$HIPODIR/lib -lhipo4 -llz4 -I$HIPODIR/hipo4 -I$CLAS12AnaTools/include -L$CLAS12AnaTools/lib -lclas12AnaTools
